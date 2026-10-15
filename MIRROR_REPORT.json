@@ -1,0 +1,98 @@
+{
+  "source": "https://unijack-studio.netlify.app/",
+  "fetched": [
+    {
+      "path": "index.html",
+      "bytes": 15163
+    },
+    {
+      "path": "style.css",
+      "bytes": 22048
+    },
+    {
+      "path": "app.js",
+      "bytes": 9632
+    },
+    {
+      "path": "motion.js",
+      "bytes": 1519
+    },
+    {
+      "path": "product-scene.js",
+      "bytes": 11155
+    },
+    {
+      "path": "vendor/three.module.js",
+      "bytes": 603113
+    },
+    {
+      "path": "assets/gallery-1.jpg",
+      "bytes": 689610
+    },
+    {
+      "path": "assets/gallery-2.jpg",
+      "bytes": 994479
+    },
+    {
+      "path": "assets/gallery-3.jpg",
+      "bytes": 624137
+    },
+    {
+      "path": "assets/gallery-4.jpg",
+      "bytes": 640175
+    },
+    {
+      "path": "vendor/OrbitControls.js",
+      "bytes": 38703
+    },
+    {
+      "path": "detailed-model.js",
+      "bytes": 31961
+    },
+    {
+      "path": "material-finish.js",
+      "bytes": 4258
+    },
+    {
+      "path": "vendor/three.core.js",
+      "bytes": 1403455
+    },
+    {
+      "path": "vendor/RoundedBoxGeometry.js",
+      "bytes": 6476
+    },
+    {
+      "path": "vendor/BufferGeometryUtils.js",
+      "bytes": 35539
+    },
+    {
+      "path": "dimensions.js",
+      "bytes": 1590
+    }
+  ],
+  "missing": {
+    "vendor/controls/OrbitControls.js": "HTTP Error 404: Not Found",
+    "gallery-3.jpg": "HTTP Error 404: Not Found",
+    "gallery-4.jpg": "HTTP Error 404: Not Found",
+    "gallery-2.jpg": "HTTP Error 404: Not Found",
+    "vendor/px.png": "HTTP Error 404: Not Found",
+    "vendor/nx.png": "HTTP Error 404: Not Found",
+    "vendor/py.png": "HTTP Error 404: Not Found",
+    "vendor/ny.png": "HTTP Error 404: Not Found",
+    "vendor/pz.png": "HTTP Error 404: Not Found",
+    "vendor/nz.png": "HTTP Error 404: Not Found",
+    "vendor/textures/sprite.png": "HTTP Error 404: Not Found",
+    "vendor/sprite.png": "HTTP Error 404: Not Found",
+    "vendor/diffuse.png": "HTTP Error 404: Not Found",
+    "vendor/normal.png": "HTTP Error 404: Not Found",
+    "vendor/animations/animation.js": "HTTP Error 404: Not Found",
+    "vendor/image.png": "HTTP Error 404: Not Found",
+    "vendor/textures/land_ocean_ice_cloud_2048.jpg": "HTTP Error 404: Not Found",
+    "vendor/material.json": "HTTP Error 404: Not Found",
+    "vendor/models/json/pressure.json": "HTTP Error 404: Not Found",
+    "vendor/models/json/example.json": "HTTP Error 404: Not Found",
+    "vendor/geometries/RoundedBoxGeometry.js": "HTTP Error 404: Not Found",
+    "vendor/utils/BufferGeometryUtils.js": "HTTP Error 404: Not Found"
+  },
+  "note": "Static mirror only; Netlify functions and runtime API calls are not copied."
+}
