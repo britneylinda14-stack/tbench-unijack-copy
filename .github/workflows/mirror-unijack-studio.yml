@@ -1,0 +1,55 @@
+name: Mirror UniJack Studio public website
+on:
+  push:
+    branches:
+      - netlify-mirror-setup
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch the actual public website
+        shell: bash
+        run: |
+          set -euo pipefail
+          URL='https://unijack-studio.netlify.app/'
+          mkdir -p /tmp/unijack-studio-site
+          status="$(curl -L -sS --max-time 30 -o /tmp/unijack-index.html -w '%{http_code}' "$URL")"
+          echo "Netlify homepage status: $status"
+          if [ "$status" != "200" ]; then
+            echo "::error::The original Netlify website did not return HTTP 200; nothing will be copied."
+            exit 1
+          fi
+          if ! grep -qiE '<html|<!doctype' /tmp/unijack-index.html; then
+            echo "::error::The source did not serve an HTML document; nothing will be copied."
+            exit 1
+          fi
+          wget --recursive --level=5 --page-requisites --convert-links --adjust-extension --no-parent --no-host-directories --domains=unijack-studio.netlify.app --directory-prefix=/tmp/unijack-studio-site --timeout=25 --tries=2 "$URL" || echo "Some noncritical site resources may be unavailable"
+          test -s /tmp/unijack-studio-site/index.html
+          echo "Mirrored files: $(find /tmp/unijack-studio-site -type f | wc -l)"
+      - name: Commit recovered static site to separate branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git switch --orphan netlify-site-mirror
+          git rm -r -f . || true
+          cp -a /tmp/unijack-studio-site/. .
+          cat > MIRROR_SOURCE.md <<'EOF'
+          # UniJack Studio static website mirror
+
+          Source URL: https://unijack-studio.netlify.app/
+
+          Recovered automatically from the publicly accessible deployed website.
+          These are mirrored static assets, **not necessarily the original source code**.
+          Server-side APIs, Netlify functions, account data, and assets loaded only through
+          runtime JavaScript may not be included. Verify functionality before publishing.
+          EOF
+          git add -A
+          git commit -m "Mirror public UniJack Studio deployed website"
+          git push origin HEAD:refs/heads/netlify-site-mirror
