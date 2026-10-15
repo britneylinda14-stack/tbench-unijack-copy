@@ -1,37 +1,81 @@
 name: Mirror UniJack Studio public website
 on:
   push:
-    branches:
-      - netlify-mirror-setup
+    branches: [netlify-mirror-setup]
   workflow_dispatch:
 permissions:
   contents: write
 jobs:
   mirror:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
-      - name: Fetch the actual public website
+      - name: Download website and recursive JavaScript dependencies
         shell: bash
         run: |
           set -euo pipefail
-          URL='https://unijack-studio.netlify.app/'
           mkdir -p /tmp/unijack-studio-site
-          status="$(curl -L -sS --max-time 30 -o /tmp/unijack-index.html -w '%{http_code}' "$URL")"
-          echo "Netlify homepage status: $status"
-          if [ "$status" != "200" ]; then
-            echo "::error::The original Netlify website did not return HTTP 200; nothing will be copied."
-            exit 1
-          fi
-          if ! grep -qiE '<html|<!doctype' /tmp/unijack-index.html; then
-            echo "::error::The source did not serve an HTML document; nothing will be copied."
-            exit 1
-          fi
-          wget --recursive --level=5 --page-requisites --convert-links --adjust-extension --no-parent --no-host-directories --domains=unijack-studio.netlify.app --directory-prefix=/tmp/unijack-studio-site --timeout=25 --tries=2 "$URL" || echo "Some noncritical site resources may be unavailable"
-          test -s /tmp/unijack-studio-site/index.html
-          echo "Mirrored files: $(find /tmp/unijack-studio-site -type f | wc -l)"
-      - name: Commit recovered static site to separate branch
+          cat > /tmp/mirror.py <<'PY'
+          import os, re, ssl, urllib.request, urllib.parse, posixpath, collections, json, html
+          base = 'https://unijack-studio.netlify.app/'
+          dest = '/tmp/unijack-studio-site'
+          todo=collections.deque(['index.html','style.css','app.js','motion.js','product-scene.js','vendor/three.module.js'])
+          seen=set()
+          fetched=[]
+          failed={}
+          exts=('.js','.mjs','.css','.webp','.jpg','.jpeg','.png','.svg','.json','.glb','.wasm','.woff','.woff2','.gif','.mp4')
+          def reference(ref, current):
+              ref=html.unescape(ref.strip())
+              if not ref or ref.startswith(('data:','#','mailto:','tel:','blob:')): return
+              if ref == 'three': ref='vendor/three.module.js'
+              elif ref.startswith('three/addons/'):ref='vendor/'+ref.removeprefix('three/addons/')
+              elif ref.startswith(('http://','https://')):
+                  parsed=urllib.parse.urlparse(ref)
+                  if parsed.netloc!='unijack-studio.netlify.app':return
+                  ref=parsed.path.lstrip('/')
+              elif ref.startswith('/'):ref=ref.lstrip('/')
+              else:ref=posixpath.normpath(posixpath.join(posixpath.dirname(current),ref))
+              ref=urllib.parse.urlparse(ref).path
+              if ref.startswith('../') or not ref or not ref.lower().endswith(exts): return
+              if ref not in seen:todo.append(ref)
+          while todo and len(seen)<400:
+              path=todo.popleft()
+              if path in seen:continue
+              seen.add(path)
+              try:
+                  req=urllib.request.Request(urllib.parse.urljoin(base,urllib.parse.quote(path)),headers={'User-Agent':'Mozilla/5.0 UniJackMirror/1.0'})
+                  with urllib.request.urlopen(req,timeout=25) as response:
+                      data=response.read(25000000)
+                      ctype=response.headers.get('Content-Type','')
+                      if response.status!=200:raise ValueError('HTTP '+str(response.status))
+                      if path.endswith('.js') and b'<html' in data[:100].lower():raise ValueError('HTML served instead of JS')
+                  target=os.path.join(dest,path)
+                  os.makedirs(os.path.dirname(target),exist_ok=True)
+                  with open(target,'wb') as f:f.write(data)
+                  fetched.append({'path':path,'bytes':len(data)})
+                  if path.endswith(('.js','.mjs','.html','.css')):
+                      source=data.decode('utf-8','replace')
+                      for ref in re.findall(r'''["']([^"'\n\r<> ]+)["']''',source):
+                          if ref.lower().split('?')[0].endswith(exts):reference(ref,path)
+                      for ref in re.findall(r'''(?:from\s*|import\s*\(|url\s*\()\s*["']?([^\s"')]+)''',source):
+                          reference(ref,path)
+                      if path.endswith('index.html'):
+                          for ref in re.findall(r'''(?:src|href)=["']([^"']+)''',source):
+                              reference(ref,path)
+                  print('OK',path,len(data),flush=True)
+              except Exception as e:
+                  failed[path]=str(e)
+                  print('FAILED',path,str(e),flush=True)
+          critical=['index.html','style.css','app.js','motion.js','product-scene.js']
+          if any(p in failed for p in critical):
+              raise RuntimeError('Critical files missing: '+str({p:failed.get(p) for p in critical if p in failed}))
+          with open(os.path.join(dest,'MIRROR_REPORT.json'),'w') as f:
+              json.dump({'source':base,'fetched':fetched,'missing':failed,'note':'Static mirror only; Netlify functions and runtime API calls are not copied.'},f,indent=2)
+          print('TOTAL',len(fetched),'missing',len(failed))
+          PY
+          python /tmp/mirror.py
+      - name: Commit the static website to the isolated mirror branch
         shell: bash
         run: |
           set -euo pipefail
@@ -43,13 +87,13 @@ jobs:
           cat > MIRROR_SOURCE.md <<'EOF'
           # UniJack Studio static website mirror
 
-          Source URL: https://unijack-studio.netlify.app/
+          Original public site: https://unijack-studio.netlify.app/
 
-          Recovered automatically from the publicly accessible deployed website.
-          These are mirrored static assets, **not necessarily the original source code**.
-          Server-side APIs, Netlify functions, account data, and assets loaded only through
-          runtime JavaScript may not be included. Verify functionality before publishing.
+          This is a capture of the publicly served HTML, styles, scripts and
+          assets. It is not the original authoring repository. Dynamic server-side
+          functions and external APIs are not guaranteed to be included.
+          See MIRROR_REPORT.json for downloaded files and missing dependencies.
           EOF
           git add -A
-          git commit -m "Mirror public UniJack Studio deployed website"
-          git push origin HEAD:refs/heads/netlify-site-mirror
+          git commit -m "Capture public UniJack Studio site and JavaScript dependencies"
+          git push --force origin HEAD:refs/heads/netlify-site-mirror
