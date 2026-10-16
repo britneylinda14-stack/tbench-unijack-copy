@@ -1,0 +1,115 @@
+name: Validate UniJack site polish
+on:
+  push:
+    branches:
+      - design/production-polish
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  check-site:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check source and website content
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check app.js
+          node --check motion.js
+          node --check product-scene.js
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          html=Path('index.html').read_text()
+          css=Path('style.css').read_text()
+          js=Path('app.js').read_text()
+          for text in ['One interface.','Modular Embedded Hardware','TBench','One platform.','A closer look at','HARDWARE COMPONENTS','Technical notes','nav-toggle','ERAU','data-route="logic"']:
+            assert text in html, 'missing HTML: '+text
+          assert 'Website concept prepared for review' not in html
+          assert 'coming soon · checked 30 Sep 2026' not in html
+          assert 'closeNavigation' in js
+          assert '.product-card:hover' in css
+          for path in re.findall(r'(?:src|href)="(\./[^"]+)"',html):
+            assert Path(path[2:]).exists(),path
+          for path in ['assets/products/unijack.jpg','assets/products/mercury.jpg','assets/products/periboard.jpg']:
+            assert Path(path).stat().st_size>1000,path
+          print('HTML, copy, assets and scripts verified')
+          PY
+      - name: Set up Chromium for desktop and mobile tests
+        shell: bash
+        run: |
+          npm install --no-save --no-package-lock playwright@1.55.0
+          npx playwright install chromium
+      - name: Test navigation, routing and responsive layout
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m http.server 4173 >/tmp/uni-server.log 2>&1 &
+          cat > ./temporary-site-check.cjs <<'JS'
+          const {chromium}=require('./node_modules/playwright');
+          const assert=require('node:assert/strict');
+          (async()=>{
+            const browser=await chromium.launch({args:['--enable-webgl','--use-gl=swiftshader']});
+            try{
+              for(const width of [320,390,768,1024,1440]){
+                const page=await browser.newPage({viewport:{width,height:850},reducedMotion:'reduce'});
+                // Skip only heavyweight WebGL in smoke tests; image fallbacks must still work.
+                await page.route('**/vendor/**',route=>route.abort());
+                await page.goto('http://127.0.0.1:4173/',{waitUntil:'domcontentloaded',timeout:20000});
+                await page.waitForFunction(()=>document.documentElement.dataset.signalReady==='yes',null,{timeout:20000});
+                await page.locator('.hero h1').waitFor();
+                if(width<=720){
+                  const toggle=page.locator('.nav-toggle');
+                  assert.equal(await toggle.isVisible(),true);
+                  await toggle.click();
+                  assert.equal(await toggle.getAttribute('aria-expanded'),'true');
+                  assert.equal(await page.locator('#primary-navigation a[href="#products"]').isVisible(),true);
+                  await page.keyboard.press('Escape');
+                  assert.equal(await toggle.getAttribute('aria-expanded'),'false');
+                  await toggle.click();
+                  await page.locator('#primary-navigation a[href="#products"]').click();
+                  assert.equal(await toggle.getAttribute('aria-expanded'),'false');
+                }else{
+                  assert.equal(await page.locator('.nav-toggle').isVisible(),false);
+                  assert.equal(await page.locator('#primary-navigation').isVisible(),true);
+                }
+                await page.locator('[data-route="fanout"]').click();
+                assert.match(await page.locator('#routing-description').innerText(),/multiple/i);
+                await page.locator('[data-route="loopback"]').click();
+                assert.match(await page.locator('#routing-description').innerText(),/module/i);
+                await page.locator('[data-route="logic"]').click();
+                for(const gate of ['AND','NAND','OR','NOR','XOR','NOT']){
+                  await page.locator('#logic-gate').selectOption(gate);
+                  assert.ok(await page.locator('#logic-expression').innerText());
+                  assert.ok(await page.locator('#logic-gate-symbol .gate-shape').count());
+                }
+                const layout=await page.evaluate(()=>({
+                  horizontalOverflow:document.documentElement.scrollWidth-window.innerWidth,
+                  productPhotos:[...document.querySelectorAll('.product-card .photo-window img')].map(i=>({loaded:i.complete&&i.naturalWidth>0,url:i.getAttribute('src')})),
+                  navHeight:document.querySelector('.nav').getBoundingClientRect().height
+                }));
+                assert.ok(layout.horizontalOverflow<=2,'Overflow at '+width+': '+JSON.stringify(layout));
+                assert.equal(layout.productPhotos.length,3);
+                assert.ok(layout.productPhotos.every(x=>x.loaded),'Images missing at '+width);
+                console.log('PASS',width,JSON.stringify(layout));
+                if(width===390||width===1440){
+                  await page.locator('[data-route="route"]').click();
+                  await page.evaluate(()=>window.scrollTo(0,0));
+                  await page.screenshot({path:'site-'+width+'.png',fullPage:true,animations:'disabled'});
+                }
+                await page.close();
+              }
+            }finally{await browser.close()}
+          })().catch(e=>{console.error(e);process.exit(1)});
+          JS
+          node temporary-site-check.cjs
+          rm temporary-site-check.cjs
+      - name: Save review screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unijack-site-polish-screenshots
+          path: site-*.png
+          if-no-files-found: ignore
