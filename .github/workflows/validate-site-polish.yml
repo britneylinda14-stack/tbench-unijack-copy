@@ -82,7 +82,7 @@ jobs:
                 await page.locator('[data-route="logic"]').click();
                 for(const gate of ['AND','NAND','OR','NOR','XOR','NOT']){
                   await page.locator('#logic-gate').selectOption(gate);
-                  assert.ok(await page.locator('#logic-expression').innerText());
+                  assert.ok(await page.locator('#logic-expression').textContent());
                   assert.ok(await page.locator('#logic-gate-symbol .gate-shape').count());
                 }
                 const layout=await page.evaluate(()=>({
