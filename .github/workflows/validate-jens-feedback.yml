@@ -90,7 +90,7 @@ jobs:
             try{
               for(const width of [390,768,1280]){
                 const page=await browser.newPage({viewport:{width,height:850},reducedMotion:'reduce'});
-                await page.goto('http://127.0.0.1:4173/',{waitUntil:'domcontentloaded'});
+                await page.goto('http://127.0.0.1:4173/',{waitUntil:'load'}); await page.waitForFunction(() => document.querySelector('#logic-gate') && document.querySelector('#routing-description') && document.readyState==='complete'); await page.waitForTimeout(200);
                 await page.locator('[data-route="fanout"]').click();
                 if(!(await page.locator('#routing-description').innerText()).includes('multiple'))throw Error('Fan-out missing');
                 await page.locator('[data-route="loopback"]').click();
