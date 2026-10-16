@@ -150,3 +150,5 @@ document.querySelectorAll('[data-route]').forEach(button=>button.addEventListene
 }));
 logicSelect.addEventListener('change',updateGate);
 document.querySelector('#pause-motion').addEventListener('click',()=>{document.body.classList.toggle('motion-paused',document.querySelector('#pause-motion').getAttribute('aria-pressed')==='true');});
+
+document.documentElement.dataset.signalReady='yes';
