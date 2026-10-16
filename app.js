@@ -115,8 +115,38 @@ document.querySelectorAll('[data-inspect]').forEach(button=>button.addEventListe
  insertion.value=100;insertionValue.textContent='Connected';syncInsertionLoop();
 }));
 syncInsertionLoop();
+const gateData={
+ AND:{expression:'A & B',caption:'AND: output is on only when A and B are both on.',shape:'<path class="gate-shape" d="M255 75H275A30 30 0 0 1 275 135H255Z"/>'},
+ NAND:{expression:'NOT (A & B)',caption:'NAND: the inverse of AND.',shape:'<path class="gate-shape" d="M255 75H275A30 30 0 0 1 275 135H255Z"/><circle class="gate-bubble" cx="310" cy="105" r="5"/>'},
+ OR:{expression:'A OR B',caption:'OR: the output is on when A or B is on.',shape:'<path class="gate-shape" d="M253 75Q275 105 253 135Q282 137 309 105Q282 73 253 75Z"/>'},
+ NOR:{expression:'NOT (A OR B)',caption:'NOR: the inverse of OR.',shape:'<path class="gate-shape" d="M253 75Q275 105 253 135Q282 137 309 105Q282 73 253 75Z"/><circle class="gate-bubble" cx="314" cy="105" r="5"/>'},
+ XOR:{expression:'A XOR B',caption:'XOR: the output is on when exactly one of A and B is on.',shape:'<path class="gate-shape" d="M258 75Q279 105 258 135Q285 137 309 105Q285 73 258 75Z"/><path class="gate-shape" d="M248 75Q269 105 248 135"/>'},
+ NOT:{expression:'NOT A',caption:'NOT: the output is the inverse of input A.',shape:'<path class="gate-shape" d="M255 75L304 105L255 135Z"/><circle class="gate-bubble" cx="310" cy="105" r="5"/>'}
+};
+const routingDescription=document.querySelector('#routing-description');
+const signalDiagram=document.querySelector('.signal-diagram');
+const logicOptions=document.querySelector('#logic-options');
+const logicSelect=document.querySelector('#logic-gate');
+function updateGate(){
+ const gate=gateData[logicSelect.value];
+ document.querySelector('#logic-gate-symbol').innerHTML=gate.shape;
+ document.querySelector('#logic-expression').textContent=gate.expression;
+ routingDescription.textContent='Signals A and B pass through ERAU. '+gate.caption;
+ document.querySelector('#signal-output-direction').textContent=gate.expression;
+ document.querySelector('#signal-input-direction').textContent=logicSelect.value==='NOT'?'A':'A / B';
+ signalDiagram.setAttribute('aria-label','ERAU logical '+logicSelect.value+' operation: '+gate.expression);
+}
 document.querySelectorAll('[data-route]').forEach(button=>button.addEventListener('click',()=>{
- document.querySelectorAll('[data-route]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));document.querySelector('.signal-diagram').dataset.signalMode=button.dataset.route;
- document.querySelector('#routing-description').textContent={route:'A signal follows a selected path to a peripheral.',multiplex:'Selected inputs share a visual output path.',loopback:'A signal returns to the controller through a loop.'}[button.dataset.route];
+ const mode=button.dataset.route;
+ document.querySelectorAll('[data-route]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));
+ signalDiagram.dataset.signalMode=mode;
+ logicOptions.hidden=mode!=='logic';
+ if(mode==='logic'){updateGate();return;}
+ document.querySelector('#signal-input-direction').textContent='IN / OUT';
+ document.querySelector('#signal-output-direction').textContent='IN / OUT';
+ const descriptions={route:'A signal passes through ERAU to a peripheral.',fanout:'One signal enters ERAU and can be directed to multiple peripheral signals.',loopback:'A signal returns to the module through an ERAU loop.'};
+ routingDescription.textContent=descriptions[mode];
+ signalDiagram.setAttribute('aria-label',descriptions[mode]);
 }));
+logicSelect.addEventListener('change',updateGate);
 document.querySelector('#pause-motion').addEventListener('click',()=>{document.body.classList.toggle('motion-paused',document.querySelector('#pause-motion').getAttribute('aria-pressed')==='true');});

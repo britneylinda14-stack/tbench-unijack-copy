@@ -34,3 +34,60 @@
 .assembly-stage[data-insertion-loop=playing] .assembly-note:after{content:'AUTO ASSEMBLY';color:var(--cyan);margin-left:13px}
 @media(max-width:720px){.assembly-stage[data-insertion-loop=playing] .assembly-note:after{display:none}}
 @media(min-width:721px) and (max-width:900px){.assembly-wrapper{grid-template-columns:1fr;gap:32px}.assembly-stage{height:480px}.part-text{min-height:0;margin-bottom:28px}}
+
+/* Jens Mueller review: TBench identity, clear routing, and responsive product imagery. */
+.brand-wordmark{font-family:var(--display);font-weight:700;letter-spacing:-.045em;text-transform:none;font-size:19px;line-height:1.1}
+.brand-wordmark .brand-suffix{font-size:9px;letter-spacing:.3em;font-weight:500;margin-top:3px}
+.brand-symbol{font-family:var(--display);font-weight:700;letter-spacing:-.14em}
+.nav .brand{gap:14px}
+.stage-heading>span:first-child{font-size:13px;font-weight:600;letter-spacing:.12em}
+.footer .brand{display:inline-flex;align-items:center;gap:11px}
+.footer .brand-symbol{font-size:35px}
+.routing-switch{flex-wrap:wrap;gap:10px 19px}
+.routing-switch button{min-height:40px;text-align:left;white-space:nowrap;padding:8px 0}
+.routing-switch button[aria-pressed=true]{font-weight:650}
+.logic-options{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:18px;font-size:12px;color:var(--muted)}
+.logic-options[hidden]{display:none}
+.logic-options select{appearance:auto;background:#192630;color:var(--ink);border:1px solid #5f9da9;border-radius:4px;padding:9px 12px;font-size:13px}
+.signal-background path{fill:none;stroke:#395563;stroke-width:1;stroke-dasharray:7 12;opacity:.3}
+.routing-traces path{fill:none;stroke:var(--cyan);stroke-width:2.3;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:9 8;animation:signal-flow 3s linear infinite}
+.signal-diagram .route-path,.signal-diagram .fanout-path,.signal-diagram .loop-path,.signal-diagram .logic-traces{display:none}
+[data-signal-mode=route] .route-path,[data-signal-mode=fanout] .fanout-path,[data-signal-mode=loopback] .loop-path,[data-signal-mode=logic] .logic-traces{display:block}
+.signal-diagram .logic-gate-symbol,.signal-diagram .logic-expression{display:none}
+[data-signal-mode=logic] .logic-gate-symbol,[data-signal-mode=logic] .logic-expression{display:block}
+.logic-gate-symbol .gate-shape{fill:#163440;stroke:#9ceaf5;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.logic-gate-symbol .gate-bubble{fill:#0d1821;stroke:#9ceaf5;stroke-width:2}
+.logic-expression{fill:#b8ecf2;font:500 11px var(--mono)}
+.signal-endpoint{min-width:76px;max-width:90px}
+.signal-endpoint>span{text-align:center;min-height:24px;overflow-wrap:anywhere;font-size:9px}
+.signal-endpoint strong{text-align:center}
+.signal-diagram{gap:4px}
+.signal-lines{height:210px;flex:1 1 auto;min-width:0;overflow:hidden}
+.routing-panel>p{min-height:60px;line-height:1.55}
+.photo-window{display:flex;justify-content:center;align-items:center;height:285px}
+.product-cards{align-items:stretch}
+.product-card{display:flex;flex-direction:column}
+.product-card-body{flex:1;display:flex;flex-direction:column}
+.product-card-body .product-tags{margin-top:auto}
+@media(max-width:1050px){.signal-endpoint{width:76px;min-width:60px}.routing-switch{gap:7px 13px}.photo-window{height:245px}}
+@media(max-width:720px){
+ .brand-wordmark{font-size:16px}.brand-wordmark .brand-suffix{font-size:8px}
+ .stage-heading>span:first-child{font-size:11px;letter-spacing:.09em}
+ .routing-switch{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 14px;margin-top:22px}
+ .routing-switch button{font-size:13px;min-width:0;white-space:normal}
+ .signal-diagram{gap:3px;margin:17px 0 14px}
+ .signal-endpoint{width:64px;min-width:60px;gap:5px}
+ .signal-endpoint strong{font-size:11px;max-width:64px;overflow-wrap:anywhere}
+ .signal-endpoint>span{font-size:8px;min-height:24px}
+ .signal-lines{height:165px}
+ .routing-panel{padding:20px 12px}
+ .routing-panel>p{min-height:unset;padding:4px 0 10px;font-size:13px}
+ .product-cards{gap:22px}
+ .photo-window{height:clamp(240px,64vw,345px);display:grid;place-items:center;overflow:hidden}
+ .photo-window img{max-width:none}
+ .photo-base img{top:44px}
+ .photo-mercury img{top:17px}
+ .photo-peri img{top:9px;transform:rotate(-90deg);transform-origin:76% 27%}
+ .product-card-body{padding:20px}
+}
+@media(prefers-reduced-motion:reduce){.routing-traces path{animation:none!important}}
