@@ -1,0 +1,123 @@
+name: Validate TBench landing and audience pages
+on:
+  push:
+    branches: [design/tbench-landing]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  browser-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate new files, without modifying UniJack
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check tbench/site.js
+          python3 - <<'PY'
+          from pathlib import Path
+          from html.parser import HTMLParser
+          new=['tbench/index.html','tbench/academia/index.html','tbench/enterprise/index.html','tbench/builders/index.html']
+          for p in new:
+            text=Path(p).read_text()
+            assert '<main id="main">' in text,p
+            assert '<title>' in text,p
+            assert 'tbench-solutions.com' in text,p
+          home=Path(new[0]).read_text()
+          assert home.count('role="tabpanel"')==3
+          assert home.count('role="tab"')==3
+          assert all(f'href="{name}/"' in home for name in ['academia','enterprise','builders'])
+          assert 'data-to="2"' in home
+          assert 'One interface.' in Path('index.html').read_text()
+          for p in ['app.js','style.css','index.html']:
+            assert Path(p).exists()
+          print('PASS: all new pages found; existing UniJack source intact')
+          PY
+      - name: Install browser for interaction and layout tests
+        run: |
+          npm install --no-save --no-package-lock playwright@1.55.0
+          npx playwright install chromium
+      - name: Test pages, slider, keyboard, and mobile layouts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m http.server 4173 >/tmp/tbench-site-server.log 2>&1 &
+          cat > /tmp/tbench-test.cjs <<'JS'
+          const assert=require('node:assert/strict');
+          const {chromium}=require(process.cwd()+'/node_modules/playwright');
+          (async()=>{
+            const browser=await chromium.launch({args:['--disable-gpu','--no-sandbox']});
+            try{
+              for(const width of [320,390,768,1024,1440]){
+                const page=await browser.newPage({viewport:{width,height:850},reducedMotion:'reduce'});
+                const errors=[];page.on('pageerror',e=>errors.push(e.message));
+                await page.goto('http://127.0.0.1:4173/tbench/',{waitUntil:'domcontentloaded'});
+                await page.locator('#slide-tab-0').waitFor();
+                await page.waitForFunction(()=>document.querySelector('#slide-count')?.textContent==='01');
+                for(let i=0;i<3;i++){
+                  await page.locator('#slide-tab-'+i).click();
+                  assert.equal(await page.locator('#slide-'+i).isVisible(),true);
+                  assert.equal(await page.locator('#slide-tab-'+i).getAttribute('aria-selected'),'true');
+                  assert.equal(await page.locator('#slide-count').innerText(),'0'+(i+1));
+                }
+                await page.locator('[data-move="1"]').click();
+                assert.equal(await page.locator('#slide-count').innerText(),'01');
+                await page.locator('#slide-tab-0').focus();
+                await page.keyboard.press('ArrowRight');
+                assert.equal(await page.locator('#slide-count').innerText(),'02');
+                if(width<=760){
+                  const menu=page.locator('.menu-toggle');
+                  assert.equal(await menu.isVisible(),true);
+                  await menu.click();
+                  assert.equal(await menu.getAttribute('aria-expanded'),'true');
+                  assert.equal(await page.locator('#site-nav a').first().isVisible(),true);
+                  await page.keyboard.press('Escape');
+                  assert.equal(await menu.getAttribute('aria-expanded'),'false');
+                }else assert.equal(await page.locator('.menu-toggle').isVisible(),false);
+                const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
+                assert.ok(overflow<=2,'Home horizontal overflow '+width+': '+overflow);
+                assert.deepEqual(errors,[]);
+                if(width===390||width===1440){
+                  await page.evaluate(()=>window.scrollTo(0,0));
+                  await page.screenshot({path:'tbench-home-'+width+'.png',fullPage:true,animations:'disabled'});
+                }
+                console.log('PASS landing',width,'overflow',overflow);
+                await page.close();
+              }
+              for(const slug of ['academia','enterprise','builders']){
+                for(const width of [390,1440]){
+                  const page=await browser.newPage({viewport:{width,height:850},reducedMotion:'reduce'});
+                  const errors=[];page.on('pageerror',e=>errors.push(e.message));
+                  const response=await page.goto('http://127.0.0.1:4173/tbench/'+slug+'/',{waitUntil:'domcontentloaded'});
+                  assert.equal(response.status(),200);
+                  assert.ok(await page.locator('.sub-copy h1').textContent());
+                  assert.equal(await page.locator('.focus-card').count(),3);
+                  assert.equal(await page.locator('.path-steps li').count(),3);
+                  assert.ok((await page.locator('.button-primary').getAttribute('href')).startsWith('mailto:'));
+                  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
+                  assert.ok(overflow<=2,slug+' horizontal overflow '+width+': '+overflow);
+                  if(width===1440)await page.screenshot({path:'tbench-'+slug+'.png',fullPage:true,animations:'disabled'});
+                  assert.deepEqual(errors,[]);
+                  console.log('PASS subpage',slug,width,'overflow',overflow);
+                  await page.close();
+                }
+              }
+              const original=await browser.newPage();
+              const response=await original.goto('http://127.0.0.1:4173/',{waitUntil:'domcontentloaded'});
+              assert.equal(response.status(),200);
+              assert.match(await original.locator('.hero h1').innerText(),/One interface/i);
+              console.log('PASS UniJack remains in place');
+              await original.close();
+            }finally{await browser.close()}
+          })().catch(err=>{console.error(err);process.exit(1)});
+          JS
+          node /tmp/tbench-test.cjs
+      - name: Save visual review screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tbench-landing-review
+          path: tbench-*.png
+          if-no-files-found: ignore
