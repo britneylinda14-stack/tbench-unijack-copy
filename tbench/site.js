@@ -1,0 +1,16 @@
+(()=>{
+const header=document.querySelector('#site-header'),toggle=document.querySelector('.menu-toggle');
+if(header&&toggle){const close=()=>{header.dataset.menu='false';toggle.setAttribute('aria-expanded','false');toggle.setAttribute('aria-label','Open navigation')};toggle.addEventListener('click',()=>{const on=header.dataset.menu!=='true';header.dataset.menu=String(on);toggle.setAttribute('aria-expanded',String(on));toggle.setAttribute('aria-label',on?'Close navigation':'Open navigation')});header.querySelectorAll('nav a').forEach(a=>a.addEventListener('click',close));document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});document.addEventListener('click',e=>{if(!header.contains(e.target))close()});window.matchMedia('(min-width:761px)').addEventListener('change',e=>{if(e.matches)close()})}
+const carousel=document.querySelector('#audience-carousel');if(!carousel)return;
+const tabs=[...carousel.querySelectorAll('[data-to]')],panels=[...carousel.querySelectorAll('[data-slide]')],counter=carousel.querySelector('#slide-count'),live=carousel.querySelector('#slide-status');
+let current=0,interval=null,paused=false;const reduce=window.matchMedia('(prefers-reduced-motion: reduce)');
+function show(index,{focus=false,announce=true}={}){current=(index+panels.length)%panels.length;panels.forEach((p,i)=>{p.hidden=i!==current;p.setAttribute('aria-hidden',String(i!==current))});tabs.forEach((t,i)=>{t.setAttribute('aria-selected',String(i===current));t.tabIndex=i===current?0:-1;t.classList.toggle('active',i===current)});counter.textContent=String(current+1).padStart(2,'0');if(announce)live.textContent='Showing '+tabs[current].textContent.replace(/^\d+/,'').trim();if(focus)tabs[current].focus()}
+function stop(){if(interval){clearInterval(interval);interval=null}}
+function start(){stop();if(paused||reduce.matches||document.hidden)return;interval=setInterval(()=>show(current+1,{announce:false}),10000)}
+tabs.forEach((t,i)=>{t.addEventListener('click',()=>{show(i);start()});t.addEventListener('keydown',e=>{const dir=e.key==='ArrowRight'?1:e.key==='ArrowLeft'?-1:0;if(dir){e.preventDefault();show(i+dir,{focus:true});start()}else if(e.key==='Home'||e.key==='End'){e.preventDefault();show(e.key==='Home'?0:tabs.length-1,{focus:true});start()}})});
+carousel.querySelectorAll('[data-move]').forEach(b=>b.addEventListener('click',()=>{show(current+Number(b.dataset.move));start()}));
+carousel.addEventListener('mouseenter',()=>{paused=true;stop()});carousel.addEventListener('mouseleave',()=>{paused=false;start()});carousel.addEventListener('focusin',()=>{paused=true;stop()});carousel.addEventListener('focusout',()=>{if(!carousel.contains(document.activeElement)){paused=false;start()}});
+document.addEventListener('visibilitychange',start);reduce.addEventListener('change',start);
+let touchX=null;carousel.addEventListener('touchstart',e=>{touchX=e.touches[0]?.clientX??null},{passive:true});carousel.addEventListener('touchend',e=>{if(touchX===null)return;const delta=(e.changedTouches[0]?.clientX??touchX)-touchX;if(Math.abs(delta)>65){show(current+(delta<0?1:-1));start()}touchX=null},{passive:true});
+show(0,{announce:false});start();
+})();
