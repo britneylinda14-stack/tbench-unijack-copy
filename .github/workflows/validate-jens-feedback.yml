@@ -1,0 +1,122 @@
+name: Validate Jens feedback and prepare product photos
+on:
+  push:
+    branches: [review/jens-feedback]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  check-and-prepare:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare aligned mobile product photos
+        run: |
+          python -m pip install --quiet Pillow
+          python - <<'PY'
+          from PIL import Image
+          from pathlib import Path
+          import json
+          src=Path('assets')
+          out=src/'products'
+          out.mkdir(exist_ok=True)
+          definitions={
+           'unijack':('gallery-3.jpg',(0.264,0.023,0.738,0.430),False),
+           'mercury':('gallery-4.jpg',(0.202,0.034,0.469,0.964),False),
+           'periboard':('gallery-3.jpg',(0.769,0.026,0.886,0.426),True)
+          }
+          report=[]
+          for name,(source,bounds,rotate) in definitions.items():
+            im=Image.open(src/source).convert('RGB')
+            w,h=im.size
+            crop=im.crop((round(w*bounds[0]),round(h*bounds[1]),round(w*bounds[2]),round(h*bounds[3])))
+            if rotate: crop=crop.transpose(Image.Transpose.ROTATE_270)
+            crop.save(out/(name+'.jpg'),quality=92,optimize=True,subsampling=0)
+            report.append({'name':name,'source':source,'bounds':bounds,'rotation':90 if rotate else 0,'size':crop.size})
+          Path('assets/products/PROVENANCE.json').write_text(json.dumps(report,indent=2)+'\n')
+          doc=Path('index.html')
+          text=doc.read_text()
+          pairs={
+            '<img src="./assets/gallery-3.jpg" alt="Bare UniJack':'<img src="./assets/products/unijack.jpg" alt="Bare UniJack',
+            '<img src="./assets/gallery-4.jpg" alt="Mercury Module':'<img src="./assets/products/mercury.jpg" alt="Mercury Module',
+            '<img src="./assets/gallery-3.jpg" alt="PeriBoard':'<img src="./assets/products/periboard.jpg" alt="PeriBoard'
+          }
+          for old,new in pairs.items():
+            assert text.count(old)==1,old
+            text=text.replace(old,new)
+          doc.write_text(text)
+          css=Path('style.css')
+          with css.open('a') as file:
+            file.write("""
+          /* Individually cropped product photography keeps the cards upright on all screen sizes. */
+          .product-cards .photo-window{height:280px;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#eef3f5}
+          .product-cards .photo-window img{position:relative;display:block;width:100%;height:100%;max-width:100%;left:auto;top:auto;object-fit:contain;object-position:center;clip-path:none;transform:none}
+          @media(max-width:720px){.product-cards .photo-window{height:clamp(230px,64vw,335px)}}
+          """)
+          PY
+      - name: Check JavaScript, files, and feedback requirements
+        run: |
+          set -e
+          node --check app.js
+          node --check product-scene.js
+          node --check motion.js
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          html=Path('index.html').read_text()
+          js=Path('app.js').read_text()
+          css=Path('style.css').read_text()
+          for marker in ['TBench','Fan-Out','Logic Operation','Peripherals','>Module<','id="logic-gate"','assets/products/periboard.jpg']:
+            assert marker in html,marker
+          assert all(t in js for t in ['AND','NAND','OR','NOR','XOR','NOT','A & B','return'])
+          for image in ['unijack','mercury','periboard']:
+            assert (Path('assets/products')/(image+'.jpg')).stat().st_size>1000
+          for p in re.findall(r'(?:src|href)="(\./[^"]+)"',html):
+            if p.startswith('./'): assert Path(p[2:]).exists(),p
+          assert 'TBENCH<span' not in html
+          print('Verified brand text, signal modes, logic gates, assets, and syntax.')
+          PY
+      - name: Browser interaction smoke test
+        run: |
+          npm install --no-save --no-package-lock playwright@1.55.0
+          npx playwright install chromium
+          python3 -m http.server 4173 >/tmp/site-server.log 2>&1 &
+          cat >/tmp/verify.cjs <<'JS'
+          const {chromium}=require(process.cwd()+'/node_modules/playwright');
+          (async()=>{
+            const browser=await chromium.launch({args:['--enable-webgl','--use-gl=swiftshader']});
+            try{
+              for(const width of [390,768,1280]){
+                const page=await browser.newPage({viewport:{width,height:850},reducedMotion:'reduce'});
+                await page.goto('http://127.0.0.1:4173/',{waitUntil:'domcontentloaded'});
+                await page.locator('[data-route="fanout"]').click();
+                if(!(await page.locator('#routing-description').innerText()).includes('multiple'))throw Error('Fan-out missing');
+                await page.locator('[data-route="loopback"]').click();
+                if(!(await page.locator('#routing-description').innerText()).includes('module'))throw Error('Loopback missing');
+                await page.locator('[data-route="logic"]').click();
+                for(const gate of ['AND','NAND','OR','NOR','XOR','NOT']){
+                  await page.locator('#logic-gate').selectOption(gate);
+                  const label=await page.locator('#logic-expression').textContent();
+                  if(!label)throw Error('Missing gate '+gate);
+                  if(!(await page.locator('#logic-gate-symbol .gate-shape').count()))throw Error('Missing shape '+gate);
+                }
+                const result=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth-window.innerWidth,products:[...document.querySelectorAll('.product-cards .photo-window img')].map(x=>({src:x.getAttribute('src'),complete:x.complete,width:x.naturalWidth}))}));
+                if(result.products.some(x=>!x.complete||!x.width))throw Error('Product image missing: '+JSON.stringify(result));
+                console.log('PASS',width,result);
+                await page.close();
+              }
+            }finally{await browser.close()}
+          })().catch(e=>{console.error(e);process.exit(1)});
+          JS
+          cp /tmp/verify.cjs ./verify-feedback-temporary.cjs
+          node verify-feedback-temporary.cjs
+          rm verify-feedback-temporary.cjs
+      - name: Commit prepared product imagery to review branch
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html style.css assets/products
+          git commit -m "Align and rotate product photos for mobile; verify all review edits"
+          git push origin HEAD:review/jens-feedback
