@@ -1,0 +1,47 @@
+[
+  {
+    "name": "unijack",
+    "source": "gallery-3.jpg",
+    "bounds": [
+      0.264,
+      0.023,
+      0.738,
+      0.43
+    ],
+    "rotation": 0,
+    "size": [
+      1422,
+      687
+    ]
+  },
+  {
+    "name": "mercury",
+    "source": "gallery-4.jpg",
+    "bounds": [
+      0.202,
+      0.034,
+      0.469,
+      0.964
+    ],
+    "rotation": 0,
+    "size": [
+      801,
+      1569
+    ]
+  },
+  {
+    "name": "periboard",
+    "source": "gallery-3.jpg",
+    "bounds": [
+      0.769,
+      0.026,
+      0.886,
+      0.426
+    ],
+    "rotation": 90,
+    "size": [
+      675,
+      351
+    ]
+  }
+]
