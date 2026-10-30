@@ -1,0 +1,170 @@
+name: Validate TBench and UniJack review changes
+on:
+  push:
+    branches: [feedback/2026-10-30-jens]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check source and requested review items
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check tbench/site.js
+          node --check app.js
+          node --check product-scene.js
+          node --check detailed-model.js
+          python3 - <<'PY'
+          from pathlib import Path
+          home=Path('tbench/index.html').read_text()
+          product=Path('index.html').read_text()
+          js=Path('app.js').read_text()
+          scene=Path('product-scene.js').read_text()
+          model=Path('detailed-model.js').read_text()
+          for p in ['tbench/academia/index.html','tbench/enterprise/index.html','tbench/builders/index.html','tbench/products/venus-mxo4/index.html','tbench/products/venus-mxo5/index.html']:
+            assert Path(p).exists(),p
+          assert all(k in home for k in ['Venus-MXO4','Venus-MXO5','Mercury- and Venus-Modules','+49 40 21979813','Products &amp; Platforms'])
+          assert 'Centurion' not in home
+          assert 'Centurion' not in product
+          assert 'Centurion' not in Path('tbench/academia/index.html').read_text()
+          assert home.index('class="feature-section"') < home.index('id="audiences"')
+          assert home.index('id="audience-carousel"') < home.index('class="feature-section"')
+          assert 'controller functionality' in product
+          assert all(f'data-route="{k}"' in product for k in ['route','cross','fanout','loopback','logic'])
+          assert all(k in product for k in ['venus-mxo4','venus-mxo5'])
+          assert 'data-logic-gate=NOT' in Path('style.css').read_text()
+          assert 'logic-input-b' in product
+          assert 'depthTest:true' in scene
+          assert 'Visible connector contact' in model
+          assert all(k in js for k in ['cross:',"logicSelect.value==='NOT'"])
+          print('PASS feedback coverage + JavaScript syntax')
+          PY
+      - name: Set up Playwright Chromium
+        run: |
+          npm install --no-save --no-package-lock playwright@1.55.0
+          npx playwright install chromium
+      - name: Exercise TBench, UniJack routing, subpages and responsive layout
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m http.server 4173 >/tmp/tbench-feedback-server.log 2>&1 &
+          cat >/tmp/check.cjs <<'JS'
+          const {chromium}=require(process.cwd()+'/node_modules/playwright');
+          const assert=require('node:assert/strict');
+          (async()=>{
+            const browser=await chromium.launch({args:['--use-gl=swiftshader','--enable-webgl','--disable-dev-shm-usage']});
+            try{
+              for(const width of [375,768,1440]){
+                const page=await browser.newPage({viewport:{width,height:880},reducedMotion:'reduce'});
+                const errs=[];page.on('pageerror',e=>errs.push(e.message));
+                await page.goto('http://127.0.0.1:4173/tbench/',{waitUntil:'domcontentloaded'});
+                await page.waitForFunction(()=>document.querySelector('.products-toggle') && document.querySelector('#slide-count')?.textContent==='01');
+                // Company nav and product menu.
+                if(width<=1050){
+                  await page.locator('.menu-toggle').click();
+                  assert.equal(await page.locator('.menu-toggle').getAttribute('aria-expanded'),'true');
+                }
+                await page.locator('.products-toggle').click();
+                assert.equal(await page.locator('.products-toggle').getAttribute('aria-expanded'),'true');
+                assert.equal(await page.locator('#product-menu a').count(),5);
+                assert.ok(await page.locator('#product-menu a[href="products/venus-mxo4/"]').isVisible());
+                assert.ok(await page.locator('#product-menu a[href="products/venus-mxo5/"]').isVisible());
+                await page.locator('.products-toggle').click();
+                assert.equal(await page.locator('.products-toggle').getAttribute('aria-expanded'),'false');
+                await page.locator('#slide-tab-1').click();
+                assert.equal(await page.locator('#slide-count').innerText(),'02');
+                await page.locator('#slide-tab-2').click();
+                assert.equal(await page.locator('#slide-count').innerText(),'03');
+                const order=await page.evaluate(()=>[...document.querySelectorAll('main > section')].map(x=>x.className));
+                assert.ok(order.indexOf('feature-section')<order.indexOf('section audience-section'));
+                const over=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
+                assert.ok(over<=2,'Company overflow '+width+': '+over);
+                assert.deepEqual(errs,[]);
+                if(width!==768){await page.evaluate(()=>scrollTo(0,0));await page.screenshot({path:'tbench-after-'+width+'.png',fullPage:true,animations:'disabled'});}
+                console.log('PASS company',width,JSON.stringify({overflow:over,order}));
+                await page.close();
+              }
+              for(const link of ['academia','enterprise','builders','products/venus-mxo4','products/venus-mxo5']){
+                const page=await browser.newPage({viewport:{width:390,height:820},reducedMotion:'reduce'});
+                const response=await page.goto('http://127.0.0.1:4173/tbench/'+link+'/',{waitUntil:'domcontentloaded'});
+                assert.equal(response.status(),200);
+                assert.ok(await page.locator('h1').count());
+                const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
+                assert.ok(overflow<=2,'Subpage overflow '+link+': '+overflow);
+                const links=await page.locator('#product-menu a').count();
+                assert.equal(links,5);
+                console.log('PASS audience/module',link);
+                await page.close();
+              }
+              for(const width of [390,1440]){
+                const page=await browser.newPage({viewport:{width,height:900},reducedMotion:'reduce'});
+                const errors=[];page.on('pageerror',e=>errors.push(e.message));
+                // Test the signal UI separately from the heavy WebGL render.
+                await page.route('**/vendor/**',route=>route.abort());
+                await page.goto('http://127.0.0.1:4173/',{waitUntil:'domcontentloaded'});
+                await page.waitForFunction(()=>document.documentElement.dataset.signalReady==='yes',null,{timeout:20000});
+                await page.locator('[data-route="cross"]').click();
+                assert.equal(await page.locator('.signal-diagram').getAttribute('data-signal-mode'),'cross');
+                assert.match(await page.locator('#routing-description').innerText(),/cross-route/i);
+                await page.locator('[data-route="fanout"]').click();
+                assert.match(await page.locator('#routing-description').innerText(),/fan out/i);
+                await page.locator('[data-route="logic"]').click();
+                for(const gate of ['AND','NAND','OR','NOR','XOR','NOT']){
+                  await page.locator('#logic-gate').selectOption(gate);
+                  assert.equal(await page.locator('.signal-diagram').getAttribute('data-logic-gate'),gate);
+                  const visible=await page.locator('.logic-input-b').evaluate(el=>getComputedStyle(el).display!=='none');
+                  assert.equal(visible,gate!=='NOT','NOT must have one input');
+                  const label=await page.locator('#signal-input-direction').textContent();
+                  assert.equal(label,gate==='NOT'?'A':'A / B');
+                }
+                await page.locator('[data-route="route"]').click();
+                assert.equal(await page.locator('.signal-diagram').getAttribute('data-signal-mode'),'route');
+                const over=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
+                assert.ok(over<=2,'UniJack overflow '+width+': '+over);
+                if(width===1440){await page.locator('#routing').scrollIntoViewIfNeeded();await page.screenshot({path:'unijack-routing-after.png',fullPage:false,animations:'disabled'});}
+                assert.deepEqual(errors,[]);
+                console.log('PASS UniJack routing',width);
+                await page.close();
+              }
+            }finally{await browser.close()}
+          })().catch(error=>{console.error(error);process.exit(1)});
+          JS
+          node /tmp/check.cjs
+      - name: Check 3D model construction and rendering
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat >/tmp/scene-check.cjs <<'JS'
+          const {chromium}=require(process.cwd()+'/node_modules/playwright');
+          const assert=require('node:assert/strict');
+          (async()=>{
+            const browser=await chromium.launch({args:['--enable-webgl','--use-gl=swiftshader','--disable-dev-shm-usage']});
+            try{
+              const page=await browser.newPage({viewport:{width:1280,height:880},reducedMotion:'reduce'});
+              await page.goto('http://127.0.0.1:4173/',{waitUntil:'domcontentloaded'});
+              try{await page.waitForFunction(()=>document.querySelector('#product-stage')?.dataset.webgl==='ready',null,{timeout:45000})}
+              catch(e){console.log('SCENE STATUS',await page.locator('#product-stage').getAttribute('data-webgl'));throw e}
+              await page.locator('[data-view="routing"]').click();
+              const state=await page.evaluate(()=>({model:window.uniJackScene?.getState(),status:document.querySelector('#product-stage').dataset.webgl,hasCanvas:document.querySelector('#product-stage canvas')!==null}));
+              assert.equal(state.status,'ready');assert.equal(state.model.mode,'routing');assert.equal(state.hasCanvas,true);
+              await page.screenshot({path:'unijack-webgl-after.png',fullPage:false,animations:'disabled'});
+              console.log('PASS WebGL scene',JSON.stringify(state));
+              await page.close();
+            }finally{await browser.close()}
+          })().catch(error=>{console.error(error);process.exit(1)});
+          JS
+          node /tmp/scene-check.cjs
+      - name: Upload review images
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tbench-jens-review-images
+          path: |
+            tbench-after-*.png
+            unijack-*-after.png
+          if-no-files-found: ignore
