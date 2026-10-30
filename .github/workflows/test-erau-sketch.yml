@@ -1,0 +1,79 @@
+name: Validate ERAU sketch implementation
+on:
+  push:
+    branches: [feature/erau-routing-from-jens-sketch]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate files
+        run: |
+          node --check app.js
+          node --check product-scene.js
+          python3 - <<'PY'
+          from pathlib import Path
+          h=Path('index.html').read_text()
+          for item in ['erau-map','erau-direct','erau-cross','erau-fanout','erau-loop','erau-logic','logic-input-b','erau-core-box']:
+            assert item in h,item
+          assert 'BI-DIRECTIONAL' in h
+          assert 'tbench/shared-nav.js' in h
+          print('PASS: ERAU modes and navigation preserved')
+          PY
+      - name: Install Chromium
+        run: |
+          npm install --no-save --no-package-lock playwright@1.55.0
+          npx playwright install chromium
+      - name: Exercise ERAU controls on mobile and desktop
+        run: |
+          set -e
+          python3 -m http.server 4173 >/tmp/erau-server.log 2>&1 &
+          cat > verify-erau.cjs <<'JS'
+          const {chromium}=require('playwright');
+          const assert=require('node:assert/strict');
+          (async()=>{
+            const browser=await chromium.launch({args:['--no-sandbox','--disable-dev-shm-usage']});
+            try{
+              for(const width of [375,768,1440]){
+                const page=await browser.newPage({viewport:{width,height:900},reducedMotion:'reduce'});
+                const errors=[];page.on('pageerror',e=>errors.push(e.message));
+                await page.route('**/vendor/**',r=>r.abort());
+                await page.goto('http://127.0.0.1:4173/',{waitUntil:'domcontentloaded'});
+                await page.waitForFunction(()=>document.documentElement.dataset.signalReady==='yes');
+                const mappings={route:'.erau-direct',cross:'.erau-cross',fanout:'.erau-fanout',loopback:'.erau-loop',logic:'.erau-logic'};
+                for(const [mode,selector] of Object.entries(mappings)){
+                  await page.locator('[data-route="'+mode+'"]').click();
+                  assert.equal(await page.locator('.erau-system').getAttribute('data-signal-mode'),mode);
+                  const display=await page.locator(selector).evaluate(el=>getComputedStyle(el).display);
+                  assert.notEqual(display,'none',mode);
+                }
+                for(const gate of ['AND','NAND','OR','NOR','XOR','NOT']){
+                  await page.locator('#logic-gate').selectOption(gate);
+                  assert.equal(await page.locator('.erau-system').getAttribute('data-logic-gate'),gate);
+                  const second=await page.locator('.logic-input-b').evaluate(el=>getComputedStyle(el).display);
+                  assert.equal(second==='none',gate==='NOT');
+                  assert.ok(await page.locator('#logic-expression').textContent());
+                }
+                assert.deepEqual(errors,[],'page errors');
+                const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
+                assert.ok(overflow<=2,'horizontal overflow '+width+': '+overflow);
+                await page.locator('[data-route="route"]').click();
+                await page.locator('#routing').scrollIntoViewIfNeeded();
+                if(width!==768)await page.screenshot({path:'erau-'+width+'.png',fullPage:false,animations:'disabled'});
+                console.log('PASS ERAU',width);
+                await page.close();
+              }
+            }finally{await browser.close()}
+          })().catch(e=>{console.error(e);process.exit(1)});
+          JS
+          node verify-erau.cjs
+      - name: Save screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: erau-review-screenshots
+          path: erau-*.png
+          if-no-files-found: ignore
