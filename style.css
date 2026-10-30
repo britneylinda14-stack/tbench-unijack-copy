@@ -372,3 +372,9 @@ h2{letter-spacing:-.046em}
  .routing-panel .erau-sketch-layout .erau-diagram-footer{gap:12px;flex-wrap:wrap}
  .routing-panel .erau-sketch-layout .erau-svg-scroll:after{content:none}
 }
+
+.routing-panel .erau-mobile-hint{display:none}
+@media(max-width:720px){
+ .routing-panel .erau-mobile-hint{display:block;color:#9ebfc7;font:500 11px/1.5 var(--mono);margin:6px 0 9px}
+ .routing-panel .erau-sketch-layout .erau-svg-scroll:focus-visible{outline:2px solid #86dce8;outline-offset:3px}
+}
