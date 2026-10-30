@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1672 941" role="img" aria-labelledby="erau-title erau-desc">
+<title id="erau-title">ERAU signal-routing schematic based on Jens's annotated drawing</title>
+<desc id="erau-desc">Illustration showing Group X0 and Group X1 on the module side, Group Y0 and Group Y1 on the peripheral side, direct routes in orange, cross-routes in green, loops in yellow, fan-out in blue, and logic operation as dashed orange lines through an AND gate inside the ERAU fabric.</desc>
+<defs>
+<pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse"><path d="M24 0H0V24" stroke="#16405a" stroke-width="0.8" fill="none" opacity=".58"/></pattern>
+<marker id="arr-left" markerWidth="7" markerHeight="7" refX="2" refY="3.5" orient="auto"><path d="M7 0L0 3.5L7 7Z" fill="#2ddd66"/></marker>
+</defs>
+<style>
+text{font-family:Arial,Helvetica,sans-serif;fill:#b6d0fa}.heading{font-size:26px;font-weight:600}.small{font-size:19px}.legend{font-size:23px;font-weight:600}.ch{font-size:19px}.region{font-size:20px}.terminal{stroke:#a3c5fa;fill:#00243d;stroke-width:2.7}.trace{fill:none;stroke-width:5.5;stroke-linecap:round;stroke-linejoin:round}.core{stroke:#a6c5fb;fill:rgba(17,44,80,.33);stroke-width:2.5}.coretxt{font-size:43px;font-weight:700;font-style:italic;fill:#99b9ed}.gate{stroke:#bad7ff;stroke-width:3;fill:#0a2c53}
+</style>
+<rect width="1672" height="941" fill="#061d36"/><rect width="1672" height="941" fill="url(#grid)"/>
+<g class="legend">
+<polyline points="256,58 340,58" class="trace" stroke="#ff852f" /><text x="355" y="66" fill="#ff852f">Direct Route</text>
+<polyline points="512,58 584,58" class="trace" stroke="#30dc62" /><text x="595" y="66" fill="#30dc62">Cross Route</text>
+<polyline points="749,58 824,58" class="trace" stroke="#ffe61d" /><text x="838" y="66" fill="#ffe61d">Loop</text>
+<polyline points="926,58 1005,58" class="trace" stroke="#0d9ff4" /><text x="1020" y="66" fill="#0d9ff4">Fan-out</text>
+<polyline points="1135,58 1205,58" class="trace" stroke="#ff842a" stroke-dasharray="12 9"/><text x="1221" y="66" fill="#ff842a">Logic Operation</text>
+</g>
+<rect x="99" y="111" width="170" height="45" rx="10" fill="none" stroke="#81a9e0" stroke-width="2"/>
+<text x="183" y="141" class="heading" text-anchor="middle">Module</text>
+<text x="184" y="174" class="heading" text-anchor="middle" font-style="italic">IN / OUT</text>
+<rect x="1408" y="111" width="154" height="45" rx="10" fill="none" stroke="#81a9e0" stroke-width="2"/>
+<text x="1485" y="141" class="heading" text-anchor="middle">Peripherals</text>
+<text x="1485" y="174" class="heading" text-anchor="middle" font-style="italic">IN / OUT</text>
+<rect x="1206" y="111" width="180" height="45" rx="10" fill="none" stroke="#81a9e0" stroke-width="2"/>
+<text x="1283" y="140" class="small" text-anchor="middle">Logic &amp; etc.</text>
+<rect x="1336" y="117" width="44" height="33" fill="url(#grid)" stroke="#a3c5fa" stroke-width="2"/>
+<rect class="core" x="649" y="246" width="425" height="528" rx="25"/>
+<text x="838" y="511" class="coretxt" text-anchor="middle">ERAU</text>
+<g class="ch">
+<text x="232" y="206" text-anchor="end">CH0</text><text x="232" y="244" text-anchor="end">CH1</text><text x="232" y="280" text-anchor="end">CH2</text><text x="232" y="314" text-anchor="end">CH3</text><text x="232" y="369" text-anchor="end">CH0</text><text x="232" y="406" text-anchor="end">CH1</text><text x="232" y="435" text-anchor="end">CH2</text><text x="232" y="469" text-anchor="end">CH3</text><text x="232" y="516" text-anchor="end">CH0</text><text x="232" y="551" text-anchor="end">CH1</text><text x="232" y="586" text-anchor="end">CH2</text><text x="232" y="620" text-anchor="end">CH3</text>
+<text x="1425" y="206" >CH0</text><text x="1425" y="244" >CH1</text><text x="1425" y="292" >CH2</text>
+<text x="1425" y="481" >CH0</text><text x="1425" y="516" >CH1</text><text x="1425" y="551" >CH2</text><text x="1425" y="602" >CH3</text><text x="1425" y="641" >CH0</text>
+</g>
+<g><rect x="244" y="191" width="18" height="18" rx="1" class="terminal"/><rect x="244" y="229" width="18" height="18" rx="1" class="terminal"/><rect x="244" y="265" width="18" height="18" rx="1" class="terminal"/><rect x="244" y="299" width="18" height="18" rx="1" class="terminal"/><rect x="244" y="354" width="18" height="18" rx="1" class="terminal"/><rect x="244" y="391" width="18" height="18" rx="1" class="terminal"/><rect x="244" y="420" width="18" height="18" rx="1" class="terminal"/><rect x="244" y="454" width="18" height="18" rx="1" class="terminal"/><rect x="244" y="501" width="18" height="18" rx="1" class="terminal"/><rect x="244" y="536" width="18" height="18" rx="1" class="terminal"/><rect x="244" y="571" width="18" height="18" rx="1" class="terminal"/><rect x="244" y="605" width="18" height="18" rx="1" class="terminal"/><rect x="244" y="658" width="18" height="18" rx="1" class="terminal"/><rect x="244" y="698" width="18" height="18" rx="1" class="terminal"/><rect x="244" y="738" width="18" height="18" rx="1" class="terminal"/><rect x="1387" y="191" width="18" height="18" rx="1" class="terminal"/><rect x="1387" y="229" width="18" height="18" rx="1" class="terminal"/><rect x="1387" y="277" width="18" height="18" rx="1" class="terminal"/><rect x="1387" y="321" width="18" height="18" rx="1" class="terminal"/><rect x="1387" y="371" width="18" height="18" rx="1" class="terminal"/><rect x="1387" y="404" width="18" height="18" rx="1" class="terminal"/><rect x="1387" y="434" width="18" height="18" rx="1" class="terminal"/><rect x="1387" y="466" width="18" height="18" rx="1" class="terminal"/><rect x="1387" y="501" width="18" height="18" rx="1" class="terminal"/><rect x="1387" y="536" width="18" height="18" rx="1" class="terminal"/><rect x="1387" y="587" width="18" height="18" rx="1" class="terminal"/><rect x="1387" y="626" width="18" height="18" rx="1" class="terminal"/><rect x="1387" y="668" width="18" height="18" rx="1" class="terminal"/><rect x="1387" y="701" width="18" height="18" rx="1" class="terminal"/><rect x="1387" y="737" width="18" height="18" rx="1" class="terminal"/></g>
+<g class="region">
+<path d="M168 196H155V318H168" fill="none" stroke="#a8c8ed" stroke-width="2"/>
+<text x="137" y="266" text-anchor="end">Group X0</text>
+<path d="M168 509H156V627H168" fill="none" stroke="#a8c8ed" stroke-width="2"/>
+<text x="136" y="577" text-anchor="end">Group X1</text>
+<path d="M1472 197H1487V345H1472" fill="none" stroke="#a8c8ed" stroke-width="2"/>
+<text x="1508" y="278" >Group Y0</text>
+<path d="M1472 506H1487V644H1472" fill="none" stroke="#a8c8ed" stroke-width="2"/>
+<text x="1510" y="578" >Group Y1</text>
+</g>
+<g>
+<polyline points="270,200 544,200 544,273 1210,273 1210,204 1387,204" class="trace" stroke="#ff862f" />
+<polyline points="270,238 493,238 493,296 1232,296 1232,238 1387,238" class="trace" stroke="#ff862f" />
+<polyline points="270,746 1387,746" class="trace" stroke="#ff862f" />
+<polyline points="270,274 455,274 455,314 928,314 949,337 1387,337" class="trace" stroke="#2fdc64" />
+<polyline points="270,308 416,308 416,341 731,341 731,428 1000,428 1000,503 1387,503" class="trace" stroke="#2fdc64" />
+<polyline points="270,614 1004,614 1004,503 1387,503" class="trace" stroke="#2fdc64" />
+<polyline points="270,430 951,430 951,597 729,597 729,613" class="trace" stroke="#ffe11d" />
+<polyline points="270,720 730,720 730,427 950,427 950,332" class="trace" stroke="#ffe11d" />
+<polyline points="270,463 656,463 656,513 1015,513 1015,381 1387,381" class="trace" stroke="#129cf4" />
+<polyline points="270,510 657,510 657,540 1387,540" class="trace" stroke="#129cf4" />
+<polyline points="270,545 657,545 657,441 1015,441 1015,413 1387,413" class="trace" stroke="#129cf4" />
+<polyline points="270,580 657,580 657,441 1387,441" class="trace" stroke="#129cf4" />
+<polyline points="270,363 716,363 716,636 829,636" class="trace" stroke="#ff862f" stroke-dasharray="12 9"/>
+<polyline points="270,398 684,398 684,656 829,656" class="trace" stroke="#ff862f" stroke-dasharray="12 9"/>
+<polyline points="891,646 927,646 927,315 1387,315" class="trace" stroke="#ff862f" stroke-dasharray="12 9"/>
+</g>
+<circle cx="731" cy="429" r="5.5" fill="#ffe11d"/><circle cx="730" cy="596" r="5.5" fill="#ffe11d"/>
+<circle cx="658" cy="541" r="6" fill="#129cf4"/><circle cx="658" cy="577" r="6" fill="#129cf4"/>
+<circle cx="927" cy="315" r="6" fill="#ff862f"/>
+<path class="gate" d="M828 628H847A29 29 0 0 1 847 684H828Z"/>
+<text x="863" y="706" class="small" text-anchor="middle">AND</text>
+<path d="M642 799H1077M642 799l14 -7m-14 7 14 7M1077 799l-14 -7m14 7 -14 7" stroke="#86b3e9" stroke-width="2" fill="none"/>
+<text x="854" y="834" class="heading" text-anchor="middle">Bi-directional</text>
+<text x="854" y="865" class="small" text-anchor="middle">per group (or group-wise)</text>
+</svg>
