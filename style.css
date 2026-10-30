@@ -385,3 +385,21 @@ h2{letter-spacing:-.046em}
  #routing .erau-svg-scroll{display:block;overflow-x:auto;overflow-y:hidden;width:100%;max-width:100%}
  #routing .erau-sketch-map{display:block;width:700px;min-width:700px;max-width:none}
 }
+
+/* Approved ERAU schematic replaces the former interactive routing explorer. */
+.erau-approved-section{display:block;max-width:1460px;margin-inline:auto;padding-top:90px;padding-bottom:100px}
+.erau-approved-intro{display:flex;justify-content:space-between;align-items:end;gap:50px;margin-bottom:28px}
+.erau-approved-intro h2{font-size:clamp(32px,3.3vw,52px);line-height:1.08;margin:12px 0 0}
+.erau-approved-intro h2 span{color:#9dbed3}
+.erau-approved-intro>p{max-width:480px;color:#afc3ce;font-size:14px;line-height:1.75;margin:0}
+.erau-approved-figure{margin:0;padding:13px;background:#071b2e;border:1px solid #294c68;border-radius:10px;box-shadow:0 24px 64px #0003;overflow:hidden}
+.erau-approved-figure img{display:block;width:100%;height:auto;object-fit:contain;aspect-ratio:1672/941;background:#061d36;border-radius:5px}
+.erau-approved-figure figcaption{padding:15px 12px 4px;font:500 11px/1.65 var(--mono);color:#9bb7c6}
+@media(max-width:780px){
+ .erau-approved-section{padding-top:60px;padding-bottom:68px}
+ .erau-approved-intro{display:block}
+ .erau-approved-intro>p{margin-top:15px}
+ .erau-approved-figure{padding:6px;overflow-x:auto;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
+ .erau-approved-figure img{width:850px;max-width:none;height:auto}
+ .erau-approved-figure figcaption{width:850px;max-width:none;padding:10px 8px}
+}

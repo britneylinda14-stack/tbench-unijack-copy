@@ -115,43 +115,7 @@ document.querySelectorAll('[data-inspect]').forEach(button=>button.addEventListe
  insertion.value=100;insertionValue.textContent='Connected';syncInsertionLoop();
 }));
 syncInsertionLoop();
-const gateData={
- AND:{expression:'A & B',caption:'AND: output is on only when A and B are both on.',shape:'<path class="gate-shape" d="M255 75H275A30 30 0 0 1 275 135H255Z"/>'},
- NAND:{expression:'NOT (A & B)',caption:'NAND: the inverse of AND.',shape:'<path class="gate-shape" d="M255 75H275A30 30 0 0 1 275 135H255Z"/><circle class="gate-bubble" cx="310" cy="105" r="5"/>'},
- OR:{expression:'A OR B',caption:'OR: the output is on when A or B is on.',shape:'<path class="gate-shape" d="M253 75Q275 105 253 135Q282 137 309 105Q282 73 253 75Z"/>'},
- NOR:{expression:'NOT (A OR B)',caption:'NOR: the inverse of OR.',shape:'<path class="gate-shape" d="M253 75Q275 105 253 135Q282 137 309 105Q282 73 253 75Z"/><circle class="gate-bubble" cx="314" cy="105" r="5"/>'},
- XOR:{expression:'A XOR B',caption:'XOR: the output is on when exactly one of A and B is on.',shape:'<path class="gate-shape" d="M258 75Q279 105 258 135Q285 137 309 105Q285 73 258 75Z"/><path class="gate-shape" d="M248 75Q269 105 248 135"/>'},
- NOT:{expression:'NOT A',caption:'NOT: the output is the inverse of input A.',shape:'<path class="gate-shape" d="M255 75L304 105L255 135Z"/><circle class="gate-bubble" cx="310" cy="105" r="5"/>'}
-};
-const routingDescription=document.querySelector('#routing-description');
-const signalDiagram=document.querySelector('.signal-diagram');
-const logicOptions=document.querySelector('#logic-options');
-const logicSelect=document.querySelector('#logic-gate');
-function updateGate(){
- const gate=gateData[logicSelect.value];
- document.querySelector('#logic-gate-symbol').innerHTML=gate.shape;
- document.querySelector('#logic-expression').textContent=gate.expression;
- routingDescription.textContent=(logicSelect.value==='NOT'?'Input A passes through ERAU. ':'Inputs A and B pass through ERAU. ')+gate.caption;
- document.querySelector('#signal-output-direction').textContent='OUT · '+gate.expression+' · GROUP 10 / 11';
- document.querySelector('#signal-input-direction').textContent=logicSelect.value==='NOT'?'IN · A · GROUP 10':'IN · A / B · GROUP 10 / 11';
- signalDiagram.dataset.logicGate=logicSelect.value;
- const gateLabel=signalDiagram.querySelector('.erau-inline-gate-label');if(gateLabel)gateLabel.textContent=logicSelect.value+' / LOGIC';
- signalDiagram.setAttribute('aria-label','ERAU logical '+logicSelect.value+' operation: '+gate.expression+(logicSelect.value==='NOT'?' using one input A':' using inputs A and B'));
-}
-document.querySelectorAll('[data-route]').forEach(button=>button.addEventListener('click',()=>{
- const mode=button.dataset.route;
- document.querySelectorAll('[data-route]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));
- signalDiagram.dataset.signalMode=mode;
- logicOptions.hidden=mode!=='logic';
- if(mode==='logic'){updateGate();return;}
- document.querySelector('#signal-input-direction').textContent='IN / OUT · GROUP 10 + 11';
- document.querySelector('#signal-output-direction').textContent='IN / OUT · GROUP 10 + 11';
- const descriptions={route:'Channels follow parallel direct routes through ERAU between module and peripherals; routing is bi-directional.',cross:'ERAU can cross-route channels between groups and assign inputs to different output channels.',fanout:'One input channel fans out to several output channels through ERAU.',loopback:'A channel loops through ERAU and returns to the module; paths are configurable.'};
- routingDescription.textContent=descriptions[mode];
- signalDiagram.setAttribute('aria-label',descriptions[mode]);
- const svg=signalDiagram.querySelector('.erau-map');if(svg)svg.setAttribute('aria-label',descriptions[mode]);
-}));
-logicSelect.addEventListener('change',updateGate);
+// The ERAU schematic is now a static, accessible vector redraw of the approved reference.
 document.querySelector('#pause-motion').addEventListener('click',()=>{document.body.classList.toggle('motion-paused',document.querySelector('#pause-motion').getAttribute('aria-pressed')==='true');});
 
 document.documentElement.dataset.signalReady='yes';
