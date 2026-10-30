@@ -123,11 +123,14 @@ jobs:
                   const label=await page.locator('#signal-input-direction').textContent();
                   assert.equal(label,gate==='NOT'?'A':'A / B');
                 }
+                if(width===1440){await page.locator('#routing').scrollIntoViewIfNeeded();await page.screenshot({path:'unijack-logic-not-after.png',fullPage:false,animations:'disabled'});}
                 await page.locator('[data-route="route"]').click();
                 assert.equal(await page.locator('.signal-diagram').getAttribute('data-signal-mode'),'route');
                 const over=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
                 assert.ok(over<=2,'UniJack overflow '+width+': '+over);
                 if(width===1440){await page.locator('#routing').scrollIntoViewIfNeeded();await page.screenshot({path:'unijack-routing-after.png',fullPage:false,animations:'disabled'});}
+                await page.locator('#products').scrollIntoViewIfNeeded();
+                await page.screenshot({path:'unijack-products-'+width+'-after.png',fullPage:false,animations:'disabled'});
                 assert.deepEqual(errors,[]);
                 console.log('PASS UniJack routing',width);
                 await page.close();
