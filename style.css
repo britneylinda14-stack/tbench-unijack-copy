@@ -247,3 +247,52 @@ h2{letter-spacing:-.046em}
 .brand .brand-logo{display:block;width:150px;height:auto;max-width:100%;object-fit:contain}
 .footer .brand .brand-logo{width:144px}
 @media(max-width:720px){.nav .brand .brand-logo{width:125px}.footer .brand .brand-logo{width:132px}}
+
+
+/* ERAU blueprint implementation derived from Jens's grouped-channel sketch.
+   All selector changes are scoped to the ERAU panel. */
+.routing-panel .erau-system{display:block;margin:17px 0 15px;min-width:0}
+.routing-panel .erau-diagram-header,.routing-panel .erau-diagram-footer{display:flex;justify-content:space-between;gap:8px;color:#87a9b4;font:500 9px/1.5 var(--mono);letter-spacing:.065em}
+.routing-panel .erau-diagram-header span:nth-child(2){color:#91e3ed}
+.routing-panel .erau-diagram-header span:last-child{text-align:right}
+.routing-panel .erau-diagram-footer{margin-top:3px;font-size:9px;color:#aac9d1}
+.routing-panel .erau-map{display:block;width:100%;height:auto;aspect-ratio:2/1;min-height:200px;overflow:visible;margin-top:8px;border:1px solid #29444f;border-radius:7px;background:#0b1720}
+.routing-panel .erau-column text{font:500 11px var(--mono);fill:#91b0bc}
+.routing-panel .erau-column .erau-side-name{font:600 12px var(--body);fill:#edf8fc}
+.routing-panel .erau-channel-labels text{font:500 10px var(--mono);fill:#9cb8c2}
+.routing-panel .erau-channel-labels text:nth-child(-n+2){fill:#8de1e9;letter-spacing:1px}
+.routing-panel .erau-connectors rect{fill:#132f3a;stroke:#6babb8;stroke-width:1.5}
+.routing-panel .erau-core-box{fill:#153440;stroke:#72b7c3;stroke-width:1.6}
+.routing-panel .erau-core-title{font:700 24px var(--display);letter-spacing:1px;fill:#daf6f8}
+.routing-panel .erau-core-subtitle{font:500 8px var(--mono);letter-spacing:1.2px;fill:#7caeb7}
+.routing-panel .erau-mode{display:none}
+.routing-panel [data-signal-mode=route] .erau-direct,
+.routing-panel [data-signal-mode=cross] .erau-cross,
+.routing-panel [data-signal-mode=fanout] .erau-fanout,
+.routing-panel [data-signal-mode=loopback] .erau-loop,
+.routing-panel [data-signal-mode=logic] .erau-logic{display:block}
+.routing-panel .erau-wire{fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:9 6;animation:signal-flow 3.8s linear infinite;opacity:.95}
+.routing-panel .erau-orange{stroke:#f6a75c}
+.routing-panel .erau-blue{stroke:#6cbdef}
+.routing-panel .erau-green{stroke:#87dd92}
+.routing-panel .erau-optional{opacity:.34;stroke-width:1.5}
+.routing-panel .erau-direction text{font:500 9px var(--mono);letter-spacing:.5px;fill:#7297a6}
+.routing-panel .erau-map .logic-gate-symbol{display:none}
+.routing-panel [data-signal-mode=logic] .logic-gate-symbol{display:block}
+.routing-panel .erau-map .logic-expression{display:none;font:600 12px var(--mono);fill:#a8ebbe}
+.routing-panel [data-signal-mode=logic] .logic-expression{display:block}
+.routing-panel [data-signal-mode=logic][data-logic-gate=NOT] .logic-input-b{display:none}
+.routing-panel .erau-map .gate-shape{stroke:#d5f5f7;stroke-width:2;fill:#163440}
+.routing-panel .erau-map .gate-bubble{stroke:#d5f5f7;stroke-width:2;fill:#0d1821}
+.routing-panel .routing-switch{display:flex;flex-wrap:wrap;gap:7px 10px;margin-top:24px}
+.routing-panel .routing-switch button{border:1px solid #365762;border-radius:5px;background:#111e27;padding:9px 11px;color:#b6cbd2;font-size:11px;font-weight:600;min-height:39px}
+.routing-panel .routing-switch button[aria-pressed=true]{color:#061b22;background:#88dfe9;border-color:#88dfe9}
+.routing-panel .routing-switch button:hover{border-color:#88dfe9}
+.routing-panel .routing-disclaimer{border-color:#2b4650}
+@media(max-width:760px){
+ .routing-panel .erau-map{min-height:0;aspect-ratio:2/1}
+ .routing-panel .erau-diagram-header{font-size:7px}
+ .routing-panel .routing-switch{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+ .routing-panel .routing-switch button{font-size:11px;padding:8px 7px;min-height:43px;text-align:center}
+}
+@media(prefers-reduced-motion:reduce){.routing-panel .erau-wire{animation:none}}

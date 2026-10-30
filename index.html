@@ -56,27 +56,54 @@
 </div>
 </section>
 <section class="section routing-section" id="routing">
-<div class="routing-copy"><div class="eyebrow">ERAU SIGNAL ROUTING</div><h2>A closer look at<br><span>signal routing.</span></h2><p>ERAU provides configurable signal paths between the controller module and peripherals. Select a mode to examine route, fan-out, loopback and logic functions.</p><div class="routing-stats"><div><strong>24</strong><span>configurable groups</span></div><div><strong>8</strong><span>channels per group</span></div></div><p class="source-note">Specifications published by TBench · <a href="https://www.crowdsupply.com/tbench-solutions/unijack-and-mercury-module" target="_blank" rel="noopener">Source: Crowd Supply</a></p></div>
+<div class="routing-copy"><div class="eyebrow">ERAU SIGNAL ROUTING</div><h2>A closer look at<br><span>signal routing.</span></h2><p>ERAU provides configurable signal paths between the controller module and peripherals. Select a mode to examine direct routing, cross-routing, looping, fan-out and logic operations.</p><div class="routing-stats"><div><strong>24</strong><span>configurable groups</span></div><div><strong>8</strong><span>channels per group</span></div></div><p class="source-note">Specifications published by TBench · <a href="https://www.crowdsupply.com/tbench-solutions/unijack-and-mercury-module" target="_blank" rel="noopener">Source: Crowd Supply</a></p></div>
 <div class="routing-panel"><div class="routing-panel-top"><span>ERAU / SIGNAL EXPLORER</span><span>FUNCTION OVERVIEW</span></div>
-<div class="routing-switch" role="group" aria-label="Select ERAU signal example"><button data-route="route" aria-pressed="true">Direct Route</button><button data-route="cross" aria-pressed="false">Cross-Route</button><button data-route="fanout" aria-pressed="false">Fan-Out</button><button data-route="loopback" aria-pressed="false">Loopback</button><button data-route="logic" aria-pressed="false">Logic Operation</button></div>
+<div class="routing-switch" role="group" aria-label="Select ERAU signal example"><button data-route="route" aria-pressed="true">Direct Route</button><button data-route="cross" aria-pressed="false">Cross-Route</button><button data-route="fanout" aria-pressed="false">Fan-Out</button><button data-route="loopback" aria-pressed="false">Loop</button><button data-route="logic" aria-pressed="false">Logical Operation</button></div>
 <div class="logic-options" id="logic-options" hidden><label for="logic-gate">Logic gate</label><select id="logic-gate" aria-label="Choose logical operation"><option value="AND">AND</option><option value="NAND">NAND</option><option value="OR">OR</option><option value="NOR">NOR</option><option value="XOR">XOR</option><option value="NOT">NOT</option></select></div>
-<div class="signal-diagram" data-signal-mode="route" data-logic-gate="AND" role="img" aria-label="Schematic signals flowing through ERAU from the module to peripherals">
-<div class="signal-endpoint input"><span id="signal-input-direction">IN / OUT</span><strong>Module</strong><span class="signal-channel-label">GROUP A</span><div class="signal-pins" aria-hidden="true"><i></i><i></i><i></i><i></i></div></div>
-<svg class="signal-lines" viewBox="0 0 400 210" aria-hidden="true"><defs><linearGradient id="signal-color"><stop stop-color="#74e2f4"/><stop offset="1" stop-color="#aec3ff"/></linearGradient></defs>
-<g class="signal-background"><path d="M0 42H165M235 42H400M0 85H165M235 85H400M0 125H165M235 125H400M0 170H165M235 170H400"/></g>
-<g class="routing-traces" aria-hidden="true">
-<path class="route-path path-a" d="M0 85H167Q177 85 180 98M220 112Q235 126 250 126H400"/>
-<path class="cross-path" d="M0 53H160Q178 53 184 90M217 116Q237 145 258 145H400 M0 155H155Q177 155 181 118M220 92Q237 53 260 53H400"/>
-<path class="fanout-path" d="M0 105H170 M230 105H277V40H400 M277 105H400 M277 105V171H400"/>
-<path class="loop-path" d="M0 104H170 M230 104H311Q332 104 332 139V176H47Q16 176 16 146V104"/>
-<g class="logic-traces"><path class="logic-input-a" d="M0 78H157L181 91 M219 91H254"/><path class="logic-input-b" d="M0 131H157L181 117 M219 117H254"/><path class="logic-output-path" d="M316 105H400"/></g>
+<div class="signal-diagram erau-system" data-signal-mode="route" data-logic-gate="AND" role="group" aria-label="Interactive ERAU diagram showing configurable bi-directional module-to-peripheral signal paths">
+<div class="erau-diagram-header"><span>MODULE / GROUP A</span><span>ERAU ROUTING FABRIC</span><span>GROUP B / PERIPHERALS</span></div>
+<svg class="signal-lines erau-map" viewBox="0 0 600 300" role="img" aria-label="Grouped channel connections routed through an ERAU fabric" preserveAspectRatio="xMidYMid meet">
+<defs><pattern id="erau-grid" width="24" height="24" patternUnits="userSpaceOnUse"><path d="M24 0H0V24" fill="none" stroke="#294551" stroke-width=".4" opacity=".52"/></pattern></defs>
+<rect x="0" y="0" width="600" height="300" rx="8" fill="url(#erau-grid)"/>
+<g class="erau-column"><text x="24" y="24">IN / OUT</text><text x="24" y="40" class="erau-side-name">Module</text><text x="576" y="24" text-anchor="end">IN / OUT</text><text x="576" y="40" class="erau-side-name" text-anchor="end">Peripherals</text></g>
+<g class="erau-channel-labels">
+<text x="24" y="70">GROUP A</text><text x="576" y="70" text-anchor="end">GROUP B</text>
+<text x="24" y="89">CH0</text><text x="24" y="124">CH1</text><text x="24" y="159">CH2</text><text x="24" y="194">CH3</text><text x="24" y="230">...</text>
+<text x="576" y="89" text-anchor="end">CH0</text><text x="576" y="124" text-anchor="end">CH1</text><text x="576" y="159" text-anchor="end">CH2</text><text x="576" y="194" text-anchor="end">CH3</text><text x="576" y="230" text-anchor="end">...</text>
 </g>
-<circle cx="200" cy="105" r="26" class="fabric-node"/><text x="200" y="109" class="fabric-label" text-anchor="middle">ERAU</text>
-<g class="logic-gate-symbol" id="logic-gate-symbol" transform="translate(0 0)"><path class="gate-shape" d="M255 75H275A30 30 0 0 1 275 135H255Z"/></g>
-<text id="logic-expression" class="logic-expression" x="310" y="178" text-anchor="middle"></text>
+<g class="erau-connectors"><rect x="72" y="80" width="9" height="9"/><rect x="72" y="115" width="9" height="9"/><rect x="72" y="150" width="9" height="9"/><rect x="72" y="185" width="9" height="9"/><rect x="519" y="80" width="9" height="9"/><rect x="519" y="115" width="9" height="9"/><rect x="519" y="150" width="9" height="9"/><rect x="519" y="185" width="9" height="9"/></g>
+<rect class="erau-core-box" x="238" y="58" width="126" height="188" rx="12"/>
+<text class="erau-core-title" x="301" y="144" text-anchor="middle">ERAU</text>
+<text class="erau-core-subtitle" x="301" y="165" text-anchor="middle">ROUTING FABRIC</text>
+<g class="erau-mode-paths">
+<g class="erau-mode erau-direct">
+<path class="erau-wire erau-orange" d="M81 85H238 M364 85H519"/><path class="erau-wire erau-blue" d="M81 120H238 M364 120H519"/><path class="erau-wire erau-green" d="M81 155H238 M364 155H519"/><path class="erau-wire erau-blue" d="M81 190H238 M364 190H519"/>
+</g>
+<g class="erau-mode erau-cross">
+<path class="erau-wire erau-orange" d="M81 85H181V125H238 M364 125H431V190H519"/>
+<path class="erau-wire erau-green" d="M81 190H157V168H238 M364 168H403V85H519"/>
+<path class="erau-wire erau-blue" d="M81 120H238 M364 120H519"/>
+</g>
+<g class="erau-mode erau-fanout">
+<path class="erau-wire erau-green" d="M81 120H238 M364 120H435V85H519 M435 120H519 M435 120V155H519 M435 155V190H519"/>
+<path class="erau-wire erau-orange erau-optional" d="M81 190H164V208H238"/>
+</g>
+<g class="erau-mode erau-loop">
+<path class="erau-wire erau-blue" d="M81 120H238 M364 120H441V244H141V190H81"/>
+<path class="erau-wire erau-orange erau-optional" d="M81 85H238 M364 85H519"/>
+</g>
+<g class="erau-mode erau-logic">
+<path class="erau-wire erau-orange logic-input-a" d="M81 85H206V112H238 M364 112H290"/>
+<path class="erau-wire erau-blue logic-input-b" d="M81 155H173V195H238 M364 195H278V168H290"/>
+<path class="erau-wire erau-green logic-output-path" d="M351 150H450V120H519"/>
+</g>
+</g>
+<g class="logic-gate-symbol" id="logic-gate-symbol" transform="translate(35 45)"><path class="gate-shape" d="M255 75H275A30 30 0 0 1 275 135H255Z"/></g>
+<text id="logic-expression" class="logic-expression" x="418" y="210" text-anchor="middle"></text>
+<g class="erau-direction"><text x="302" y="267" text-anchor="middle">BI-DIRECTIONAL · CONFIGURABLE BY GROUP</text></g>
 </svg>
-<div class="signal-endpoint output"><span id="signal-output-direction">IN / OUT</span><strong>Peripherals</strong><span class="signal-channel-label">GROUP B</span><div class="signal-pins" aria-hidden="true"><i></i><i></i><i></i><i></i></div></div></div>
-<p id="routing-description" aria-live="polite">A signal follows a direct route through ERAU between module and peripherals.</p><div class="routing-disclaimer">Illustrative ERAU signal paths · configurable per group · not timing measurements</div></div>
+<div class="erau-diagram-footer"><span id="signal-input-direction">IN / OUT · A</span><span id="signal-output-direction">IN / OUT · B</span></div></div>
+<p id="routing-description" aria-live="polite">Channels connect directly through ERAU between the module and peripherals; routes are configurable in either direction.</p><div class="routing-disclaimer">Illustrative signal paths · bi-directional per group · not timing measurements</div></div>
 </section>
 <section class="section products-section tb-section--product" id="products"><div class="section-topline"><div><span class="eyebrow">HARDWARE COMPONENTS</span><h2>The hardware,<br><span>up close.</span></h2></div><p>Three core components.<br>Designed to work together.</p></div><div class="product-cards"><article class="product-card"><div class="photo-window photo-base"><img src="./assets/products/unijack.jpg" alt="Bare UniJack development platform from the campaign gallery" loading="lazy" width="3000" height="1688"><span class="photo-index">01 / PLATFORM</span></div><div class="product-card-body"><h3>UniJack™</h3><p>The base platform connecting the controller, expansion interfaces and ERAU routing fabric.</p><div class="product-tags"><span>Modular platform</span><span>ERAU</span></div><a href="https://www.tbenchsolutions.com/products/unijack/" target="_blank" rel="noopener" class="card-link">View UniJack details <span aria-hidden="true">↗</span></a></div></article><article class="product-card"><div class="photo-window photo-mercury"><img src="./assets/products/mercury.jpg" alt="Mercury Module front face from the campaign gallery" loading="lazy" width="3000" height="1687"><span class="photo-index">02 / CONTROLLER</span></div><div class="product-card-body"><h3>Mercury Module</h3><p>The Mercury controller module uses an Infineon AURIX TC356.</p><div class="product-tags"><span>AURIX TC356</span><span>Up to 300 MHz*</span></div><a href="./tbench/products/mercury/" class="card-link">View Mercury details <span aria-hidden="true">↗</span></a></div></article><article class="product-card"><div class="photo-window photo-peri"><img src="./assets/products/periboard.jpg" alt="PeriBoard peripheral expansion board from the campaign gallery" loading="lazy" width="3000" height="1688"><span class="photo-index">03 / EXPANSION</span></div><div class="product-card-body"><h3>PeriBoard</h3><p>The peripheral interface board for adding and testing connected hardware.</p><div class="product-tags"><span>Peripheral expansion</span><span>Open interface*</span></div><a href="./tbench/products/periboard/" class="card-link">View platform details <span aria-hidden="true">↗</span></a></div></article></div><div class="product-evidence"><span>*Specifications and interface claims are vendor-stated; unverified on hardware.</span><a href="https://www.crowdsupply.com/tbench-solutions/unijack-and-mercury-module" target="_blank" rel="noopener">View product source</a></div><div class="venus-family"><span class="eyebrow">ADDITIONAL MODULES</span><a href="./tbench/products/venus-mxo4/">Venus-MXO4 Module <span aria-hidden="true">↗</span></a><a href="./tbench/products/venus-mxo5/">Venus-MXO5 Module <span aria-hidden="true">↗</span></a></div></section>
 <section class="applications-section"><div class="section applications-inner"><div class="eyebrow">APPLICATIONS</div><h2>Built for<br><span>hands-on development.</span></h2><div class="application-grid"><div><span class="application-number">DEVELOPMENT</span><h3>Embedded development</h3><p>Evaluate controller functionality, I/O and peripherals on a modular hardware platform.</p></div><div><span class="application-number">EDUCATION</span><h3>Teaching &amp; research</h3><p>Demonstrate the relationship between modules, interfaces and signal routing.</p></div><div><span class="application-number">EXPANSION</span><h3>Peripheral integration</h3><p>Explore application-specific peripherals with the TBench team.</p></div></div></div></section>
