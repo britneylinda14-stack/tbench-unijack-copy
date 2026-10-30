@@ -132,9 +132,10 @@ function updateGate(){
  document.querySelector('#logic-gate-symbol').innerHTML=gate.shape;
  document.querySelector('#logic-expression').textContent=gate.expression;
  routingDescription.textContent=(logicSelect.value==='NOT'?'Input A passes through ERAU. ':'Inputs A and B pass through ERAU. ')+gate.caption;
- document.querySelector('#signal-output-direction').textContent='OUT · '+gate.expression;
- document.querySelector('#signal-input-direction').textContent=logicSelect.value==='NOT'?'IN · A':'IN · A / B';
+ document.querySelector('#signal-output-direction').textContent='OUT · '+gate.expression+' · GROUP 10 / 11';
+ document.querySelector('#signal-input-direction').textContent=logicSelect.value==='NOT'?'IN · A · GROUP 10':'IN · A / B · GROUP 10 / 11';
  signalDiagram.dataset.logicGate=logicSelect.value;
+ const gateLabel=signalDiagram.querySelector('.erau-inline-gate-label');if(gateLabel)gateLabel.textContent=logicSelect.value+' / LOGIC';
  signalDiagram.setAttribute('aria-label','ERAU logical '+logicSelect.value+' operation: '+gate.expression+(logicSelect.value==='NOT'?' using one input A':' using inputs A and B'));
 }
 document.querySelectorAll('[data-route]').forEach(button=>button.addEventListener('click',()=>{
@@ -143,8 +144,8 @@ document.querySelectorAll('[data-route]').forEach(button=>button.addEventListene
  signalDiagram.dataset.signalMode=mode;
  logicOptions.hidden=mode!=='logic';
  if(mode==='logic'){updateGate();return;}
- document.querySelector('#signal-input-direction').textContent='IN / OUT · A';
- document.querySelector('#signal-output-direction').textContent='IN / OUT · B';
+ document.querySelector('#signal-input-direction').textContent='IN / OUT · GROUP 10 + 11';
+ document.querySelector('#signal-output-direction').textContent='IN / OUT · GROUP 10 + 11';
  const descriptions={route:'Channels follow parallel direct routes through ERAU between module and peripherals; routing is bi-directional.',cross:'ERAU can cross-route channels between groups and assign inputs to different output channels.',fanout:'One input channel fans out to several output channels through ERAU.',loopback:'A channel loops through ERAU and returns to the module; paths are configurable.'};
  routingDescription.textContent=descriptions[mode];
  signalDiagram.setAttribute('aria-label',descriptions[mode]);

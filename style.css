@@ -296,3 +296,62 @@ h2{letter-spacing:-.046em}
  .routing-panel .routing-switch button{font-size:11px;padding:8px 7px;min-height:43px;text-align:center}
 }
 @media(prefers-reduced-motion:reduce){.routing-panel .erau-wire{animation:none}}
+
+
+/* ERAU REV03 - faithfully map Jens' hand drawing with two channel groups,
+   continuously visible colored paths and an in-ERAU logic gate. */
+.routing-panel .erau-sketch-layout{margin:20px 0 18px;overflow:visible}
+.routing-panel .erau-sketch-layout .erau-legend{display:flex;flex-wrap:wrap;align-items:center;gap:7px 17px;margin-bottom:14px;font:600 10px/1.45 var(--mono);color:#bbd4dc}
+.routing-panel .erau-sketch-layout .erau-legend span{display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
+.routing-panel .erau-sketch-layout .erau-legend i{display:inline-block;width:27px;height:3px;border-radius:4px}
+.routing-panel .erau-sketch-layout .legend-direct i{background:#f9b36c}
+.routing-panel .erau-sketch-layout .legend-cross i{background:#87dca1}
+.routing-panel .erau-sketch-layout .legend-loop i{background:#b0dd78}
+.routing-panel .erau-sketch-layout .legend-fanout i{background:#70bdf1}
+.routing-panel .erau-sketch-layout .legend-logic i{background:repeating-linear-gradient(90deg,#f9b36c 0 7px,transparent 7px 11px)}
+.routing-panel .erau-sketch-layout .erau-sketch-caption{display:flex;justify-content:space-between;align-items:center;gap:5px;margin:0 1px 5px;color:#cbd9df;font:600 9px/1.3 var(--mono);letter-spacing:.07em}
+.routing-panel .erau-sketch-layout .erau-sketch-caption span{color:#80a5ae}
+.routing-panel .erau-sketch-layout .erau-sketch-caption strong{font-size:11px;color:#8ae9ec}
+.routing-panel .erau-sketch-layout .erau-svg-scroll{overflow:visible;width:100%;border:1px solid #335464;background:#0b1c25;border-radius:7px}
+.routing-panel .erau-sketch-layout .erau-sketch-map{width:100%;height:auto;aspect-ratio:1200/555;min-height:0;display:block;margin:0;border:0;background:#0b1c25;overflow:visible}
+.routing-panel .erau-sketch-layout .erau-mode{display:block!important;opacity:.19;transition:opacity .2s}
+.routing-panel .erau-sketch-layout[data-signal-mode=route] .erau-direct,
+.routing-panel .erau-sketch-layout[data-signal-mode=cross] .erau-cross,
+.routing-panel .erau-sketch-layout[data-signal-mode=fanout] .erau-fanout,
+.routing-panel .erau-sketch-layout[data-signal-mode=loopback] .erau-loop,
+.routing-panel .erau-sketch-layout[data-signal-mode=logic] .erau-logic{opacity:1}
+.routing-panel .erau-sketch-layout .erau-wire{stroke-width:5;stroke-dasharray:none;stroke-linecap:round;stroke-linejoin:round;fill:none;animation:none;transition:stroke-width .18s,opacity .18s}
+.routing-panel .erau-sketch-layout .erau-direct .erau-wire{stroke:#f9b36c}
+.routing-panel .erau-sketch-layout .erau-cross .erau-wire{stroke:#87dca1}
+.routing-panel .erau-sketch-layout .erau-loop .erau-wire{stroke:#b0dd78}
+.routing-panel .erau-sketch-layout .erau-fanout .erau-wire{stroke:#70bdf1}
+.routing-panel .erau-sketch-layout .erau-logic .erau-wire{stroke:#f9b36c;stroke-dasharray:12 9}
+.routing-panel .erau-sketch-layout .erau-core-box{fill:rgba(29,64,72,.45);stroke:#6f9da8;stroke-width:2.4;stroke-dasharray:10 7}
+.routing-panel .erau-sketch-layout .erau-core-title{font:700 36px var(--display);fill:#edfafa;letter-spacing:.1em}
+.routing-panel .erau-sketch-layout .erau-core-subtitle{font:500 12px var(--mono);fill:#acd3d8;letter-spacing:1px}
+.routing-panel .erau-sketch-layout .erau-column .erau-side-name{font:700 20px var(--display);fill:#ecf8fb}
+.routing-panel .erau-sketch-layout .erau-column text{font:500 16px var(--mono);fill:#9dc4cc}
+.routing-panel .erau-sketch-layout .erau-channel-labels text{font:500 16px var(--mono);fill:#a7bec7}
+.routing-panel .erau-sketch-layout .erau-channel-labels text:nth-child(1),
+.routing-panel .erau-sketch-layout .erau-channel-labels text:nth-child(2),
+.routing-panel .erau-sketch-layout .erau-channel-labels text:nth-child(3),
+.routing-panel .erau-sketch-layout .erau-channel-labels text:nth-child(4){font:700 18px var(--mono);fill:#91e2e8;letter-spacing:1px}
+.routing-panel .erau-sketch-layout .erau-connectors rect{fill:#172f3a;stroke:#a2d4db;stroke-width:2}
+.routing-panel .erau-sketch-layout .logic-gate-symbol{display:block!important;opacity:.64;transition:opacity .2s}
+.routing-panel .erau-sketch-layout[data-signal-mode=logic] .logic-gate-symbol{opacity:1}
+.routing-panel .erau-sketch-layout .erau-inline-gate-label{font:600 14px var(--mono);fill:#f3c495;opacity:.72}
+.routing-panel .erau-sketch-layout .logic-expression{font:600 13px var(--mono);fill:#b5efc9}
+.routing-panel .erau-sketch-layout .erau-bidirectional-label{font:500 13px var(--mono);fill:#8cbac0;letter-spacing:.7px}
+.routing-panel .erau-sketch-layout .erau-diagram-footer{margin-top:9px;color:#b7d3d8;font-size:10px}
+.routing-panel .erau-sketch-layout[data-logic-gate=NOT] .logic-input-b{display:none}
+.routing-panel .erau-sketch-layout .gate-shape{fill:#173f47;stroke:#d6f5f6;stroke-width:2.3}
+.routing-panel .erau-sketch-layout .gate-bubble{fill:#152c36;stroke:#d6f5f6;stroke-width:2.4}
+@media(max-width:760px){
+ .routing-panel .erau-sketch-layout .erau-legend{gap:8px 11px;font-size:9px}
+ .routing-panel .erau-sketch-layout .erau-legend i{width:18px}
+ .routing-panel .erau-sketch-layout .erau-sketch-caption{font-size:7px;letter-spacing:0}
+ .routing-panel .erau-sketch-layout .erau-sketch-caption span{display:none}
+ .routing-panel .erau-sketch-layout .erau-sketch-map{min-width:0;aspect-ratio:1200/555}
+ .routing-panel .erau-sketch-layout .erau-diagram-footer{font-size:8px}
+}
+@media(prefers-reduced-motion:reduce){.routing-panel .erau-sketch-layout .erau-mode{transition:none}}
