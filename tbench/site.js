@@ -14,3 +14,18 @@ document.addEventListener('visibilitychange',start);reduce.addEventListener('cha
 let touchX=null;carousel.addEventListener('touchstart',e=>{touchX=e.touches[0]?.clientX??null},{passive:true});carousel.addEventListener('touchend',e=>{if(touchX===null)return;const delta=(e.changedTouches[0]?.clientX??touchX)-touchX;if(Math.abs(delta)>65){show(current+(delta<0?1:-1));start()}touchX=null},{passive:true});
 show(0,{announce:false});start();
 })();
+
+// Collapsible product navigation, including keyboard and outside-click behavior.
+(()=>{
+const header=document.querySelector('#site-header'),button=document.querySelector('.products-toggle');
+if(!header||!button)return;
+const menu=document.getElementById('product-menu');
+if(!menu)return;
+function setOpen(open){menu.hidden=!open;button.setAttribute('aria-expanded',String(open))}
+button.addEventListener('click',()=>setOpen(button.getAttribute('aria-expanded')!=='true'));
+menu.querySelectorAll('a').forEach(link=>link.addEventListener('click',()=>setOpen(false)));
+document.addEventListener('click',event=>{if(!button.parentElement.contains(event.target))setOpen(false)});
+document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!menu.hidden){setOpen(false);button.focus()}});
+const mainToggle=document.querySelector('.menu-toggle');
+mainToggle?.addEventListener('click',()=>setOpen(false));
+})();
