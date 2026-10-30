@@ -242,3 +242,8 @@ h2{letter-spacing:-.046em}
  .footer{flex-wrap:wrap}
 }
 @media(prefers-reduced-motion:reduce){.product-cards .photo-window img{transition:none}}
+
+/* Approved TBench logo image; branding only. */
+.brand .brand-logo{display:block;width:150px;height:auto;max-width:100%;object-fit:contain}
+.footer .brand .brand-logo{width:144px}
+@media(max-width:720px){.nav .brand .brand-logo{width:125px}.footer .brand .brand-logo{width:132px}}

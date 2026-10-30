@@ -75,3 +75,8 @@
  .header-cta{display:none}
 }
 @media(max-width:760px){.portfolio-inner{grid-template-columns:1fr;gap:20px}.portfolio-strip{padding:47px 0}.feature-photo{order:0}.feature-copy{order:1}.feature-section{padding-block:64px}.footer-bottom{display:flex;flex-direction:column;align-items:flex-start;gap:8px}.footer-bottom span,.footer-bottom a{margin:0}}
+
+/* Approved TBench logo image; branding only. */
+.brand .brand-logo{display:block;width:135px;height:auto;max-width:100%;object-fit:contain}
+.site-footer .brand .brand-logo{width:144px}
+@media(max-width:760px){.site-header .brand .brand-logo{width:118px}.site-footer .brand .brand-logo{width:132px}}
