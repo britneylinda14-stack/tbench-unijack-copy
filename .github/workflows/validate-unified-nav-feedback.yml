@@ -1,0 +1,166 @@
+name: Validate unified TBench navigation and document feedback
+on:
+  push:
+    branches: [design/unified-navigation-and-feedback-20261030]
+permissions:
+  contents: read
+jobs:
+  ui:
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+    - uses: actions/checkout@v4
+    - name: Verify files, section variants and shared navigation
+      run: |
+        set -e
+        node --check tbench/shared-nav.js
+        node --check tbench/site.js
+        node --check app.js
+        python3 - <<'PY'
+        from pathlib import Path
+        import re
+        pages=['index.html','tbench/index.html','tbench/academia/index.html','tbench/enterprise/index.html','tbench/builders/index.html']+[f'tbench/products/{p}/index.html' for p in ['mercury','periboard','venus-mxo4','venus-mxo5']]
+        for p in pages:
+          s=Path(p).read_text()
+          assert s.count('id="tb-unified-header"') == 1,p
+          assert 'tb-products-button' in s,p
+          assert 'shared-nav.js' in s,p
+          assert 'shared-nav.css' in s,p
+          assert 'section-variants.css' in s,p
+          assert 'tbench-official-logo.svg' in s,p
+          for label in ['UniJack Development Platform','Mercury Module','PeriBoard','Venus-MXO4 Module','Venus-MXO5 Module']:
+            assert label in s,(p,label)
+        landing=Path('tbench/index.html').read_text()
+        assert 'feature-section tb-section--product' in landing
+        assert 'expertise-section tb-section--service' in landing
+        assert 'portfolio-strip tb-section--support' in landing
+        assert 'intro tb-section--support' in Path('index.html').read_text()
+        assert 'products-section tb-section--product' in Path('index.html').read_text()
+        assert 'focus-section tb-section--service' in Path('tbench/enterprise/index.html').read_text()
+        variants=Path('tbench/section-variants.css').read_text()
+        assert '.tb-section--product' in variants and '.tb-section--service' in variants
+        print('PASS: 9 consistent headers and white/product, green/service, gray/support variants')
+        PY
+    - name: Install Chromium
+      run: |
+        npm install --no-save --no-package-lock playwright@1.55.0
+        npx playwright install chromium
+    - name: Browser QA: navigation, contrast, CTA, responsive sections
+      run: |
+        set -e
+        python3 -m http.server 4173 >/tmp/tbench-nav-server.log 2>&1 &
+        cat >/tmp/verify.cjs <<'JS'
+        const {chromium}=require(process.cwd()+'/node_modules/playwright'), assert=require('node:assert/strict');
+        const urls=['/','/tbench/','/tbench/academia/','/tbench/enterprise/','/tbench/builders/','/tbench/products/mercury/','/tbench/products/periboard/','/tbench/products/venus-mxo4/','/tbench/products/venus-mxo5/'];
+        function relativeLuminance(color){
+          const m=color.match(/\d+(\.\d+)?/g);if(!m||m.length<3)return null;
+          const rgb=m.slice(0,3).map(Number).map(x=>x/255).map(x=>x<=0.04045?x/12.92:Math.pow((x+0.055)/1.055,2.4));
+          return .2126*rgb[0]+.7152*rgb[1]+.0722*rgb[2];
+        }
+        function contrast(fore,back){const f=relativeLuminance(fore),b=relativeLuminance(back);return (Math.max(f,b)+.05)/(Math.min(f,b)+.05)}
+        (async()=>{
+          const browser=await chromium.launch({args:['--no-sandbox','--disable-dev-shm-usage']});
+          try{
+            const signatures=[];
+            for(const path of urls){
+              for(const width of [390,1024,1440]){
+                const page=await browser.newPage({viewport:{width,height:900},reducedMotion:'reduce'});
+                const errs=[];page.on('pageerror',e=>errs.push(e.message));
+                // Avoid expensive optional WebGL in interaction smoke tests.
+                if(path==='/')await page.route('**/vendor/**',r=>r.abort());
+                const res=await page.goto('http://127.0.0.1:4173'+path,{waitUntil:'domcontentloaded',timeout:25000});
+                assert.equal(res.status(),200);
+                await page.waitForFunction(()=>document.documentElement.dataset.tbenchNavReady==='true');
+                const labels=await page.locator('.tb-navigation > a, .tb-navigation > .tb-nav-products > button').allTextContents();
+                const signature=labels.map(x=>x.trim()).join('|');
+                if(!signatures.length)signatures.push(signature);
+                else assert.equal(signature,signatures[0],path+' '+width);
+                assert.equal(await page.locator('.tb-product-list > a').count(),6);
+                const logo=page.locator('.tb-brand img');
+                assert.ok(await logo.evaluate(i=>i.complete&&i.naturalWidth>0));
+                const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
+                assert.ok(overflow<=2,'HORIZONTAL OVERFLOW '+path+' '+width+': '+overflow);
+                assert.deepEqual(errs,[],'JS errors at '+path);
+                if(width<=1120){
+                  const toggle=page.locator('#tb-menu-toggle');
+                  assert.equal(await toggle.isVisible(),true);
+                  await toggle.click();
+                  assert.equal(await toggle.getAttribute('aria-expanded'),'true');
+                  await page.locator('#tb-products-button').click();
+                  assert.equal(await page.locator('#tb-product-links').isVisible(),true);
+                  const destinations=await page.locator('#tb-product-links > a').evaluateAll(a=>a.map(el=>el.href));
+                  assert.ok(destinations.some(x=>x.endsWith('/tbench/products/mercury/')));
+                  assert.ok(destinations.some(x=>x.endsWith('/tbench/products/periboard/')));
+                  await page.keyboard.press('Escape');
+                  assert.equal(await page.locator('#tb-product-links').isVisible(),false);
+                  await page.keyboard.press('Escape');
+                  assert.equal(await toggle.getAttribute('aria-expanded'),'false');
+                }else{
+                  assert.equal(await page.locator('#tb-menu-toggle').isVisible(),false);
+                  assert.equal(await page.locator('.tb-navigation').isVisible(),true);
+                  await page.locator('#tb-products-button').click();
+                  assert.equal(await page.locator('#tb-product-links').isVisible(),true);
+                }
+                if(path==='/tbench/'&&width===1440){
+                  const details=await page.evaluate(()=>{
+                    const out={};
+                    for(const [name,selector] of Object.entries({feature:'.feature-section',services:'.expertise-section',support:'.portfolio-strip'})){
+                      const el=document.querySelector(selector);
+                      out[name]=getComputedStyle(el).backgroundColor;
+                    }
+                    const section=document.querySelector('.feature-section');
+                    const cta=section.querySelector('.button-primary');
+                    return {...out,ctaBackground:getComputedStyle(cta).backgroundColor,ctaText:getComputedStyle(cta).color};
+                  });
+                  assert.equal(details.feature,'rgb(255, 255, 255)');
+                  assert.equal(details.services,'rgb(11, 40, 35)');
+                  assert.equal(details.support,'rgb(239, 243, 242)');
+                  assert.ok(contrast(details.ctaText,details.ctaBackground)>=4.5,'CTA contrast '+JSON.stringify(details));
+                  console.log('PASS variants and CTA contrast',JSON.stringify({...details,ratio:contrast(details.ctaText,details.ctaBackground)}));
+                }
+                if(path==='/'&&width===1440){
+                  const productBG=await page.locator('.products-section').evaluate(el=>getComputedStyle(el).backgroundColor);
+                  assert.equal(productBG,'rgb(255, 255, 255)');
+                  await page.screenshot({path:'unijack-product-updated.png',fullPage:true,animations:'disabled'});
+                }
+                if(path==='/tbench/'&&(width===390||width===1440)){
+                  await page.screenshot({path:'tbench-'+width+'.png',fullPage:true,animations:'disabled'});
+                }
+                if(path==='/tbench/products/mercury/'&&width===1440){
+                  await page.screenshot({path:'mercury-1440.png',fullPage:true,animations:'disabled'});
+                }
+                console.log('PASS',path,width,'overflow',overflow);
+                await page.close();
+              }
+            }
+            // Navigate from the company page into UniJack and then to Mercury and back, retaining nav.
+            const page=await browser.newPage({viewport:{width:1440,height:900},reducedMotion:'reduce'});
+            await page.route('**/vendor/**',r=>r.abort());
+            await page.goto('http://127.0.0.1:4173/tbench/',{waitUntil:'domcontentloaded'});
+            await page.locator('#tb-products-button').click();
+            await page.locator('#tb-product-links a').first().click();
+            await page.waitForURL('**/');
+            assert.equal(new URL(page.url()).pathname,'/');
+            assert.equal(await page.locator('#tb-products-button').isVisible(),true);
+            await page.locator('#tb-products-button').click();
+            await page.locator('#tb-product-links a[href*="/mercury/"]').click();
+            assert.ok(page.url().endsWith('/tbench/products/mercury/'));
+            assert.equal(await page.locator('#tb-products-button').isVisible(),true);
+            await page.locator('.tb-brand').click();
+            assert.ok(page.url().endsWith('/tbench/'));
+            console.log('PASS end-to-end nav TBench -> UniJack -> Mercury -> TBench');
+            await page.close();
+          }finally{await browser.close()}
+        })().catch(e=>{console.error(e);process.exit(1)});
+        JS
+        node /tmp/verify.cjs
+    - name: Save screenshots
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: tbench-feedback-screenshots
+        path: |
+          tbench-*.png
+          mercury-*.png
+          unijack-*.png
+        if-no-files-found: ignore
