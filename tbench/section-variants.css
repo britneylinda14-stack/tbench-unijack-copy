@@ -79,3 +79,10 @@
 .products-section.tb-section--product .venus-family a{color:#0a6573;border-color:#c8dbdd}
 .products-section.tb-section--product .venus-family a:hover{background:#eaf4f5}
 @media(prefers-reduced-motion:reduce){.tb-section--product *,.tb-section--service *{transition-duration:.01ms!important}}
+
+/* Mercury and PeriBoard product photographs: preserve board aspect and scale. */
+.page-product .product-photo-card{background:#eef4f4;border-color:#c4d6d7;box-shadow:0 20px 50px #28454c19}
+.page-product .product-photo-card .sub-card-header,.page-product .product-photo-card .sub-card-footer{color:#2b5660}
+.page-product .product-photo-card .sub-product-photo{display:flex;justify-content:center;align-items:center;padding:18px;background:#e8eff0;border-radius:7px}
+.page-product .product-photo-card .sub-product-photo img{width:100%;max-width:330px;max-height:280px;object-fit:contain;mix-blend-mode:multiply}
+@media(max-width:760px){.page-product .product-photo-card .sub-product-photo img{max-height:210px}}
