@@ -19,14 +19,14 @@ async function cloneReviewedModel() {
 
 function makeRouting() {
  const flow=new THREE.Group(),particles=[];
- const pathMaterial=new THREE.MeshBasicMaterial({color:'#74e2f4',transparent:true,opacity:.45,depthTest:false,depthWrite:false});
- const dotMaterial=new THREE.MeshBasicMaterial({color:'#e4fcff',depthTest:false,depthWrite:false});
+ const pathMaterial=new THREE.MeshBasicMaterial({color:'#74e2f4',transparent:true,opacity:.53,depthTest:true,depthWrite:false});
+ const dotMaterial=new THREE.MeshBasicMaterial({color:'#e4fcff',depthTest:true,depthWrite:false});
  const dotGeometry=new THREE.SphereGeometry(.036,8,6);
  for(let i=0;i<16;i++) {
   const z=-1.37+i*.177;
   const curve=new THREE.CatmullRomCurve3([
-   new THREE.Vector3(-.30,.12,z),new THREE.Vector3(.15,.12,z),new THREE.Vector3(.48,.12,z*.55),
-   new THREE.Vector3(1.33,.12,z*.55),new THREE.Vector3(2.18,.13,z),new THREE.Vector3(2.89,.35,z)]);
+   new THREE.Vector3(-.30,.16,z),new THREE.Vector3(.15,.16,z),new THREE.Vector3(.48,.16,z*.55),
+   new THREE.Vector3(1.33,.16,z*.55),new THREE.Vector3(2.18,.17,z),new THREE.Vector3(2.89,.20,z)]);
   const path=new THREE.Mesh(new THREE.TubeGeometry(curve,32,.011,4,false),pathMaterial);
   const dot=new THREE.Mesh(dotGeometry,dotMaterial);
   path.renderOrder=10;dot.renderOrder=11;flow.add(path,dot);

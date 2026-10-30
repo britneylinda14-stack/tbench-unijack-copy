@@ -131,10 +131,11 @@ function updateGate(){
  const gate=gateData[logicSelect.value];
  document.querySelector('#logic-gate-symbol').innerHTML=gate.shape;
  document.querySelector('#logic-expression').textContent=gate.expression;
- routingDescription.textContent='Signals A and B pass through ERAU. '+gate.caption;
+ routingDescription.textContent=(logicSelect.value==='NOT'?'Input A passes through ERAU. ':'Inputs A and B pass through ERAU. ')+gate.caption;
  document.querySelector('#signal-output-direction').textContent=gate.expression;
  document.querySelector('#signal-input-direction').textContent=logicSelect.value==='NOT'?'A':'A / B';
- signalDiagram.setAttribute('aria-label','ERAU logical '+logicSelect.value+' operation: '+gate.expression);
+ signalDiagram.dataset.logicGate=logicSelect.value;
+ signalDiagram.setAttribute('aria-label','ERAU logical '+logicSelect.value+' operation: '+gate.expression+(logicSelect.value==='NOT'?' using one input A':' using inputs A and B'));
 }
 document.querySelectorAll('[data-route]').forEach(button=>button.addEventListener('click',()=>{
  const mode=button.dataset.route;
@@ -144,7 +145,7 @@ document.querySelectorAll('[data-route]').forEach(button=>button.addEventListene
  if(mode==='logic'){updateGate();return;}
  document.querySelector('#signal-input-direction').textContent='IN / OUT';
  document.querySelector('#signal-output-direction').textContent='IN / OUT';
- const descriptions={route:'A signal passes through ERAU to a peripheral.',fanout:'One signal enters ERAU and can be directed to multiple peripheral signals.',loopback:'A signal returns to the module through an ERAU loop.'};
+ const descriptions={route:'A signal follows a direct route through ERAU between module and peripherals.',cross:'ERAU can cross-route one channel to a different channel group.',fanout:'One module signal can fan out through ERAU to multiple peripheral signals.',loopback:'A signal returns to the module through an ERAU loop.'};
  routingDescription.textContent=descriptions[mode];
  signalDiagram.setAttribute('aria-label',descriptions[mode]);
 }));

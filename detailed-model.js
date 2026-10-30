@@ -246,7 +246,15 @@ export async function buildDetailedModel(){
  const root=new THREE.Group();root.name='UniJack_photo_reconstruction_v2';root.userData={status:'PHOTO-BASED APPROXIMATION — NOT CAD',scale:'Model units: millimetres. Connector reference dimensions; Mercury depth and carrier outline inferred, not measured.',sources:['Crowd Supply UniJack campaign gallery 1–4'],underside:'Base and PeriBoard underside not photographed; plain inferred surfaces'};
  root.userData.materials='Visual appearance inferred from actual campaign photographs. Authored roughness; no measured material scans or confirmed plating composition.';
  const base=group(root,'UniJack_baseboard'),mercury=group(root,'Mercury_module'),peri=group(root,'PeriBoard');
- board(base,160,78,'gallery-3.jpg',crops.base,{holes:[[...baseCoord(609,353),.85],[...baseCoord(644,353),.85]]});slot(base);power(base,-73.8,-27.6);terminal(base);usb(base,-72.1,6.0);ethernet(base,-72.5,27.8);
+ board(base,160,78,'gallery-3.jpg',crops.base,{holes:[[...baseCoord(609,353),.85],[...baseCoord(644,353),.85]]});slot(base);
+// A narrow exposed socket lip keeps the gold connector identifiable when
+// Mercury is seated. This is a visual illustration, not a measured CAD part.
+box(base,-40.50,5.30,0,1.10,.42,63.8,M.black,'Exposed socket carrier',.12);
+for(const z0 of contactCenters){
+ const z=z0/(D.module.length/66);
+ box(base,-40.49,5.57,z,.68,.14,.30,M.gold,'Visible connector contact');
+}
+power(base,-73.8,-27.6);terminal(base);usb(base,-72.1,6.0);ethernet(base,-72.5,27.8);
  // Project each package and its own marking from the same image rectangle.
  // This prevents a second offset chip from showing through beside the mesh.
  chipFromPhoto(base,[968,178,88,80],{height:1.35});
