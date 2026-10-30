@@ -57,7 +57,7 @@ jobs:
                assert.equal(await page.locator('.erau-sketch-layout').getAttribute('data-logic-gate'),gate);
                const second=await page.locator('.logic-input-b').evaluate(el=>getComputedStyle(el).display);
                assert.equal(second==='none',gate==='NOT','Incorrect second input gate '+gate);
-               assert.equal((await page.locator('.erau-inline-gate-label').innerText()).startsWith(gate),true);
+               assert.equal((await page.locator('.erau-inline-gate-label').textContent()).startsWith(gate),true);
              }
              await page.locator('[data-route="route"]').click();
              const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
