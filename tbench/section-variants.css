@@ -1,0 +1,81 @@
+/* Reusable TBench content color system from the October 30 review.
+   Products = white; services = dark green; neutral support = light gray.
+   Hero areas and interactive dark hardware visualizations stay intact. */
+:root{--tb-product-white:#ffffff;--tb-support-gray:#eff3f2;--tb-deep-green:#0b2823;--tb-green-border:#2c5750;--tb-product-ink:#193039;--tb-product-muted:#415d66;--tb-accent-dark:#086b77}
+.tb-section--product{background:var(--tb-product-white);color:var(--tb-product-ink)}
+.tb-section--service{background:var(--tb-deep-green);color:#e9f4f1}
+.tb-section--support{background:var(--tb-support-gray);color:var(--tb-product-ink)}
+.tb-section--neutral{background:#13191d;color:#e9f3f4}
+/* Product-focused sections */
+.feature-section.tb-section--product{background:#fff;border-block:1px solid #e2e8e8;color:#182e36}
+.feature-section.tb-section--product h2,.feature-section.tb-section--product h2 span{color:#17353a}
+.feature-section.tb-section--product .eyebrow{color:#087183}
+.feature-section.tb-section--product .feature-copy>p:not(.eyebrow){color:#435b63}
+.feature-section.tb-section--product .feature-list span{color:#31515b;border-color:#b6cbcd;background:#f5f8f8}
+.feature-section.tb-section--product .button-primary{background:#125d67;border:1px solid #125d67;color:white}
+.feature-section.tb-section--product .button-primary:hover{background:#06434b;border-color:#06434b}
+.feature-section.tb-section--product .official-link{color:#165a64}
+.feature-section.tb-section--product .feature-photo{background:#fff;border-color:#d9e4e5}
+.feature-section.tb-section--product .feature-photo>span{background:#fff;color:#243f48}
+.portfolio-strip.tb-section--support{background:var(--tb-support-gray);border-block:1px solid #d3dedf;color:#19323b}
+.portfolio-strip.tb-section--support .eyebrow{color:#0d6470}
+.portfolio-strip.tb-section--support h2{color:#19313a}
+.portfolio-strip.tb-section--support p:not(.eyebrow){color:#4b6570}
+.portfolio-strip.tb-section--support .portfolio-links a{background:#fff;border-color:#c4d5d7;color:#193b45}
+.portfolio-strip.tb-section--support .portfolio-links a:hover{border-color:#1c8790;background:#f6fafa}
+.portfolio-strip.tb-section--support .portfolio-links a span:last-child{color:#0a6c76}
+/* Engineering services */
+.expertise-section.tb-section--service{background:var(--tb-deep-green);border-color:var(--tb-green-border)}
+.expertise-section.tb-section--service .section-head h2{color:#f0f8f5}
+.expertise-section.tb-section--service .section-head h2 span{color:#a1d2c1}
+.expertise-section.tb-section--service .section-head>p{color:#bbd0c8}
+.expertise-section.tb-section--service .eyebrow,.expertise-section.tb-section--service .expertise-grid article>span{color:#a0e4cf}
+.expertise-section.tb-section--service .expertise-grid article{border-top-color:var(--tb-green-border)}
+.expertise-section.tb-section--service .expertise-grid h3{color:#f5faf8}
+.expertise-section.tb-section--service .expertise-grid p{color:#bed2ca}
+.expertise-section.tb-section--service .expertise-grid a{color:#b6f3da}
+/* Product subpages: white summary + light-gray detail cards */
+.page-product .sub-hero.tb-section--product{background:#fff;color:var(--tb-product-ink)}
+.page-product .sub-hero.tb-section--product .eyebrow{color:#0e6772}
+.page-product .sub-hero.tb-section--product h1{color:#19323b}
+.page-product .sub-hero.tb-section--product .sub-lead{color:#47636e}
+.page-product .sub-hero.tb-section--product .back-link{color:#285e68}
+.page-product .sub-hero.tb-section--product .text-link{color:#095a66}
+.page-product .sub-hero.tb-section--product .button-primary{background:#0c6b77;border-color:#0c6b77;color:#fff}
+.page-product .focus-section.tb-section--support{background:#eff3f2;color:#1a343b}
+.page-product .focus-section.tb-section--support .section-head h2{color:#19343b}
+.page-product .focus-section.tb-section--support .section-head>p{color:#516972}
+.page-product .focus-section.tb-section--support .eyebrow{color:#126d75}
+.page-product .focus-section.tb-section--support .focus-card{background:white;border-color:#d0dee0;color:#213942}
+.page-product .focus-section.tb-section--support .focus-card h3{color:#1f3a43}
+.page-product .focus-section.tb-section--support .focus-card p{color:#526871}
+.page-product .focus-section.tb-section--support .focus-num{color:#0d727b}
+/* Audience service view, with reusable service variant. */
+.page-enterprise .focus-section.tb-section--service{background:var(--tb-deep-green);border-color:var(--tb-green-border)}
+.page-enterprise .focus-section.tb-section--service .section-head h2{color:#f2f9f5}
+.page-enterprise .focus-section.tb-section--service .section-head>p{color:#bbd0c8}
+.page-enterprise .focus-section.tb-section--service .focus-card{background:#153931;border-color:#2f5c51}
+.page-enterprise .focus-section.tb-section--service .focus-card p{color:#c1d9cf}
+/* UniJack standalone product: keep the dark 3D hero; use light product and supporting sections. */
+.intro.tb-section--support{background:#f1f4f3;color:#19323a}
+.intro.tb-section--support h2{color:#19313a}
+.intro.tb-section--support h2 span{color:#426975}
+.intro.tb-section--support .eyebrow{color:#096b75}
+.intro.tb-section--support p{color:#465e67}
+.products-section.tb-section--product{background:#fff;color:#1a3038}
+.products-section.tb-section--product .eyebrow{color:#0c6b77}
+.products-section.tb-section--product h2{color:#152c34}
+.products-section.tb-section--product h2 span{color:#48646d}
+.products-section.tb-section--product .section-topline p{color:#506671}
+.products-section.tb-section--product .product-card{background:#f9fbfb;border-color:#d9e5e6;box-shadow:0 8px 24px #0f283013}
+.products-section.tb-section--product .product-card:hover{border-color:#77b7bd}
+.products-section.tb-section--product .product-card-body h3{color:#1c323b}
+.products-section.tb-section--product .product-card-body p{color:#50646c}
+.products-section.tb-section--product .product-tags span{background:#edf4f5;color:#285963;border-color:#dce7e8}
+.products-section.tb-section--product .card-link{color:#075e6b;border-color:#d9e5e7}
+.products-section.tb-section--product .card-link:hover{color:#003f49}
+.products-section.tb-section--product .product-evidence{color:#54717b}
+.products-section.tb-section--product .venus-family{border-color:#d3e1e2}
+.products-section.tb-section--product .venus-family a{color:#0a6573;border-color:#c8dbdd}
+.products-section.tb-section--product .venus-family a:hover{background:#eaf4f5}
+@media(prefers-reduced-motion:reduce){.tb-section--product *,.tb-section--service *{transition-duration:.01ms!important}}

@@ -1,0 +1,39 @@
+/* Shared primary navigation for the TBench landing, audience and product pages.
+   The header structure and interactions are intentionally identical site-wide. */
+.tb-header{box-sizing:border-box;position:sticky;top:0;z-index:1000;width:100%;height:82px;background:rgba(8,19,24,.975);border-bottom:1px solid rgba(169,216,216,.22);color:#eff8f8;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);font-family:'DM Sans',Arial,sans-serif}
+.tb-header *{box-sizing:border-box}.tb-header a{text-decoration:none}.tb-header button{font:inherit;cursor:pointer}
+.tb-header .tb-header-inner{height:100%;max-width:1460px;margin:0 auto;padding:0 clamp(20px,4.3vw,65px);display:flex;align-items:center;gap:clamp(19px,2.3vw,35px)}
+.tb-header .tb-brand{display:inline-flex;align-items:center;flex:none;max-width:145px;line-height:1}
+.tb-header .tb-brand img{width:143px;height:auto;max-width:100%;object-fit:contain;display:block}
+.tb-header .tb-navigation{display:flex;flex:1 1 auto;align-items:center;gap:clamp(13px,1.85vw,30px);min-width:0}
+.tb-header .tb-navigation>a,.tb-header .tb-product-toggle{display:inline-flex;align-items:center;justify-content:center;gap:5px;min-height:44px;padding:0;color:#c4d3d5;font-size:12.5px;font-weight:600;white-space:nowrap;background:transparent;border:0;transition:color .18s}
+.tb-header .tb-navigation>a:hover,.tb-header .tb-navigation>a:focus-visible,.tb-header .tb-product-toggle:hover,.tb-header .tb-product-toggle[aria-expanded=true]{color:#89e6eb}
+.tb-header .tb-nav-products{position:relative;flex:none}
+.tb-header .tb-product-toggle span{font-size:17px;color:#86dce8}
+.tb-header .tb-product-list{position:absolute;left:-14px;top:calc(100% + 10px);min-width:290px;max-width:calc(100vw - 35px);background:#11262c;border:1px solid #395c61;border-radius:7px;padding:8px;display:flex;flex-direction:column;box-shadow:0 22px 52px rgba(0,0,0,.36)}
+.tb-header .tb-product-list[hidden]{display:none!important}
+.tb-header .tb-product-list a{font-size:12.5px;font-weight:500;display:flex;align-items:center;justify-content:space-between;gap:8px;color:#e2f0f1;padding:11px 12px;border-radius:4px;min-height:43px;line-height:1.35}
+.tb-header .tb-product-list a:hover,.tb-header .tb-product-list a:focus-visible{color:#b8faff;background:#23434a}
+.tb-header .tb-product-list .tb-product-external{border-top:1px solid rgba(143,212,211,.2);margin-top:4px;color:#a8c6c8}
+.tb-header .tb-contact{margin-left:auto;flex:none;display:inline-flex;align-items:center;justify-content:center;gap:12px;min-height:43px;padding:0 15px;border:1px solid #4e7778;border-radius:5px;color:#f0f9fa;background:rgba(104,188,189,.045);font-size:12.5px;font-weight:700;white-space:nowrap}
+.tb-header .tb-contact:hover{border-color:#8be5eb;background:#214049;color:#fff}
+.tb-header .tb-contact span{color:#8be6ed}
+.tb-header .tb-menu-button{display:none;width:42px;height:42px;flex:none;align-items:center;justify-content:center;flex-direction:column;gap:5px;border-radius:6px;border:1px solid #42666a;background:#122830;padding:10px;color:#e8f5f5}
+.tb-header .tb-menu-button i{display:block;width:100%;height:2px;background:currentColor;border-radius:5px}
+.tb-header :is(button,a):focus-visible{outline:2px solid #8ceaf0;outline-offset:3px}
+@media(max-width:1120px){
+ .tb-header{height:74px}
+ .tb-header .tb-header-inner{gap:14px}
+ .tb-header .tb-brand{margin-right:auto}
+ .tb-header .tb-brand img{width:130px}
+ .tb-header .tb-menu-button{display:flex}
+ .tb-header .tb-contact{display:none}
+ .tb-header .tb-navigation{display:none;position:absolute;z-index:1001;top:calc(100% + 1px);left:0;right:0;min-width:0;max-height:calc(100dvh - 75px);overflow-y:auto;flex-direction:column;align-items:stretch;gap:0;background:#0b1b22;border-bottom:1px solid #315963;padding:9px max(20px,5vw) 19px;box-shadow:0 25px 50px #0007}
+ .tb-header[data-menu-open=true] .tb-navigation{display:flex}
+ .tb-header .tb-navigation>a,.tb-header .tb-product-toggle{width:100%;display:flex;justify-content:space-between;min-height:49px;font-size:14px;white-space:normal;text-align:left;padding:9px 2px;border-bottom:1px solid rgba(182,228,224,.11)}
+ .tb-header .tb-nav-products{width:100%}
+ .tb-header .tb-product-list{position:static;min-width:0;max-width:none;padding:4px 3px 9px 12px;box-shadow:none;background:#112b31;border:0;border-left:2px solid #53858b;border-radius:0;margin-bottom:8px}
+ .tb-header .tb-product-list a{font-size:13px;min-height:43px}
+}
+@media(max-width:460px){.tb-header .tb-header-inner{padding-inline:20px}.tb-header .tb-brand img{width:120px}}
+@media(prefers-reduced-motion:reduce){.tb-header *{transition:none!important}}
