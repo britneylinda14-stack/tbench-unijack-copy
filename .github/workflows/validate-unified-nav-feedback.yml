@@ -45,7 +45,7 @@ jobs:
       run: |
         npm install --no-save --no-package-lock playwright@1.55.0
         npx playwright install chromium
-    - name: Browser QA: navigation, contrast, CTA, responsive sections
+    - name: Browser QA for navigation contrast CTA and responsive layout
       run: |
         set -e
         python3 -m http.server 4173 >/tmp/tbench-nav-server.log 2>&1 &
@@ -139,7 +139,7 @@ jobs:
             await page.goto('http://127.0.0.1:4173/tbench/',{waitUntil:'domcontentloaded'});
             await page.locator('#tb-products-button').click();
             await page.locator('#tb-product-links a').first().click();
-            await page.waitForURL('**/');
+            await page.waitForURL('http://127.0.0.1:4173/');
             assert.equal(new URL(page.url()).pathname,'/');
             assert.equal(await page.locator('#tb-products-button').isVisible(),true);
             await page.locator('#tb-products-button').click();
