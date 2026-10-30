@@ -76,6 +76,7 @@ jobs:
                 assert.ok(await page.locator('#product-menu a[href="products/venus-mxo5/"]').isVisible());
                 await page.locator('.products-toggle').click();
                 assert.equal(await page.locator('.products-toggle').getAttribute('aria-expanded'),'false');
+                if(width<=1050){await page.locator('.menu-toggle').click();assert.equal(await page.locator('.menu-toggle').getAttribute('aria-expanded'),'false');}
                 await page.locator('#slide-tab-1').click();
                 assert.equal(await page.locator('#slide-count').innerText(),'02');
                 await page.locator('#slide-tab-2').click();
