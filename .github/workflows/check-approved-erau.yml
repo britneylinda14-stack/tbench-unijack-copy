@@ -1,0 +1,72 @@
+name: Verify approved ERAU image on website
+on:
+  push:
+    branches: [fix/erau-approved-schematic-20261030]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check asset and markup
+        run: |
+          node --check app.js
+          python3 - <<'PY'
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+          tree=ET.parse('assets/erau-routing-approved.svg')
+          root=tree.getroot()
+          assert root.attrib.get('viewBox')=='0 0 1672 941'
+          h=Path('index.html').read_text()
+          assert h.count('erau-approved-figure')==1
+          assert 'src="./assets/erau-routing-approved.svg"' in h
+          assert 'data-route=' not in h
+          assert 'tbench/shared-nav.js' in h
+          assert 'Jens' in h
+          print('PASS asset XML, script syntax and exact section swap')
+          PY
+      - name: Install browser
+        run: |
+          npm install --no-save --no-package-lock playwright@1.55.0
+          npx playwright install chromium
+      - name: Check SVG loads and layout
+        run: |
+          set -e
+          python3 -m http.server 4173 >/tmp/erau-http.log 2>&1 &
+          cat > check.cjs <<'JS'
+          const {chromium}=require('playwright'),assert=require('node:assert/strict');
+          (async()=>{
+            const browser=await chromium.launch({args:['--no-sandbox','--disable-dev-shm-usage']});
+            try{
+              for(const width of [390,768,1440]){
+                const page=await browser.newPage({viewport:{width,height:900},reducedMotion:'reduce'});
+                const errors=[];page.on('pageerror',e=>errors.push(e.message));
+                await page.route('**/vendor/**',r=>r.abort());
+                const r=await page.goto('http://127.0.0.1:4173/',{waitUntil:'domcontentloaded'});
+                assert.equal(r.status(),200);
+                const im=page.locator('.erau-approved-figure img');
+                await im.waitFor();
+                const state=await im.evaluate(x=>({complete:x.complete,w:x.naturalWidth,h:x.naturalHeight,box:x.getBoundingClientRect().width}));
+                assert.equal(state.complete,true);assert.equal(state.w,1672);assert.equal(state.h,941);
+                assert.equal(await page.locator('#routing .routing-switch').count(),0);
+                const pageOver=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
+                assert.ok(pageOver<=2,'Page overflow '+width+': '+pageOver);
+                await page.locator('#routing').scrollIntoViewIfNeeded();
+                await page.screenshot({path:'approved-erau-'+width+'.png',fullPage:false,animations:'disabled'});
+                assert.deepEqual(errors,[]);
+                console.log('PASS approved ERAU',width,JSON.stringify(state));
+                await page.close();
+              }
+            }finally{await browser.close()}
+          })().catch(e=>{console.error(e);process.exit(1)});
+          JS
+          node check.cjs
+      - name: Save images
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: approved-erau-image-check
+          path: approved-erau-*.png
+          if-no-files-found: ignore
