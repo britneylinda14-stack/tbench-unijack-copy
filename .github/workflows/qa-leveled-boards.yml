@@ -1,0 +1,71 @@
+name: Verify leveled board images
+on:
+  push:
+    branches: [fix/level-source-board-angles-20261109]
+permissions:
+  contents: read
+jobs:
+  qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify orientation correction and fresh stylesheet
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          h=Path('index.html').read_text()
+          s=Path('style.css').read_text()
+          assert 'style.css?v=boards-leveled-20261109' in h
+          for cls,deg in [('mercury','3.7'),('peri','2.6')]:
+            assert s.count('.product-cards .photo-'+cls+' img{transform:rotate('+deg+'deg)')==2
+          print('PASS product angles and stylesheet version')
+          PY
+      - name: Set up browser
+        run: |
+          npm install --no-save --no-package-lock playwright@1.55.0
+          npx playwright install chromium
+      - name: Check boards on desktop and mobile
+        run: |
+          set -e
+          python3 -m http.server 4173 >/tmp/boards.log 2>&1 &
+          cat > test.cjs <<'JS'
+          const {chromium}=require('playwright'),assert=require('node:assert/strict');
+          (async()=>{
+            const browser=await chromium.launch({args:['--no-sandbox','--disable-dev-shm-usage']});
+            try{
+              for(const width of [390,768,1440]){
+                const page=await browser.newPage({viewport:{width,height:900},reducedMotion:'reduce'});
+                const errors=[];page.on('pageerror',e=>errors.push(e.message));
+                await page.route('**/vendor/**',r=>r.abort());
+                await page.goto('http://127.0.0.1:4173/',{waitUntil:'domcontentloaded'});
+                await page.locator('.products-section').scrollIntoViewIfNeeded();
+                for(const [key,angle] of [['mercury',3.7],['peri',2.6]]){
+                  const im=page.locator('.product-cards .photo-'+key+' img');
+                  await im.evaluate(x=>{x.loading='eager'});
+                  await im.evaluate(x=>x.decode());
+                  const actual=await im.evaluate(x=>getComputedStyle(x).transform);
+                  const match=actual.match(/matrix\(([^)]+)\)/);
+                  assert.ok(match,actual);
+                  const values=match[1].split(',').map(x=>+x.trim());
+                  const rad=Math.atan2(values[1],values[0])*180/Math.PI;
+                  assert.ok(Math.abs(rad-angle)<.05, key+' angle '+rad);
+                }
+                assert.ok((await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth))<=2);
+                assert.deepEqual(errors,[]);
+                await page.locator('.products-section').scrollIntoViewIfNeeded();
+                await page.screenshot({path:'leveled-boards-'+width+'.png',animations:'disabled'});
+                console.log('PASS images',width);
+                await page.close();
+              }
+            }finally{await browser.close()}
+          })().catch(e=>{console.error(e);process.exit(1)});
+          JS
+          node test.cjs
+      - name: Save screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: leveled-board-previews
+          path: leveled-boards-*.png
+          if-no-files-found: ignore
