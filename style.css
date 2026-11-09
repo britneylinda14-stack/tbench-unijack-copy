@@ -314,3 +314,16 @@ h2{letter-spacing:-.046em}
 #routing .routing-panel>p{min-height:45px;line-height:1.55}
 @media(max-width:720px){#routing .approved-routing-graphic{min-width:690px}#routing .routing-switch{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}#routing .routing-switch button{text-align:left;font-size:11px;white-space:normal;min-width:0}}
 @media(prefers-reduced-motion:reduce){#routing .approved-path{transition:none}}
+
+/* Replace angled gallery crops with exact, straight board images from the approved attachment.
+   Keep card sizes, labels and content unchanged. */
+.product-cards .photo-mercury,.product-cards .photo-peri{display:flex;align-items:center;justify-content:center}
+.product-cards .photo-mercury>img,.product-cards .photo-peri>img{
+ position:static!important;inset:auto!important;left:auto!important;top:auto!important;
+ width:auto!important;height:auto!important;max-width:95%!important;max-height:92%!important;
+ padding:0!important;margin:0!important;clip-path:none!important;
+ object-fit:contain!important;transform:none!important;transform-origin:center!important;
+ mix-blend-mode:multiply;
+}
+.product-cards .photo-mercury>img{height:90%!important;width:auto!important;max-height:90%!important}
+.product-cards .photo-peri>img{width:94%!important;height:auto!important;max-height:78%!important}
