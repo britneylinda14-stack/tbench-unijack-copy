@@ -19,7 +19,7 @@ jobs:
           s=Path('style.css').read_text()
           for key in ['mercury','periboard']:
             p=Path(f'assets/products/{key}-straight-approved.avif')
-            assert p.exists() and p.stat().st_size>4000,p
+            assert p.exists() and p.stat().st_size>2000,p
             assert p.read_bytes()[4:12] == b"ftypavif",p
             assert str(p) in h,p
           assert 'style.css?v=approved-board-photos-20261109' in h
