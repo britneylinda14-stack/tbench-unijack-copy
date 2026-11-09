@@ -10,7 +10,7 @@
 <meta property="og:description" content="The UniJack platform, Mercury controller, PeriBoard and ERAU signal routing.">
 <meta property="og:image" content="https://britneylinda14-stack.github.io/tbench-unijack-copy/assets/gallery-1.jpg">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23080b10'/%3E%3Cpath d='M8 7v12a8 8 0 0016 0V7h-4v12a4 4 0 01-8 0V7z' fill='%2374e2f4'/%3E%3C/svg%3E">
-<link rel="stylesheet" href="./style.css?v=erau-interactive-7">
+<link rel="stylesheet" href="./style.css?v=erau-precise-8">
 <script type="importmap">{"imports":{"three":"./vendor/three.module.js","three/addons/":"./vendor/"}}</script>
 <noscript><style>.scene-controls,.insertion-control,.part-tabs,.routing-switch{display:none}</style></noscript>
 <link rel="stylesheet" href="./tbench/section-variants.css"><link rel="stylesheet" href="./tbench/shared-nav.css"><script defer src="./tbench/shared-nav.js"></script></head>
@@ -114,19 +114,23 @@ text{font-family:Arial,Helvetica,sans-serif;fill:#b6d0fa}.heading{font-size:26px
 <polyline points="270,746 1387,746" class="trace approved-path path-route" stroke="#ff862f" />
 <polyline points="270,274 455,274 455,314 928,314 949,337 1387,337" class="trace approved-path path-cross" stroke="#2fdc64" />
 <polyline points="270,308 416,308 416,341 731,341 731,428 1000,428 1000,503 1387,503" class="trace approved-path path-cross" stroke="#2fdc64" />
-<polyline points="270,614 1004,614 1004,503 1387,503" class="trace approved-path path-cross" stroke="#2fdc64" />
-<polyline points="270,430 951,430 951,597 729,597 729,613" class="trace approved-path path-loopback" stroke="#ffe11d" />
-<polyline points="270,720 730,720 730,427 950,427 950,332" class="trace approved-path path-loopback" stroke="#ffe11d" />
-<polyline points="270,463 656,463 656,513 1015,513 1015,381 1387,381" class="trace approved-path path-fanout" stroke="#129cf4" />
-<polyline points="270,510 657,510 657,540 1387,540" class="trace approved-path path-fanout" stroke="#129cf4" />
-<polyline points="270,545 657,545 657,441 1015,441 1015,413 1387,413" class="trace approved-path path-fanout" stroke="#129cf4" />
-<polyline points="270,580 657,580 657,441 1387,441" class="trace approved-path path-fanout" stroke="#129cf4" />
+
+<polyline points="1387,596 1110,596 1110,577 906,577 906,580 270,580" class="trace approved-path path-loopback" stroke="#ffe11d" />
+
+<polyline points="270,510 1005,510" class="trace approved-path path-fanout" stroke="#129cf4" />
+<polyline points="1005,510 1387,510" class="trace approved-path path-fanout" stroke="#129cf4" />
+<polyline points="1005,510 1054,510 1054,545 1387,545" class="trace approved-path path-fanout" stroke="#129cf4" />
+<polyline points="1005,510 1080,510 1080,596 1387,596" class="trace approved-path path-fanout" stroke="#129cf4" />
+<polyline points="1005,510 1108,510 1108,635 1387,635" class="trace approved-path path-fanout" stroke="#129cf4" />
+
+
+
 <polyline points="270,363 716,363 716,636 829,636" class="trace approved-path path-logic" stroke="#ff862f" stroke-dasharray="12 9"/>
 <polyline points="270,398 684,398 684,656 829,656" class="trace approved-path path-logic" stroke="#ff862f" stroke-dasharray="12 9"/>
 <polyline points="891,646 927,646 927,315 1387,315" class="trace approved-path path-logic" stroke="#ff862f" stroke-dasharray="12 9"/>
 </g>
-<circle cx="731" cy="429" r="5.5" fill="#ffe11d"/><circle cx="730" cy="596" r="5.5" fill="#ffe11d"/>
-<circle cx="658" cy="541" r="6" fill="#129cf4"/><circle cx="658" cy="577" r="6" fill="#129cf4"/>
+<circle cx="1005" cy="510" r="7" fill="#129cf4"/>
+
 <circle cx="927" cy="315" r="6" fill="#ff862f"/>
 <g id="logic-gate-symbol" transform="translate(574 553)"><path class="gate-shape" d="M255 75H275A30 30 0 0 1 275 135H255Z"/></g>
 <text id="erau-gate-caption" x="863" y="706" class="small" text-anchor="middle">AND</text><text id="logic-expression" x="936" y="706" class="small" text-anchor="start"></text>
@@ -142,5 +146,5 @@ text{font-family:Arial,Helvetica,sans-serif;fill:#b6d0fa}.heading{font-size:26px
 <section class="section contact-section" id="contact"><div class="eyebrow">CONTACT TBENCH</div><div class="contact-grid"><h2>Explore UniJack<br><span>with TBench.</span></h2><div><p>For product specifications, application questions or integration discussions, connect with TBench directly. You can also follow the Crowd Supply campaign for updates.</p><div class="contact-actions"><a class="button primary" href="https://www.tbenchsolutions.com/products/unijack/" target="_blank" rel="noopener">Contact TBench</a><a class="button" href="https://www.crowdsupply.com/tbench-solutions/unijack-and-mercury-module" target="_blank" rel="noopener">Crowd Supply updates</a></div></div></div><details class="evidence-details"><summary>Technical notes &amp; sources</summary><div><p>Product descriptions and specifications are published by TBench on its <a href="https://www.tbenchsolutions.com/products/unijack/" target="_blank" rel="noopener">UniJack product page</a> and <a href="https://www.crowdsupply.com/tbench-solutions/unijack-and-mercury-module" target="_blank" rel="noopener">Crowd Supply campaign</a>. They remain vendor-stated, with no independent hardware validation supplied for this website.</p><p>The 3D views use the detailed photo-based reconstruction, with raised chips, open connector shells, contact pins and board materials informed by the campaign photographs. Module and connector proportions use reference dimensions; board outlines, component heights, housing lengths and placement remain estimates. The fitted connector part numbers are unconfirmed. This is an illustrative model, not measured CAD. Signal animations explain a concept; their paths, speeds and colors do not represent hardware measurements. No product certification or timing guarantee is claimed.</p><p>Photography credited to TBench Solutions / Crowd Supply. Product images and diagrams are provided for information; confirm specifications and availability with TBench.</p></div></details></section>
 </main>
 <footer class="footer"><a class="brand" href="#" aria-label="TBench Solutions home"><img class="brand-logo" src="./assets/tbench-official-logo.svg" alt="TBench Solutions" width="820" height="318" decoding="async"></a><span>UniJack · TBench Solutions</span><a href="tel:+494021979813">+49 40 21979813</a><a href="https://www.tbenchsolutions.com/" target="_blank" rel="noopener">Official TBench website</a></footer>
-<script type="module" src="./app.js?v=erau-interactive-7"></script>
+<script type="module" src="./app.js?v=erau-precise-8"></script>
 </body></html>

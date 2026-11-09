@@ -147,7 +147,7 @@ document.querySelectorAll('[data-route]').forEach(button=>button.addEventListene
  if(mode==='logic'){updateGate();return;}
  document.querySelector('#signal-input-direction').textContent='IN / OUT · GROUP 10 + 11';
  document.querySelector('#signal-output-direction').textContent='IN / OUT · GROUP 10 + 11';
- const descriptions={route:'Channels follow parallel direct routes through ERAU between module and peripherals; routing is bi-directional.',cross:'ERAU can cross-route channels between groups and assign inputs to different output channels.',fanout:'One input channel fans out to several output channels through ERAU.',loopback:'A channel loops through ERAU and returns to the module; paths are configurable.'};
+ const descriptions={route:'Channels follow parallel direct routes through ERAU between module and peripherals; routing is bi-directional.',cross:'Cross-route connections are shown without Group X1 CH3.',fanout:'One source signal (Group X1 CH0) branches to multiple peripheral channels.',loopback:'A peripheral channel finds its way back to the corresponding module input without a circular loop.'};
  routingDescription.textContent=descriptions[mode];
  signalDiagram.setAttribute('aria-label',descriptions[mode]);
  const svg=signalDiagram.querySelector('.erau-map');if(svg)svg.setAttribute('aria-label',descriptions[mode]);
