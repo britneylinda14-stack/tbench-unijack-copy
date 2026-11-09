@@ -222,8 +222,8 @@ h2{letter-spacing:-.046em}
 .product-cards .photo-window{background:#e5eff1;height:292px}
 .product-cards .photo-window img{padding:17px;object-fit:contain;mix-blend-mode:multiply;transition:transform .25s ease}
 .product-cards .photo-base img{transform:scale(.97)}
-.product-cards .photo-mercury img{transform:rotate(0deg) scale(.92)}
-.product-cards .photo-peri img{transform:rotate(0deg) scale(.92)}
+.product-cards .photo-mercury img{transform:rotate(3.7deg) scale(.92)}
+.product-cards .photo-peri img{transform:rotate(2.6deg) scale(.92)}
 .footer{gap:18px}
 @media(max-width:1050px){.routing-switch{gap:8px 12px}.routing-switch button{font-size:11px}.product-cards .photo-window{height:255px}}
 @media(max-width:720px){
@@ -234,8 +234,8 @@ h2{letter-spacing:-.046em}
  .signal-pins{gap:8px}
  .routing-panel>p{font-size:13px}
  .product-cards .photo-window{height:clamp(235px,66vw,345px)}
- .product-cards .photo-mercury img{transform:rotate(0deg) scale(1.06)}
- .product-cards .photo-peri img{transform:rotate(0deg) scale(.98)}
+ .product-cards .photo-mercury img{transform:rotate(3.7deg) scale(1.06)}
+ .product-cards .photo-peri img{transform:rotate(2.6deg) scale(.98)}
  .venus-family{align-items:stretch;flex-direction:column;gap:10px}
  .venus-family .eyebrow{margin-right:0}
  .venus-family a{justify-content:space-between}
