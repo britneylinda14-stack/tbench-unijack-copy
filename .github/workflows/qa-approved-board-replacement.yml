@@ -18,9 +18,9 @@ jobs:
           h=Path('index.html').read_text()
           s=Path('style.css').read_text()
           for key in ['mercury','periboard']:
-            p=Path(f'assets/products/{key}-straight-approved.jpg')
+            p=Path(f'assets/products/{key}-straight-approved.avif')
             assert p.exists() and p.stat().st_size>4000,p
-            assert p.read_bytes().startswith(bytes.fromhex("ffd8ff")),p
+            assert p.read_bytes()[4:12] == b"ftypavif",p
             assert str(p) in h,p
           assert 'style.css?v=approved-board-photos-20261109' in h
           assert 'transform:none!important' in s
