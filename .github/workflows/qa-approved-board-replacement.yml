@@ -1,0 +1,82 @@
+name: Verify approved board photo replacements
+on:
+  push:
+    branches: [fix/use-approved-straight-board-photos-20261109]
+permissions:
+  contents: read
+jobs:
+  qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify approved photo assets and references
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          from PIL import Image
+          h=Path('index.html').read_text()
+          s=Path('style.css').read_text()
+          for key in ['mercury','periboard']:
+            p=Path(f'assets/products/{key}-straight-approved.jpg')
+            assert p.exists() and p.stat().st_size>4000,p
+            im=Image.open(p);im.verify()
+            assert str(p) in h,p
+          assert 'style.css?v=approved-board-photos-20261109' in h
+          assert 'transform:none!important' in s
+          print('PASS assets, dimensions and revised CSS')
+          PY
+      - name: Install Chromium
+        run: |
+          npm install --no-save --no-package-lock playwright@1.55.0
+          npx playwright install chromium
+      - name: Check cards at mobile tablet and desktop
+        run: |
+          set -e
+          python3 -m http.server 4173 >/tmp/site.log 2>&1 &
+          cat > qa.cjs <<'JS'
+          const {chromium}=require('playwright'),assert=require('node:assert/strict');
+          (async()=>{
+            const browser=await chromium.launch({args:['--no-sandbox','--disable-dev-shm-usage']});
+            try{
+              for(const width of [390,768,1440]){
+                const page=await browser.newPage({viewport:{width,height:900},reducedMotion:'reduce'});
+                const errors=[];page.on('pageerror',e=>errors.push(e.message));
+                await page.route('**/vendor/**',r=>r.abort());
+                await page.goto('http://127.0.0.1:4173/',{waitUntil:'domcontentloaded'});
+                await page.locator('.products-section').scrollIntoViewIfNeeded();
+                for(const key of ['mercury','peri']){
+                  const img=page.locator('.product-cards .photo-'+key+' img');
+                  await img.evaluate(el=>el.loading='eager');
+                  await img.evaluate(el=>el.decode());
+                  const v=await img.evaluate(el=>{
+                    const r=el.getBoundingClientRect(),parent=el.closest('.photo-window').getBoundingClientRect();
+                    return {src:el.currentSrc,loaded:el.complete&&el.naturalWidth>0,
+                      transform:getComputedStyle(el).transform,x:r.x,y:r.y,width:r.width,height:r.height,
+                      px:parent.x,py:parent.y,pw:parent.width,ph:parent.height}
+                  });
+                  assert.equal(v.loaded,true,key);
+                  assert.match(v.src,/straight-approved\.jpg/);
+                  assert.equal(v.transform,'none');
+                  assert.ok(v.width>40&&v.height>40);
+                  assert.ok(v.x>=v.px-1&&v.x+v.width<=v.px+v.pw+1,'horizontal fit '+key+JSON.stringify(v));
+                  assert.ok(v.y>=v.py-1&&v.y+v.height<=v.py+v.ph+1,'vertical fit '+key+JSON.stringify(v));
+                }
+                const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
+                assert.ok(overflow<=2,'overflow '+width+': '+overflow);
+                assert.deepEqual(errors,[]);
+                await page.screenshot({path:'approved-board-photos-'+width+'.png',animations:'disabled'});
+                console.log('PASS board photo replacements',width);
+                await page.close();
+              }
+            }finally{await browser.close()}
+          })().catch(e=>{console.error(e);process.exit(1)});
+          JS
+          node qa.cjs
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: approved-straight-board-previews
+          path: approved-board-photos-*.png
+          if-no-files-found: ignore
