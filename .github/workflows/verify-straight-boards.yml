@@ -1,0 +1,70 @@
+name: Verify straight product board photographs
+on:
+  push:
+    branches: [fix/straight-mercury-periboard-images-20261109]
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check CSS contains no product-card rotation
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          s=Path("style.css").read_text()
+          for cls in ["mercury","peri"]:
+            rules=re.findall(r"\.product-cards \.photo-"+cls+r" img\{([^}]*)\}",s)
+            assert len(rules)==2,(cls,rules)
+            assert all("rotate(0deg)" in r for r in rules),cls
+          print("PASS zero rotation at desktop and mobile")
+          PY
+      - name: Install Chromium
+        run: |
+          npm install --no-save --no-package-lock playwright@1.55.0
+          npx playwright install chromium
+      - name: Verify page and capture cards
+        run: |
+          set -e
+          python3 -m http.server 4173 >/tmp/straight-server.log 2>&1 &
+          cat > cards.cjs <<'JS'
+          const {chromium}=require('playwright'), assert=require('node:assert/strict');
+          (async()=>{
+            const browser=await chromium.launch({args:['--no-sandbox','--disable-dev-shm-usage']});
+            try {
+              for(const width of [390,768,1440]){
+                const page=await browser.newPage({viewport:{width,height:900},reducedMotion:'reduce'});
+                const errors=[];page.on('pageerror',e=>errors.push(e.message));
+                await page.route('**/vendor/**',r=>r.abort());
+                await page.goto('http://127.0.0.1:4173/',{waitUntil:'domcontentloaded'});
+                for(const cls of ['mercury','peri']){
+                  const img=page.locator('.product-cards .photo-'+cls+' img');
+                  const d=await img.evaluate(x=>({transform:getComputedStyle(x).transform,loaded:x.complete&&x.naturalWidth>0}));
+                  assert.equal(d.loaded,true,cls+' photo missing');
+                  const matrix=d.transform.match(/^matrix\(([^)]+)\)$/);
+                  assert.ok(matrix,'unexpected transform '+d.transform);
+                  const values=matrix[1].split(',').map(x=>+x.trim());
+                  assert.ok(Math.abs(values[1])<0.0001&&Math.abs(values[2])<0.0001,'tilted '+cls+': '+d.transform);
+                }
+                const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
+                assert.ok(overflow<=2,'page overflow '+width);
+                assert.deepEqual(errors,[]);
+                await page.locator('.products-section').scrollIntoViewIfNeeded();
+                await page.screenshot({path:'straight-'+width+'.png',fullPage:false,animations:'disabled'});
+                console.log('PASS product cards '+width);
+                await page.close();
+              }
+            } finally{await browser.close()}
+          })().catch(e=>{console.error(e);process.exit(1)});
+          JS
+          node cards.cjs
+      - name: Save screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: straight-product-cards
+          path: straight-*.png
+          if-no-files-found: ignore
