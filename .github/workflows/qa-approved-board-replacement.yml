@@ -56,7 +56,7 @@ jobs:
                       px:parent.x,py:parent.y,pw:parent.width,ph:parent.height}
                   });
                   assert.equal(v.loaded,true,key);
-                  assert.match(v.src,/straight-approved\.jpg/);
+                  assert.match(v.src,/straight-approved\.avif/);
                   assert.equal(v.transform,'none');
                   assert.ok(v.width>40&&v.height>40);
                   assert.ok(v.x>=v.px-1&&v.x+v.width<=v.px+v.pw+1,'horizontal fit '+key+JSON.stringify(v));
