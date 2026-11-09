@@ -1,0 +1,81 @@
+name: Validate transparent TBench logo across site
+on:
+  push:
+    branches: [brand/approved-transparent-logo-20261109]
+permissions:
+  contents: read
+jobs:
+  logo-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check SVG and page references
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+          p=Path('assets/tbench-official-logo.svg')
+          q=Path('assets/tbench-logo-dark.svg')
+          for file in (p,q):
+            root=ET.parse(file).getroot()
+            assert root.attrib['viewBox']=='0 0 2048 659',file
+            assert not any('rect' in x.tag for x in root.iter()),'Logo must remain transparent'
+          assert '#FFFFFF' in p.read_text()
+          assert '#172F54' in q.read_text()
+          paths=['index.html','tbench/index.html','tbench/academia/index.html','tbench/enterprise/index.html','tbench/builders/index.html']+[f'tbench/products/{p}/index.html' for p in ['mercury','periboard','venus-mxo4','venus-mxo5']]
+          for path in paths:
+            s=Path(path).read_text()
+            assert s.count('tbench-official-logo.svg?v=20261109')==2,path
+            assert s.count('width="2048" height="659"')>=2,path
+          print('PASS: 9 pages / 18 references, transparent white & navy assets')
+          PY
+      - name: Install browser
+        run: |
+          npm install --no-save --no-package-lock playwright@1.55.0
+          npx playwright install chromium
+      - name: Verify every logo and responsive layout
+        run: |
+          set -e
+          python3 -m http.server 4173 >/tmp/tbench-logo-server.log 2>&1 &
+          cat > verify-logo.cjs <<'JS'
+          const {chromium}=require('playwright'),assert=require('node:assert/strict');
+          (async()=>{
+            const browser=await chromium.launch({args:['--no-sandbox','--disable-dev-shm-usage']});
+            const urls=['/','/tbench/','/tbench/academia/','/tbench/enterprise/','/tbench/builders/','/tbench/products/mercury/','/tbench/products/periboard/','/tbench/products/venus-mxo4/','/tbench/products/venus-mxo5/'];
+            try{
+              for(const path of urls){
+                for(const width of [390,1024,1440]){
+                  const page=await browser.newPage({viewport:{width,height:900},reducedMotion:'reduce'});
+                  const errors=[];page.on('pageerror',e=>errors.push(e.message));
+                  if(path==='/') await page.route('**/vendor/**',r=>r.abort());
+                  const response=await page.goto('http://127.0.0.1:4173'+path,{waitUntil:'domcontentloaded'});
+                  assert.equal(response.status(),200,path);
+                  const logos=page.locator('img[src*="tbench-official-logo.svg"]');
+                  assert.equal(await logos.count(),2,path);
+                  for(const logo of await logos.all()){
+                    const x=await logo.evaluate(img=>({loaded:img.complete&&img.naturalWidth===2048&&img.naturalHeight===659,w:img.getBoundingClientRect().width,h:img.getBoundingClientRect().height}));
+                    assert.ok(x.loaded,'Logo loading failed '+path);
+                    assert.ok(x.w>90&&x.w<180&&x.h>25&&x.h<70,'Logo sizing '+JSON.stringify(x));
+                  }
+                  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
+                  assert.ok(overflow<=2,'page overflow '+path+' '+width+': '+overflow);
+                  assert.deepEqual(errors,[],'JS errors');
+                  if((path==='/'||path==='/tbench/')&&(width===390||width===1440)){
+                    await page.screenshot({path:'approved-logo-'+(path==='/'?'unijack':'tbench')+'-'+width+'.png',animations:'disabled'});
+                  }
+                  console.log('PASS',path,width);
+                  await page.close();
+                }
+              }
+            }finally{await browser.close()}
+          })().catch(e=>{console.error(e);process.exit(1)});
+          JS
+          node verify-logo.cjs
+      - name: Save header screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: logo-approval-qa
+          path: approved-logo-*.png
+          if-no-files-found: ignore
