@@ -40,8 +40,11 @@ jobs:
                 const errors=[];page.on('pageerror',e=>errors.push(e.message));
                 await page.route('**/vendor/**',r=>r.abort());
                 await page.goto('http://127.0.0.1:4173/',{waitUntil:'domcontentloaded'});
+                await page.locator('.products-section').scrollIntoViewIfNeeded();
                 for(const cls of ['mercury','peri']){
                   const img=page.locator('.product-cards .photo-'+cls+' img');
+                  await img.evaluate(x=>x.loading='eager');
+                  await img.evaluate(x=>x.decode());
                   const d=await img.evaluate(x=>({transform:getComputedStyle(x).transform,loaded:x.complete&&x.naturalWidth>0}));
                   assert.equal(d.loaded,true,cls+' photo missing');
                   const matrix=d.transform.match(/^matrix\(([^)]+)\)$/);
