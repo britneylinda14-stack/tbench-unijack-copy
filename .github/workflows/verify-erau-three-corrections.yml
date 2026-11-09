@@ -1,0 +1,82 @@
+name: Verify three ERAU routing corrections
+on:
+  push:
+    branches: [fix/erau-three-precise-routing-corrections]
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate route geometry and scripts
+        run: |
+          node --check app.js
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          h=Path('index.html').read_text()
+          paths=re.findall(r'<polyline points="([^"]+)" class="trace approved-path path-([a-z]+)"',h)
+          groups={}
+          for pts,mode in paths: groups.setdefault(mode,[]).append(pts)
+          assert {x:len(y) for x,y in groups.items()}=={'route':3,'cross':2,'loopback':1,'fanout':5,'logic':3},groups
+          assert not any(x.startswith('270,614') for x in groups['cross'])
+          fan=groups['fanout']
+          assert len([x for x in fan if x.startswith('270,')])==1
+          assert fan[0].startswith('270,510')
+          assert all(x.startswith('1005,510') for x in fan[1:])
+          assert groups['loopback'][0].startswith('1387,596')
+          assert groups['loopback'][0].endswith('270,580')
+          assert 'erau-interactive-7' not in h
+          assert 'id="logic-gate"' in h
+          print('PASS precise route geometry')
+          PY
+      - name: Browser setup
+        run: |
+          npm install --no-save --no-package-lock playwright@1.55.0
+          npx playwright install chromium
+      - name: Verify route interactivity at three widths
+        run: |
+          set -e
+          python3 -m http.server 4173 >/tmp/erauserver.log 2>&1 &
+          cat > check.cjs <<'JS'
+          const {chromium}=require('playwright'),assert=require('node:assert/strict');
+          (async()=>{
+            const browser=await chromium.launch({args:['--no-sandbox','--disable-dev-shm-usage']});
+            try{
+              for(const width of [390,768,1440]){
+                const page=await browser.newPage({viewport:{width,height:900},reducedMotion:'reduce'});
+                const errors=[];page.on('pageerror',e=>errors.push(e.message));
+                await page.route('**/vendor/**',r=>r.abort());
+                await page.goto('http://127.0.0.1:4173/',{waitUntil:'domcontentloaded'});
+                await page.waitForFunction(()=>document.documentElement.dataset.signalReady==='yes');
+                for(const mode of ['route','cross','fanout','loopback','logic']){
+                  await page.locator('[data-route="'+mode+'"]').click();
+                  assert.equal(await page.locator('.signal-diagram').getAttribute('data-signal-mode'),mode);
+                  assert.equal(await page.locator('.path-'+mode).first().evaluate(x=>getComputedStyle(x).opacity),'1');
+                }
+                for(const gate of ['AND','NAND','OR','NOR','XOR','NOT']){
+                  await page.locator('#logic-gate').selectOption(gate);
+                  assert.equal(await page.locator('.signal-diagram').getAttribute('data-logic-gate'),gate);
+                }
+                const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
+                assert.ok(overflow<=2,'page overflow at '+width+': '+overflow);
+                assert.deepEqual(errors,[]);
+                await page.locator('[data-route="fanout"]').click();
+                await page.locator('#routing').scrollIntoViewIfNeeded();
+                await page.screenshot({path:'erau-fanout-'+width+'.png',animations:'disabled'});
+                console.log('PASS interactive ERAU at',width);
+                await page.close();
+              }
+            }finally{await browser.close()}
+          })().catch(e=>{console.error(e);process.exit(1)});
+          JS
+          node check.cjs
+      - name: Save evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: erau-corrections-review
+          path: erau-fanout-*.png
+          if-no-files-found: ignore
