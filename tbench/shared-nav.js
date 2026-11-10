@@ -6,6 +6,17 @@
   const toggle=header.querySelector('#tb-menu-toggle');
   const products=header.querySelector('#tb-products-button');
   const productsList=header.querySelector('#tb-product-links');
+  // Keep the two company editorial pages accessible from every existing header.
+  const companyRoot=new URL('./',document.currentScript.src);
+  const about=[...menu.querySelectorAll('a')].find(link=>link.textContent.trim()==='About');
+  if(about){
+    [['Research','research/'],['News','news/']].forEach(([label,path])=>{
+      if([...menu.querySelectorAll('a')].some(a=>a.textContent.trim()===label))return;
+      const link=document.createElement('a');link.textContent=label;link.href=new URL(path,companyRoot).href;
+      menu.insertBefore(link,about);
+    });
+  }
+
   if(!menu||!toggle||!products||!productsList)return;
   const setProducts=open=>{productsList.hidden=!open;products.setAttribute('aria-expanded',String(open))};
   const setMenu=open=>{
