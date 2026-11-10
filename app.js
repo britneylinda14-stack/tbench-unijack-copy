@@ -133,8 +133,8 @@ function updateGate(){
  const caption=document.querySelector('#erau-gate-caption');if(caption)caption.textContent=logicSelect.value;
  document.querySelector('#logic-expression').textContent=gate.expression;
  routingDescription.textContent=(logicSelect.value==='NOT'?'Input A passes through ERAU. ':'Inputs A and B pass through ERAU. ')+gate.caption;
- document.querySelector('#signal-output-direction').textContent='OUT · '+gate.expression+' · GROUP 10 / 11';
- document.querySelector('#signal-input-direction').textContent=logicSelect.value==='NOT'?'IN · A · GROUP 10':'IN · A / B · GROUP 10 / 11';
+ document.querySelector('#signal-output-direction').textContent='GROUPS Y';
+ document.querySelector('#signal-input-direction').textContent='GROUPS X';
  signalDiagram.dataset.logicGate=logicSelect.value;
  const gateLabel=signalDiagram.querySelector('.erau-inline-gate-label');if(gateLabel)gateLabel.textContent=logicSelect.value+' / LOGIC';
  signalDiagram.setAttribute('aria-label','ERAU logical '+logicSelect.value+' operation: '+gate.expression+(logicSelect.value==='NOT'?' using one input A':' using inputs A and B'));
@@ -145,8 +145,8 @@ document.querySelectorAll('[data-route]').forEach(button=>button.addEventListene
  signalDiagram.dataset.signalMode=mode;
  logicOptions.hidden=mode!=='logic';
  if(mode==='logic'){updateGate();return;}
- document.querySelector('#signal-input-direction').textContent='IN / OUT · GROUP 10 + 11';
- document.querySelector('#signal-output-direction').textContent='IN / OUT · GROUP 10 + 11';
+ document.querySelector('#signal-input-direction').textContent='GROUPS X';
+ document.querySelector('#signal-output-direction').textContent='GROUPS Y';
  const descriptions={route:'Channels follow parallel direct routes through ERAU between module and peripherals; routing is bi-directional.',cross:'Cross-route connections are shown without Group X1 CH3.',fanout:'One source signal (Group X1 CH0) branches to multiple peripheral channels.',loopback:'A single signal travels from a module channel through ERAU, curves around and returns on a lower path to the module input, as in Jens’s loop example.'};
  routingDescription.textContent=descriptions[mode];
  signalDiagram.setAttribute('aria-label',descriptions[mode]);
