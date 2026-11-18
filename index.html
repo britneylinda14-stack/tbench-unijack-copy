@@ -12,7 +12,7 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23080b10'/%3E%3Cpath d='M8 7v12a8 8 0 0016 0V7h-4v12a4 4 0 01-8 0V7z' fill='%2374e2f4'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="./tokens.css?v=unijack-2.0">
 <link rel="stylesheet" href="./tbench/shared-nav.css?v=apple-16">
-<link rel="stylesheet" href="./style.css?v=unijack-2.0-shared-nav">
+<link rel="stylesheet" href="./style.css?v=unijack-2.0-routing-board">
 <script>
 // Decide the layout before first paint: the pinned scroll story needs WebGL
 // (with reduced motion it steps between stops); otherwise the static layout.
@@ -20,15 +20,15 @@
 d.dataset.saveData=s?'on':'off';d.dataset.motion=r?'reduced':'full';d.dataset.story=!s&&!!window.WebGLRenderingContext?'on':'off';})(document.documentElement);
 </script>
 <!-- The page's own modules are versioned here, so a browser never runs a stale cached copy after an update. -->
-<script type="importmap">{"imports":{"three":"./vendor/three.module.min.js","three/addons/":"./vendor/","./story.js":"./story.js?v=unijack-2.0-fanout-horizontal","./motion.js":"./motion.js?v=unijack-2.0","./story-scene.js":"./story-scene.js?v=unijack-2.0","./detailed-model.js":"./detailed-model.js?v=unijack-2.0","./material-finish.js":"./material-finish.js?v=unijack-2.0","./dimensions.js":"./dimensions.js?v=unijack-2.0"}}</script>
+<script type="importmap">{"imports":{"three":"./vendor/three.module.min.js","three/addons/":"./vendor/","./story.js":"./story.js?v=unijack-2.0-routing-board","./motion.js":"./motion.js?v=unijack-2.0-routing-board","./story-scene.js":"./story-scene.js?v=unijack-2.0-routing-board","./detailed-model.js":"./detailed-model.js?v=unijack-2.0","./material-finish.js":"./material-finish.js?v=unijack-2.0","./dimensions.js":"./dimensions.js?v=unijack-2.0"}}</script>
 <link rel="modulepreload" href="./app.js?v=unijack-2.0">
-<link rel="modulepreload" href="./story.js?v=unijack-2.0-fanout-horizontal">
-<link rel="modulepreload" href="./motion.js?v=unijack-2.0">
+<link rel="modulepreload" href="./story.js?v=unijack-2.0-routing-board">
+<link rel="modulepreload" href="./motion.js?v=unijack-2.0-routing-board">
 <script>
 // Start three.js, the scene modules and the tiny texture previews with the page
 // (not after it), unless the visitor has Save-Data on.
 (function(d){if(d.documentElement.dataset.saveData==='on')return;var h=d.head;
-['./vendor/three.module.min.js','./vendor/three.core.min.js','./story-scene.js?v=unijack-2.0','./detailed-model.js?v=unijack-2.0','./material-finish.js?v=unijack-2.0','./dimensions.js?v=unijack-2.0','./vendor/RoundedBoxGeometry.js','./vendor/BufferGeometryUtils.js'].forEach(function(u){var l=d.createElement('link');l.rel='modulepreload';l.href=u;h.appendChild(l);});
+['./vendor/three.module.min.js','./vendor/three.core.min.js','./story-scene.js?v=unijack-2.0-routing-board','./detailed-model.js?v=unijack-2.0','./material-finish.js?v=unijack-2.0','./dimensions.js?v=unijack-2.0','./vendor/RoundedBoxGeometry.js','./vendor/BufferGeometryUtils.js'].forEach(function(u){var l=d.createElement('link');l.rel='modulepreload';l.href=u;h.appendChild(l);});
 ['gallery-3','gallery-4','gallery-2'].forEach(function(n){var l=d.createElement('link');l.rel='preload';l.as='image';l.crossOrigin='anonymous';l.href='./assets/textures/'+n+'-tiny.webp';h.appendChild(l);});})(document);
 </script>
 <noscript><style>.scene-controls,.insertion-control,.part-tabs,.routing-switch{display:none}</style></noscript>
@@ -60,6 +60,10 @@ d.dataset.saveData=s?'on':'off';d.dataset.motion=r?'reduced':'full';d.dataset.st
 <div class="hero-copy"><div class="eyebrow"><span class="mini-line"></span> THE UNIJACK ECOSYSTEM</div><h1>One interface.<br><span>Full control.</span></h1><p class="hero-description">A modular hardware platform connecting your controller, I/O and peripherals through ERAU.</p><div class="hero-actions"><a class="button primary" href="#platform">Explore UniJack</a><a class="text-link" href="https://www.crowdsupply.com/tbench-solutions/unijack-and-mercury-module" target="_blank" rel="noopener">Follow on Crowd Supply <span class="external-icon" aria-hidden="true">↗</span></a></div><div class="hero-micro"><span>UNIJACK / MERCURY / PERIBOARD</span><span>TBENCH SOLUTIONS</span></div></div>
 <div class="product-stage" id="product-stage" role="group" aria-label="Illustrative 3D assembly of UniJack, Mercury Module and PeriBoard">
 <img class="scene-fallback" src="./assets/gallery-1.jpg" srcset="./assets/responsive/gallery-1-1000.webp 1000w, ./assets/responsive/gallery-1-1800.webp 1800w" sizes="(max-width: 959px) 100vw, 62vw" loading="lazy" alt="UniJack assembly with Mercury Module and PeriBoard, photographed by TBench" width="3000" height="1688">
+<figure class="routing-board-fallback">
+ <figcaption>ERAU routing fabric</figcaption>
+ <img src="./assets/responsive/unijack-720.webp?v=3" srcset="./assets/responsive/unijack-720.webp?v=3 720w, ./assets/responsive/unijack-1200.webp?v=3 1200w" sizes="(max-width: 959px) 72vw, min(62vw, 936px)" loading="lazy" alt="Top-down photograph of the UniJack base board" width="1200" height="592">
+</figure>
 <div class="stage-heading"><span>UNIJACK™</span><span class="stage-angle">3D PRODUCT VIEW</span></div>
 <div class="stage-callout" id="stage-callout"><span class="callout-line"></span><span id="callout-label">UniJack ecosystem<span>PLATFORM · CONTROLLER · PERIPHERALS</span></span></div>
 <div class="stage-floor" aria-hidden="true"></div>

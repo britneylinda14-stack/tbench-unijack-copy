@@ -49,6 +49,7 @@ stage.prepend(host);
 // ---------- Annotations ----------
 // Every word below already exists on the page (see the storyboard sources).
 // The layer is decorative (aria-hidden); the same words are in the document.
+const ROUTING_ANNOTATIONS = {caption:['ERAU routing fabric','ILLUSTRATIVE SIGNAL PATHS'], items:[{at:'erau', name:'ERAU signal routing', d:[250,-120], m:['above',0]}]};
 const ANNOTATIONS = {
  assembled:{caption:['UniJack ecosystem','PLATFORM · CONTROLLER · PERIPHERALS'], items:[
   {at:'baseBack', name:'UniJack base platform', d:[-120,-100], m:['below',0,1,0]},
@@ -64,7 +65,8 @@ const ANNOTATIONS = {
  insertion:{caption:['Mercury insertion'], items:[]},
  separate:{caption:['Mercury insertion'], items:[{at:'socket', name:'Separate', d:[-170,-60], m:['above',0,1,0]}]},
  connected:{caption:['Mercury insertion'], items:[{at:'socket', name:'Connected', d:[-170,-60], m:['above',0,1,0]}]},
- routing:{caption:['ERAU routing fabric','ILLUSTRATIVE SIGNAL PATHS'], items:[{at:'erau', name:'ERAU signal routing', d:[250,-120], m:['above',0]}]},
+ 'routing-preview':ROUTING_ANNOTATIONS,
+ routing:ROUTING_ANNOTATIONS,
  'hw-base':{items:[{at:'base', name:'UniJack™', d:[80,-190], m:['below',0]}]},
  'hw-mercury':{items:[{at:'mercury', name:'Mercury Module', d:[90,-160], m:['above',0]}]},
  'hw-peri':{items:[{at:'peri', name:'PeriBoard', d:[90,-150], m:['above',0]}]}
@@ -512,6 +514,7 @@ function computeFrame(){
 function frameScene(){
  if (!storyOn) return;
  frameNow = computeFrame();
+ stage.style.setProperty('--routing-board-top', frameNow.top + 'px');
  placeGlow(frameNow);
  scene?.setFrame(frameNow.top, frameNow.bottom, frameNow.hero);
 }
@@ -570,7 +573,7 @@ function layoutHardware(){
 }
 
 // ---------- Render the non-3D parts of the stage ----------
-function viewFor(stop){ return stop === 'assembled' ? 'assembled' : stop === 'exploded' ? 'exploded' : (stop === 'routing' || tl.byName[stop]?.schematic) ? 'routing' : ''; }
+function viewFor(stop){ return stop === 'assembled' ? 'assembled' : stop === 'exploded' ? 'exploded' : (stop === 'routing-preview' || stop === 'routing' || tl.byName[stop]?.schematic) ? 'routing' : ''; }
 function setStop(stop){
  if (stop === currentStop) return;
  currentStop = stop;
@@ -695,10 +698,14 @@ function update(force = false){
  else if (sRaw > tl.end) s = tl.end;
  const step = reduced.matches;
  if (step) s = stepped(s);
+ const preview = tl.byName['routing-preview'];
+ const inPreview = s >= preview.start && s < preview.end;
+ if (inPreview) s = preview.start + .01;
  if (!force && s === sShown && h === handoffT) { travelText(); stage.style.setProperty('--board', boardShown.toFixed(3)); drawAppLines(); return; }
  const jumped = step && s !== lastSnap && lastSnap >= 0;
  lastSnap = s; sShown = s; handoffT = h;
  const pose = poseAt(tl, s);
+ const wasInPreview = currentStop === 'routing-preview';
  setStop(pose.phase === 'hardware' ? 'hardware' : pose.stop);
  stage.style.setProperty('--fade', hwRegion ? '1' : (1 - easeInOut(span(h, [0, .55]))).toFixed(3));
  stage.style.setProperty('--dim', pose.dim.toFixed(3));
@@ -707,7 +714,10 @@ function update(force = false){
  stage.dataset.visible = String(visible);
  scene?.setActive(visible && !document.hidden);
  if (!visible) layer.style.visibility = 'hidden';
- if (scene) { if (jumped) scene.crossfadeTo(s); else scene.setProgress(s, {jump: !!hwRegion !== (lastFrame?.phase === 'hardware')}); }
+ if (scene) {
+  if (jumped && !inPreview && !wasInPreview) scene.crossfadeTo(s);
+  else scene.setProgress(s, {jump: inPreview || wasInPreview || !!hwRegion !== (lastFrame?.phase === 'hardware')});
+ }
  if (!hwRegion) drawSchematic(s, h);
  syncInsertion(pose);
  travelText();

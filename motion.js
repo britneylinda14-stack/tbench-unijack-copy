@@ -44,6 +44,7 @@ export const PACING = {
  desktop: {
   assembled: {move:.20, draw:.08, hold:.20},
   exploded:  {move:.28, draw:.08, hold:.20},
+  'routing-preview': {hold:.52},
   ports:     {move:.20, draw:.08, hold:.20},
   chips:     {move:.18, draw:.08, hold:.20},
   underside: {move:.22, draw:.08, hold:.20},
@@ -59,6 +60,7 @@ export const PACING = {
  phone: {
   assembled: {move:.20, draw:.06, hold:.20},
   exploded:  {read:.28, move:.22, draw:.06, hold:.18},
+  'routing-preview': {hold:.52},
   ports:     {read:.28, move:.16, draw:.06, hold:.18},
   chips:     {move:.15, draw:.06, hold:.18},
   underside: {move:.18, draw:.06, hold:.18},
@@ -78,10 +80,12 @@ export const PACING = {
 
 // Board state at the end of each stop's move. Values carry forward.
 const START = {cam:'hero', hero:1, explode:0, insertion:1, flip:0, leave:0, dim:0};
+const ROUTING = {cam:'topDown', leave:1};
 const TARGET = {
- assembled:{cam:'heroYaw', hero:0}, exploded:{cam:'exploded', explode:1}, ports:{cam:'ports', explode:0},
+ assembled:{cam:'heroYaw', hero:0}, exploded:{cam:'exploded', explode:1},
+ 'routing-preview':{...ROUTING, explode:0}, ports:{cam:'ports', explode:0},
  chips:{cam:'chips'}, underside:{cam:'underside', flip:1}, insertion:{cam:'insertion', flip:0},
- separate:{insertion:0}, connected:{insertion:1}, routing:{cam:'topDown', leave:1}, frame:{dim:1}
+ separate:{insertion:0}, connected:{insertion:1}, routing:ROUTING, frame:{dim:1}
 };
 export const SCHEMATIC_GROUPS = ['route','cross','loopback','fanout','logic'];
 
@@ -89,7 +93,7 @@ export const SCHEMATIC_GROUPS = ['route','cross','loopback','fanout','logic'];
 export function buildTimeline(pacing){
  const list = [];
  const add = (name, {read=0, move=0, draw=0, hold=0}, extra = {}) => list.push({name, read, move, draw, hold, ...extra});
- for (const n of ['assembled','exploded','ports','chips','underside']) add(n, pacing[n]);
+ for (const n of ['assembled','exploded','routing-preview','ports','chips','underside']) add(n, pacing[n]);
  add('insertion', {move:pacing.insertion.move});
  add('separate', pacing.insertion.separate);
  add('connected', pacing.insertion.connect);
@@ -99,7 +103,9 @@ export function buildTimeline(pacing){
  add('final', {hold:pacing.schematic.finalHold}, {schematic:true});
  let at = 0, state = {...START};
  for (const stop of list) {
-  stop.from = state; state = {...state, ...(TARGET[stop.name] || {})}; stop.to = state;
+  stop.from = state; stop.to = {...state, ...(TARGET[stop.name] || {})};
+  // The still is a cutaway. The assembly sequence resumes from the exploded pose.
+  if (stop.name !== 'routing-preview') state = stop.to;
   stop.start = at; stop.readEnd = at + stop.read; stop.moveEnd = stop.readEnd + stop.move; stop.drawEnd = stop.moveEnd + stop.draw; stop.end = at = stop.drawEnd + stop.hold;
  }
  const byName = Object.fromEntries(list.map(s => [s.name, s]));
@@ -124,7 +130,8 @@ export function poseAt(tl, s){
  // The explode reads as one movement: all parts start within a few percent.
  const ex = w => a.explode + (b.explode - a.explode) * easeInOut(span(t, w));
  const dim = stop.name === 'frame' ? easeInOut(clamp01((s - stop.moveEnd) / (stop.draw || 1))) : stop.schematic ? 1 : a.dim;
- const prev = tl.stops[tl.stops.indexOf(stop) - 1];
+ const i = tl.stops.indexOf(stop), previous = tl.stops[i - 1];
+ const prev = previous?.name === 'routing-preview' ? tl.stops[i - 2] : previous;
  return {phase:'story', stop:stop.name, prev:prev ? prev.name : stop.name, camA:a.cam, camB:b.cam, camT:e, hero:mix('hero'),
   explode:{peri:ex([0,.8]), mercury:ex([.06,.86]), components:ex([.12,.92])},
   insertion:mix('insertion'), flip:mix('flip'), leave:mix('leave'), dim};
