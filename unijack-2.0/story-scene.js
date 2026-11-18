@@ -177,7 +177,8 @@ export async function createStoryScene(host,{lite=false,instant=false,timeline=n
 
  function pose(){
   const P=tl?poseAt(tl,state.p):restPose,o=state.override,w=state.weight;
-  const still=P.stop==='routing-preview';
+  const preview=P.preview??0;
+  const overrideWeight=w*(1-preview);
   const periT=P.explode.peri,mercT=P.explode.mercury,compT=lite?0:P.explode.components,leaveT=P.leave,flipT=easeInOut(P.flip);
   const ins=mercuryInsertionPose(P.insertion);
   mTarget.copy(rest.mercury).addScaledVector(EXPLODE.mercury,mercT).addScaledVector(LEAVE.mercury,leaveT).addScaledVector(FLIP.lift,flipT);
@@ -186,24 +187,24 @@ export async function createStoryScene(host,{lite=false,instant=false,timeline=n
   let tilt=-.1*mercT+ins.angle+FLIP.angle*flipT,lift=EXPLODE.components*compT;
   const hw=P.phase==='hardware';
   let cam=blendCam(keys[P.camA]||keys.hero,keys[P.camB]||keys.hero,P.camT);
-  if(o&&w>0&&!hw&&!still){
+  if(o&&overrideWeight>0&&!hw){
    const oi=mercuryInsertionPose(o.insertion??1);
    const om=rest.mercury.clone();om.x+=oi.x;om.y+=oi.y;
-   mTarget.lerp(om,w);pTarget.lerp(rest.peri,w);tilt=lerp(tilt,oi.angle,w);lift=lerp(lift,0,w);
-   cam=blendCam(cam,overrideCamera(o),easeInOut(w));
+   mTarget.lerp(om,overrideWeight);pTarget.lerp(rest.peri,overrideWeight);tilt=lerp(tilt,oi.angle,overrideWeight);lift=lerp(lift,0,overrideWeight);
+   cam=blendCam(cam,overrideCamera(o),easeInOut(overrideWeight));
   }
-  const showAll=hw||still||!o||o.focus==='all'||w<.02;
+  const showAll=hw||!o||o.focus==='all'||overrideWeight<.02;
   for(const [name,part] of [['base',base],['mercury',mercury],['peri',peri]])part.visible=showAll||o.focus===name;
   if(!mercury.position.equals(mTarget)||!peri.position.equals(pTarget)||components.position.y!==lift||mercury.rotation.z!==tilt)shadowDirty=true;
   mercury.position.copy(mTarget);peri.position.copy(pTarget);components.position.y=lift;mercury.rotation.z=tilt;
   shadow.material.opacity=(1-leaveT)*.9;shadow.visible=shadow.material.opacity>.01&&showAll;
   // Camera: story key + drag offset + a small idle drift at the top of the page.
   const idle=state.idle&&!state.paused&&!hw?Math.sin(state.time*.32)*.1*P.hero:0;
-  const el=THREE.MathUtils.clamp(cam.el+(still?0:state.dragPitch),-.2,1.545);
-  const az=cam.az+(still?0:state.dragYaw)+idle;
+  const el=THREE.MathUtils.clamp(cam.el+state.dragPitch*(1-preview),-.2,1.545);
+  const az=cam.az+state.dragYaw*(1-preview)+idle;
   // Reveal: the board rises and scales up into place; at the top of the page
   // it sits a little lower and lifts as the hero text leaves.
-  const e=still?1:easeOut(state.intro),Hc=canvas.clientHeight||1;
+  const e=lerp(easeOut(state.intro),1,preview),Hc=canvas.clientHeight||1;
   const heroT=P.hero;
   const heroDrop=Math.max(0,frameBox.hero-frameBox.top)*.62*heroT;
   const baseDy=hw?hwDy+Hc*.14*(1-e):steadyDy+heroDrop+Hc*.14*(1-e);
