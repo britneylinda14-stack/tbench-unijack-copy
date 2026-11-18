@@ -24,7 +24,7 @@ const CALLOUTS = {
  routing:'ERAU routing fabric<span>ILLUSTRATIVE SIGNAL PATHS</span>'
 };
 // Shortcut buttons → the stop they jump to.
-const SHORTCUT = {assembled:'assembled', exploded:'exploded', routing:'routed', ports:'ports', chips:'chips', underside:'underside', insertion:'separate'};
+const SHORTCUT = {assembled:'assembled', exploded:'exploded', routing:'routing', ports:'ports', chips:'chips', underside:'underside', insertion:'separate'};
 const ASSEMBLY_STOPS = new Set(['ports','chips','underside','insertion','separate','connected']);
 const INSERTION_STOPS = new Set(['insertion','separate','connected']);
 
@@ -220,7 +220,7 @@ function annoFrame(){
  return {top:r.top + f.top, bottom:r.top + r.height - f.bottom, limit:r.top + r.height - f.bottom + (compact.matches ? 0 : 4), bounds, scale, offX:c.left, offY:c.top};
 }
 function drawAnnotations(){
- if (!storyOn || !lastFrame || !scene || stage.dataset.visible === 'false' || currentStop === 'routed') { layer.style.visibility = 'hidden'; return; }
+ if (!storyOn || !lastFrame || !scene || stage.dataset.visible === 'false') { layer.style.visibility = 'hidden'; return; }
  const s = lastFrame.progress;
  const frame = annoFrame();
  // Phones: the caption sits directly above the group (labels, then board).
@@ -512,7 +512,6 @@ function computeFrame(){
 function frameScene(){
  if (!storyOn) return;
  frameNow = computeFrame();
- stage.style.setProperty('--routed-top', frameNow.top + 'px');
  placeGlow(frameNow);
  scene?.setFrame(frameNow.top, frameNow.bottom, frameNow.hero);
 }
@@ -571,7 +570,7 @@ function layoutHardware(){
 }
 
 // ---------- Render the non-3D parts of the stage ----------
-function viewFor(stop){ return stop === 'assembled' ? 'assembled' : stop === 'exploded' ? 'exploded' : (stop === 'routed' || stop === 'routing' || tl.byName[stop]?.schematic) ? 'routing' : ''; }
+function viewFor(stop){ return stop === 'assembled' ? 'assembled' : stop === 'exploded' ? 'exploded' : (stop === 'routing' || tl.byName[stop]?.schematic) ? 'routing' : ''; }
 function setStop(stop){
  if (stop === currentStop) return;
  currentStop = stop;
@@ -700,20 +699,15 @@ function update(force = false){
  const jumped = step && s !== lastSnap && lastSnap >= 0;
  lastSnap = s; sShown = s; handoffT = h;
  const pose = poseAt(tl, s);
- const wasRouted = currentStop === 'routed';
  setStop(pose.phase === 'hardware' ? 'hardware' : pose.stop);
  stage.style.setProperty('--fade', hwRegion ? '1' : (1 - easeInOut(span(h, [0, .55]))).toFixed(3));
  stage.style.setProperty('--dim', pose.dim.toFixed(3));
  root.dataset.handoff = h >= 1 ? 'done' : 'pending';
  const visible = !!hwRegion || h < 1;
- const routed = currentStop === 'routed';
  stage.dataset.visible = String(visible);
- scene?.setActive(visible && !routed && !document.hidden);
- if (!visible || routed) layer.style.visibility = 'hidden';
- if (scene && !routed) {
-  if (jumped && !wasRouted) scene.crossfadeTo(s);
-  else scene.setProgress(s, {jump: wasRouted || !!hwRegion !== (lastFrame?.phase === 'hardware')});
- }
+ scene?.setActive(visible && !document.hidden);
+ if (!visible) layer.style.visibility = 'hidden';
+ if (scene) { if (jumped) scene.crossfadeTo(s); else scene.setProgress(s, {jump: !!hwRegion !== (lastFrame?.phase === 'hardware')}); }
  if (!hwRegion) drawSchematic(s, h);
  syncInsertion(pose);
  travelText();
@@ -818,7 +812,7 @@ function init(){
  reduced.addEventListener('change', () => { lastSnap = -1; update(true); });
  new ResizeObserver(queue).observe(document.body);
  document.fonts?.ready.then(queue);
- document.addEventListener('visibilitychange', () => scene?.setActive(!document.hidden && currentStop !== 'routed' && (!storyOn || handoffT < 1 || !!hwRegion)));
+ document.addEventListener('visibilitychange', () => scene?.setActive(!document.hidden && (!storyOn || handoffT < 1 || !!hwRegion)));
  loadSchematic().then(() => { layoutOverlay(); update(true); prewarmOverlay(); });
  update(true);
  if (root.dataset.saveData === 'on') return;
@@ -847,10 +841,7 @@ export const story = {
    const name = SHORTCUT[view] || view, target = scrollForStop(name);
    const far = Math.abs(target - scrollY) > vh * 1.2;
    setSnap(target / vh);
-   if (name === 'routed' || reduced.matches || far || compact.matches) {
-    if (name !== 'routed' && currentStop !== 'routed') scene?.crossfadeTo(target / vh);
-    scrollTo({top:target, behavior:'instant'});
-   }
+   if (reduced.matches || far || compact.matches) { scene?.crossfadeTo(target / vh); scrollTo({top:target, behavior:'instant'}); }
    else scrollTo({top:target, behavior:'smooth'});
    return;
   }

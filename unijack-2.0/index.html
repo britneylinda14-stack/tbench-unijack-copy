@@ -12,7 +12,7 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23080b10'/%3E%3Cpath d='M8 7v12a8 8 0 0016 0V7h-4v12a4 4 0 01-8 0V7z' fill='%2374e2f4'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="./tokens.css?v=unijack-2.0">
 <link rel="stylesheet" href="./tbench/shared-nav.css?v=apple-16">
-<link rel="stylesheet" href="./style.css?v=unijack-2.0-routed-view">
+<link rel="stylesheet" href="./style.css?v=unijack-2.0-shared-nav">
 <script>
 // Decide the layout before first paint: the pinned scroll story needs WebGL
 // (with reduced motion it steps between stops); otherwise the static layout.
@@ -20,10 +20,10 @@
 d.dataset.saveData=s?'on':'off';d.dataset.motion=r?'reduced':'full';d.dataset.story=!s&&!!window.WebGLRenderingContext?'on':'off';})(document.documentElement);
 </script>
 <!-- The page's own modules are versioned here, so a browser never runs a stale cached copy after an update. -->
-<script type="importmap">{"imports":{"three":"./vendor/three.module.min.js","three/addons/":"./vendor/","./story.js":"./story.js?v=unijack-2.0-routed-view","./motion.js":"./motion.js?v=unijack-2.0-routed-view","./story-scene.js":"./story-scene.js?v=unijack-2.0","./detailed-model.js":"./detailed-model.js?v=unijack-2.0","./material-finish.js":"./material-finish.js?v=unijack-2.0","./dimensions.js":"./dimensions.js?v=unijack-2.0"}}</script>
-<link rel="modulepreload" href="./app.js?v=unijack-2.0-routed-view">
-<link rel="modulepreload" href="./story.js?v=unijack-2.0-routed-view">
-<link rel="modulepreload" href="./motion.js?v=unijack-2.0-routed-view">
+<script type="importmap">{"imports":{"three":"./vendor/three.module.min.js","three/addons/":"./vendor/","./story.js":"./story.js?v=unijack-2.0-fanout-horizontal","./motion.js":"./motion.js?v=unijack-2.0","./story-scene.js":"./story-scene.js?v=unijack-2.0","./detailed-model.js":"./detailed-model.js?v=unijack-2.0","./material-finish.js":"./material-finish.js?v=unijack-2.0","./dimensions.js":"./dimensions.js?v=unijack-2.0"}}</script>
+<link rel="modulepreload" href="./app.js?v=unijack-2.0">
+<link rel="modulepreload" href="./story.js?v=unijack-2.0-fanout-horizontal">
+<link rel="modulepreload" href="./motion.js?v=unijack-2.0">
 <script>
 // Start three.js, the scene modules and the tiny texture previews with the page
 // (not after it), unless the visitor has Save-Data on.
@@ -60,11 +60,10 @@ d.dataset.saveData=s?'on':'off';d.dataset.motion=r?'reduced':'full';d.dataset.st
 <div class="hero-copy"><div class="eyebrow"><span class="mini-line"></span> THE UNIJACK ECOSYSTEM</div><h1>One interface.<br><span>Full control.</span></h1><p class="hero-description">A modular hardware platform connecting your controller, I/O and peripherals through ERAU.</p><div class="hero-actions"><a class="button primary" href="#platform">Explore UniJack</a><a class="text-link" href="https://www.crowdsupply.com/tbench-solutions/unijack-and-mercury-module" target="_blank" rel="noopener">Follow on Crowd Supply <span class="external-icon" aria-hidden="true">↗</span></a></div><div class="hero-micro"><span>UNIJACK / MERCURY / PERIBOARD</span><span>TBENCH SOLUTIONS</span></div></div>
 <div class="product-stage" id="product-stage" role="group" aria-label="Illustrative 3D assembly of UniJack, Mercury Module and PeriBoard">
 <img class="scene-fallback" src="./assets/gallery-1.jpg" srcset="./assets/responsive/gallery-1-1000.webp 1000w, ./assets/responsive/gallery-1-1800.webp 1800w" sizes="(max-width: 959px) 100vw, 62vw" loading="lazy" alt="UniJack assembly with Mercury Module and PeriBoard, photographed by TBench" width="3000" height="1688">
-<div class="routed-preview"><img src="./assets/erau-routing-approved.svg?v=unijack-2.0-fanout-horizontal" width="1672" height="941" alt="ERAU schematic showing direct routing, cross-routing, loop, fan-out, and a logic operation between module and peripheral channels."></div>
 <div class="stage-heading"><span>UNIJACK™</span><span class="stage-angle">3D PRODUCT VIEW</span></div>
 <div class="stage-callout" id="stage-callout"><span class="callout-line"></span><span id="callout-label">UniJack ecosystem<span>PLATFORM · CONTROLLER · PERIPHERALS</span></span></div>
 <div class="stage-floor" aria-hidden="true"></div>
-<div class="scene-controls"><div class="segmented" role="group" aria-label="Product view"><button data-view="assembled" aria-pressed="true">Assembled</button><button data-view="exploded" aria-pressed="false">Exploded</button><button data-view="routing" aria-pressed="false">Routed</button></div><button class="icon-button" id="pause-motion" aria-label="Pause animation" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6v12M15 6v12"/></svg></button><button class="icon-button" id="reset-scene" aria-label="Reset camera"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10a8 8 0 111 8M4 4v6h6"/></svg></button></div>
+<div class="scene-controls"><div class="segmented" role="group" aria-label="Product view"><button data-view="assembled" aria-pressed="true">Assembled</button><button data-view="exploded" aria-pressed="false">Exploded</button><button data-view="routing" aria-pressed="false">Routing</button></div><button class="icon-button" id="pause-motion" aria-label="Pause animation" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6v12M15 6v12"/></svg></button><button class="icon-button" id="reset-scene" aria-label="Reset camera"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10a8 8 0 111 8M4 4v6h6"/></svg></button></div>
 <div class="scene-footnote"><span id="scene-hint">Drag to rotate · scroll to zoom</span><span>3D visualization based on product photography</span></div>
 </div>
 <div class="hero-bottom"><span>MODULAR HARDWARE. CONFIGURABLE CONNECTIONS.</span><a href="#platform" aria-label="Scroll to platform"><span class="scroll-mark" aria-hidden="true"></span> SCROLL TO EXPLORE</a></div>
@@ -178,5 +177,5 @@ text{font-family:Arial,Helvetica,sans-serif;fill:#b6d0fa}.heading{font-size:26px
 <a href="./privacy.html">Privacy Policy</a>
 <a href="./privacy.html#cookie-settings" data-cookie-settings>Cookie Settings</a>
 </nav></footer>
-<script type="module" src="./app.js?v=unijack-2.0-routed-view"></script>
+<script type="module" src="./app.js?v=unijack-2.0-fanout"></script>
 </body></html>
