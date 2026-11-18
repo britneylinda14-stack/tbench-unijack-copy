@@ -289,6 +289,7 @@ html:not([data-story=on]) .routing-section{padding-top:0}
 [data-story=on] #product-stage{position:fixed;inset:var(--header) 0 auto 0;height:calc(100vh - var(--header));height:calc(100svh - var(--header));z-index:0;pointer-events:none;opacity:var(--fade,1);transition-property:none}
 [data-story=on] #product-stage[data-visible=false]{visibility:hidden}
 [data-story=on] #product-stage .stage-canvas{inset:0;pointer-events:auto}
+[data-story=on] #product-stage :is(.stage-canvas,.scene-fallback,.routing-board-fallback){translate:0 var(--board-y,0px)}
 /* Nothing shows before the board enters; the reveal sets --intro. */
 [data-story=on] .stage-webgl{opacity:0}
 [data-story=on] .ready .stage-webgl{opacity:calc(var(--intro,0) * (1 - var(--dim,0)*.85) * var(--board,1));transition:none}
@@ -301,12 +302,10 @@ html:not([data-story=on]) .routing-section{padding-top:0}
 /* Still photograph: no WebGL, or the board was not ready in time. */
 [data-story=on] #product-stage.no-webgl::before{opacity:0;transition:opacity 300ms ease;animation:none}
 [data-story=on] #product-stage.no-webgl .scene-fallback{display:block;left:50%;top:var(--still-top,45%);width:var(--still-w,60vw);height:var(--still-h,34vw);transform:translateX(-50%);object-fit:cover;border-radius:var(--radius-lg);opacity:0;transition:opacity 300ms ease}
-[data-story=on] #product-stage.no-webgl .scene-fallback.is-loaded{opacity:1}
+[data-story=on] #product-stage.no-webgl .scene-fallback.is-loaded{opacity:calc(var(--board,1) * (1 - var(--preview,0)))}
 .routing-board-fallback{display:none}
-[data-story=on][data-stop=routing-preview] #product-stage:not(.ready) .routing-board-fallback{position:absolute;inset:var(--routing-board-top) 0 100px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;margin:0;color:var(--c-on-dark);font-size:var(--t-caption)}
+[data-story=on] #product-stage.no-webgl .routing-board-fallback{position:absolute;inset:var(--routing-board-top) 0 100px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;margin:0;color:var(--c-on-dark);font-size:var(--t-caption);opacity:calc(var(--board,1) * var(--preview,0));pointer-events:none}
 .routing-board-fallback img{width:min(72%,936px);min-height:0;object-fit:contain}
-[data-story=on][data-stop=routing-preview] #product-stage :is(.scene-fallback,.stage-webgl-snap,.scene-footnote),
-[data-story=on][data-stop=routing-preview] #product-stage::before{visibility:hidden}
 [data-story=on][data-stop=routing-preview] #product-stage .stage-canvas{pointer-events:none}
 /* Time-limit still: the "3D unavailable" notes apply only when WebGL is actually missing. */
 [data-still=timeout] #scene-hint,[data-still=timeout] .assembly-stage .assembly-note{display:none}
@@ -314,7 +313,7 @@ html:not([data-story=on]) .routing-section{padding-top:0}
 [data-story=on] .scene-controls{left:50%;bottom:30px;transform:translateX(-50%);pointer-events:auto;opacity:calc(var(--intro,1) * (1 - var(--dim,0)))}
 [data-story=on] .scene-footnote{left:var(--gutter);right:var(--gutter);bottom:6px;opacity:calc(1 - var(--dim,0))}
 [data-story=on] :is(.scene-controls,.scene-footnote){transition:visibility 0s linear var(--dur-3)}
-[data-story=on][data-chapter=assembly] :is(.scene-controls,.scene-footnote){opacity:0;visibility:hidden;transition:opacity var(--dur-2) ease,visibility 0s linear var(--dur-2)}
+[data-story=on][data-chapter=assembly] :is(.scene-controls,.scene-footnote),[data-story=on][data-stop=routing-preview] .scene-footnote{opacity:0;visibility:hidden;transition:opacity var(--dur-2) ease,visibility 0s linear var(--dur-2)}
 [data-story=on] .story-schematic{position:fixed}
 /* Fade in beside the cards once the scene has drawn the hardware pose. */
 [data-story=on] #product-stage[data-phase=hardware]{opacity:0;clip-path:inset(var(--hw-clip-top,0px) 0 var(--hw-clip-bottom,0px))}
@@ -323,12 +322,9 @@ html:not([data-story=on]) .routing-section{padding-top:0}
 @media (min-width:960px){[data-story=on] #product-stage[data-phase=hardware] .stage-canvas{-webkit-mask-image:linear-gradient(to right,#000 calc(var(--hw-right,56vw) - 96px),transparent var(--hw-right,56vw));mask-image:linear-gradient(to right,#000 calc(var(--hw-right,56vw) - 96px),transparent var(--hw-right,56vw))}}
 [data-story=on] #product-stage[data-phase=hardware] :is(.scene-controls,.scene-footnote){visibility:hidden}
 [data-story=on] #product-stage[data-phase=hardware]::before{display:none}
-/* Scroll snap markers (story.js places one per hold). */
-html[data-story=on][data-snap=on]{scroll-snap-type:y proximity}
-.story-snaps i{position:absolute;left:0;width:1px;height:1px;pointer-events:none;scroll-snap-align:start}
-
 /* ---------- Annotations: dot, thin leader, short label ---------- */
 .story-annotations{position:fixed;inset:0;z-index:8;pointer-events:none;--anno-line:rgba(245,245,247,.62);--anno-dot:var(--c-cyan);--anno-tag:var(--c-on-dark);--anno-name:var(--c-on-dark-2);--anno-single:var(--c-on-dark)}
+.story-annotations[data-band=dark]{clip-path:inset(var(--header) 0 0)}
 .story-annotations[data-band=light]{--anno-line:rgba(29,29,31,.5);--anno-dot:var(--c-cyan-deep);--anno-tag:var(--c-on-light);--anno-name:var(--c-on-light-2);--anno-single:var(--c-on-light)}
 .anno-lines{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
 .anno-leader{fill:none;stroke:var(--anno-line);stroke-width:1;stroke-dasharray:1 1;vector-effect:non-scaling-stroke}
@@ -377,6 +373,7 @@ html[data-story=on][data-snap=on]{scroll-snap-type:y proximity}
 [data-story=on] :is(#platform,.beat-routing,.beat-stats) .story-text{position:fixed;left:0;right:0;top:var(--band-top);z-index:2;max-width:none;margin:0;padding:0 var(--gutter);text-align:center;pointer-events:none;transform:translate3d(0,-200vh,0);will-change:transform}
 [data-story=on] .assembly-copy{position:fixed;left:0;right:0;top:var(--band-top);height:calc(100vh - var(--band-top));height:calc(100svh - var(--band-top));z-index:2;max-width:none;margin:0;padding:0 var(--gutter);text-align:center;pointer-events:none}
 [data-story=on] .assembly-copy>:is(.eyebrow,.part-tabs,.part-text){transform:translate3d(0,-200vh,0);will-change:transform}
+[data-story=on] :is(#platform,.beat-routing,.beat-stats) .story-text,[data-story=on] .assembly-copy>:is(.eyebrow,.part-tabs,.part-text){transition-property:none}
 [data-story=on] .assembly-copy>.eyebrow{display:block}
 [data-story=on] [data-live=true],[data-story=on] .story-text[data-live=true]>*{pointer-events:auto}
 [data-story=on] .story-text>*{max-width:var(--content);margin-inline:auto}
@@ -412,6 +409,7 @@ html[data-story=on][data-snap=on]{scroll-snap-type:y proximity}
 .application-number{position:relative}
 .application-number::after{content:'';position:absolute;left:0;bottom:calc(var(--tag-gap) - 12px);width:48px;height:1px;background:currentColor;opacity:.6;transform:scaleX(var(--line,1));transform-origin:0 50%}
 [data-story=on] .application-number::after{transform:scaleX(var(--line,0))}
+[data-story=on] #routing .approved-routing-graphic{transition:none}
 [data-story=on]:not([data-handoff=done])[data-schematic=ready] #routing .approved-routing-graphic{opacity:var(--handoff,0)}
 
 /* Wide desktop: let headlines share a line when there is room. */
