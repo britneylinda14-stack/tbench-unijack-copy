@@ -112,7 +112,8 @@ export async function createStoryScene(host,{lite=false,instant=false,timeline=n
  const hwBox={x:0,y:0,w:0,h:0};let hwDx=0,hwDy=0;
  function layoutKeys(){
   const W=canvas.clientWidth||1,H=canvas.clientHeight||1,region=Math.max(H*.3,H-frameBox.top-frameBox.bottom);
-  const cw=lite?.94:Math.min(.8,1200/W),ch=region/H*.96;
+  const narrowPhone=W<=600;
+  const cw=narrowPhone?.77:lite?.94:Math.min(.8,1200/W),ch=region/H*(narrowPhone?.82:.96);
   steadyDy=frameBox.top+region/2-H/2;regionRatio=Math.min(1,region/H);
   const dc=lite?.92:.72; // close-ups
   keys={

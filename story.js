@@ -265,7 +265,10 @@ function drawAnnotations(){
   // Only the current stop's annotations are ever on screen.
   if (ANNOTATIONS[stop.name]) {
    const a = annotationState(tl, stop, s);
-   if (a.visible) addItems(ANNOTATIONS[stop.name].items, 1 - a.exit, k => clamp01((a.draw - STAGGER[k]) / .8));
+   const items = INSERTION_STOPS.has(stop.name) && scene.hasOverride()
+    ? [{...ANNOTATIONS.connected.items[0], name: insertionValue.textContent}]
+    : ANNOTATIONS[stop.name].items;
+   if (a.visible) addItems(items, 1 - a.exit, k => clamp01((a.draw - STAGGER[k]) / .8));
   }
   // Caption for the current run of stops.
   const run = captionRun(stop.name);
@@ -580,12 +583,11 @@ function setStop(stop){
 }
 // The insertion slider shows the scroll-driven insertion during its stops.
 const insertion = $('#insertion'), insertionValue = $('#insertion-value');
-let shownInsertion = -1;
 function syncInsertion(pose){
  if (!insertion || scene?.hasOverride()) return;
  const v = Math.round(pose.insertion * 100);
- if (v === shownInsertion) return;
- shownInsertion = v; insertion.value = String(v);
+ if (v === Number(insertion.value)) return;
+ insertion.value = String(v);
  insertionValue.textContent = v >= 99 ? 'Connected' : v <= 1 ? 'Separate' : `${v}%`;
 }
 function stageRegion(){ return host.getBoundingClientRect(); }

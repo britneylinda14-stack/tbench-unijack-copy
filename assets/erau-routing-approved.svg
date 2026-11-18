@@ -16,12 +16,12 @@ text{font-family:Arial,Helvetica,sans-serif;fill:#b6d0fa}.heading{font-size:26px
 <polyline points="926,58 1005,58" class="trace" stroke="#0d9ff4" /><text x="1020" y="66" fill="#0d9ff4">Fan-out</text>
 <polyline points="1135,58 1205,58" class="trace" stroke="#ff842a" stroke-dasharray="12 9"/><text x="1221" y="66" fill="#ff842a">Logic Operation</text>
 </g>
-<rect x="99" y="111" width="170" height="45" rx="10" fill="none" stroke="#81a9e0" stroke-width="2"/>
-<text x="183" y="141" class="heading" text-anchor="middle">Module</text>
-<text x="184" y="174" class="heading" text-anchor="middle" font-style="italic">IN / OUT</text>
-<rect x="1408" y="111" width="154" height="45" rx="10" fill="none" stroke="#81a9e0" stroke-width="2"/>
-<text x="1485" y="141" class="heading" text-anchor="middle">Peripherals</text>
-<text x="1485" y="174" class="heading" text-anchor="middle" font-style="italic">IN / OUT</text>
+<rect x="99" y="98" width="170" height="45" rx="10" fill="none" stroke="#81a9e0" stroke-width="2"/>
+<text x="183" y="128" class="heading" text-anchor="middle">Module</text>
+<text x="184" y="177" class="heading" text-anchor="middle" font-style="italic">IN / OUT</text>
+<rect x="1408" y="98" height="45" width="154" rx="10" fill="none" stroke="#81a9e0" stroke-width="2"/>
+<text x="1485" y="128" class="heading" text-anchor="middle">Peripherals</text>
+<text x="1485" y="177" class="heading" text-anchor="middle" font-style="italic">IN / OUT</text>
 <rect x="1206" y="111" width="180" height="45" rx="10" fill="none" stroke="#81a9e0" stroke-width="2"/>
 <text x="1283" y="140" class="small" text-anchor="middle">Logic &amp; etc.</text>
 <rect x="1336" y="117" width="44" height="33" fill="url(#grid)" stroke="#a3c5fa" stroke-width="2"/>
@@ -47,23 +47,15 @@ text{font-family:Arial,Helvetica,sans-serif;fill:#b6d0fa}.heading{font-size:26px
 <polyline points="270,200 544,200 544,273 1210,273 1210,204 1387,204" class="trace" stroke="#ff862f" />
 <polyline points="270,238 493,238 493,296 1232,296 1232,238 1387,238" class="trace" stroke="#ff862f" />
 <polyline points="270,746 1387,746" class="trace" stroke="#ff862f" />
-<polyline points="270,274 455,274 455,314 928,314 949,337 1387,337" class="trace" stroke="#2fdc64" />
+<polyline points="270,274 455,274 455,314 949,314 949,337 1387,337" class="trace" stroke="#2fdc64" />
 <polyline points="270,308 416,308 416,341 731,341 731,428 1000,428 1000,503 1387,503" class="trace" stroke="#2fdc64" />
-<polyline points="270,614 1004,614 1004,503 1387,503" class="trace" stroke="#2fdc64" />
-<polyline points="270,430 951,430 951,597 729,597 729,613" class="trace" stroke="#ffe11d" />
-<polyline points="270,720 730,720 730,427 950,427 950,332" class="trace" stroke="#ffe11d" />
-<polyline points="270,463 656,463 656,513 1015,513 1015,381 1387,381" class="trace" stroke="#129cf4" />
-<polyline points="270,510 657,510 657,540 1387,540" class="trace" stroke="#129cf4" />
-<polyline points="270,545 657,545 657,441 1015,441 1015,413 1387,413" class="trace" stroke="#129cf4" />
-<polyline points="270,580 657,580 657,441 1387,441" class="trace" stroke="#129cf4" />
+<path d="M270 429 H968 V707 H270" class="trace" stroke="#ffe11d" style="stroke-linejoin:miter" />
+<path d="M270 510 H1387 M1054 510 V635 H1387 M1054 545 H1387 M1054 596 H1387" class="trace" stroke="#129cf4" />
 <polyline points="270,363 716,363 716,636 829,636" class="trace" stroke="#ff862f" stroke-dasharray="12 9"/>
 <polyline points="270,398 684,398 684,656 829,656" class="trace" stroke="#ff862f" stroke-dasharray="12 9"/>
-<polyline points="891,646 927,646 927,315 1387,315" class="trace" stroke="#ff862f" stroke-dasharray="12 9"/>
+<polyline points="879,646 927,646 927,315 1387,315" class="trace" stroke="#ff862f" stroke-dasharray="12 9"/>
 </g>
-<circle cx="731" cy="429" r="5.5" fill="#ffe11d"/><circle cx="730" cy="596" r="5.5" fill="#ffe11d"/>
-<circle cx="658" cy="541" r="6" fill="#129cf4"/><circle cx="658" cy="577" r="6" fill="#129cf4"/>
-<circle cx="927" cy="315" r="6" fill="#ff862f"/>
-<path class="gate" d="M828 628H847A29 29 0 0 1 847 684H828Z"/>
+<path class="gate" d="M829 616H849A30 30 0 0 1 849 676H829Z"/>
 <text x="863" y="706" class="small" text-anchor="middle">AND</text>
 <path d="M642 799H1077M642 799l14 -7m-14 7 14 7M1077 799l-14 -7m14 7 -14 7" stroke="#86b3e9" stroke-width="2" fill="none"/>
 <text x="854" y="834" class="heading" text-anchor="middle">Bi-directional</text>

@@ -146,12 +146,12 @@ document.querySelectorAll('[data-inspect]').forEach(button=>button.addEventListe
 }));
 syncInsertionLoop();
 const gateData={
- AND:{expression:'A & B',caption:'AND: output is on only when A and B are both on.',shape:'<path class="gate-shape" d="M255 75H275A30 30 0 0 1 275 135H255Z"/>'},
- NAND:{expression:'NOT (A & B)',caption:'NAND: the inverse of AND.',shape:'<path class="gate-shape" d="M255 75H275A30 30 0 0 1 275 135H255Z"/><circle class="gate-bubble" cx="310" cy="105" r="5"/>'},
- OR:{expression:'A OR B',caption:'OR: the output is on when A or B is on.',shape:'<path class="gate-shape" d="M253 75Q275 105 253 135Q282 137 309 105Q282 73 253 75Z"/>'},
- NOR:{expression:'NOT (A OR B)',caption:'NOR: the inverse of OR.',shape:'<path class="gate-shape" d="M253 75Q275 105 253 135Q282 137 309 105Q282 73 253 75Z"/><circle class="gate-bubble" cx="314" cy="105" r="5"/>'},
- XOR:{expression:'A XOR B',caption:'XOR: the output is on when exactly one of A and B is on.',shape:'<path class="gate-shape" d="M258 75Q279 105 258 135Q285 137 309 105Q285 73 258 75Z"/><path class="gate-shape" d="M248 75Q269 105 248 135"/>'},
- NOT:{expression:'NOT A',caption:'NOT: the output is the inverse of input A.',shape:'<path class="gate-shape" d="M255 75L304 105L255 135Z"/><circle class="gate-bubble" cx="310" cy="105" r="5"/>'}
+ AND:{expression:'A & B',caption:'AND: output is on only when A and B are both on.',outputX:305,shape:'<path class="gate-shape" d="M255 75H275A30 30 0 0 1 275 135H255Z"/>'},
+ NAND:{expression:'NOT (A & B)',caption:'NAND: the inverse of AND.',outputX:315,shape:'<path class="gate-shape" d="M255 75H275A30 30 0 0 1 275 135H255Z"/><circle class="gate-bubble" cx="310" cy="105" r="5"/>'},
+ OR:{expression:'A OR B',caption:'OR: the output is on when A or B is on.',outputX:309,shape:'<path class="gate-shape" d="M253 75Q275 105 253 135Q282 137 309 105Q282 73 253 75Z"/>'},
+ NOR:{expression:'NOT (A OR B)',caption:'NOR: the inverse of OR.',outputX:319,shape:'<path class="gate-shape" d="M253 75Q275 105 253 135Q282 137 309 105Q282 73 253 75Z"/><circle class="gate-bubble" cx="314" cy="105" r="5"/>'},
+ XOR:{expression:'A XOR B',caption:'XOR: the output is on when exactly one of A and B is on.',outputX:309,shape:'<path class="gate-shape" d="M258 75Q279 105 258 135Q285 137 309 105Q285 73 258 75Z"/><path class="gate-shape" d="M248 75Q269 105 248 135"/>'},
+ NOT:{expression:'NOT A',caption:'NOT: the output is the inverse of input A.',outputX:315,shape:'<path class="gate-shape" d="M255 75L304 105L255 135Z"/><circle class="gate-bubble" cx="310" cy="105" r="5"/>'}
 };
 const routingDescription=document.querySelector('#routing-description');
 const signalDiagram=document.querySelector('.signal-diagram');
@@ -159,7 +159,10 @@ const logicOptions=document.querySelector('#logic-options');
 const logicSelect=document.querySelector('#logic-gate');
 function updateGate(){
  const gate=gateData[logicSelect.value];
- document.querySelector('#logic-gate-symbol').innerHTML=gate.shape;
+ const symbol=document.querySelector('#logic-gate-symbol');
+ symbol.innerHTML=gate.shape;
+ const output=document.querySelector('#logic-output-trace').points.getItem(0);
+ output.x=symbol.transform.baseVal.getItem(0).matrix.e+gate.outputX;
  const caption=document.querySelector('#erau-gate-caption');if(caption)caption.textContent=logicSelect.value;
  document.querySelector('#logic-expression').textContent=gate.expression;
  routingDescription.textContent=(logicSelect.value==='NOT'?'Input A passes through ERAU. ':'Inputs A and B pass through ERAU. ')+gate.caption;
@@ -177,7 +180,7 @@ document.querySelectorAll('[data-route]').forEach(button=>button.addEventListene
  if(mode==='logic'){updateGate();return;}
  document.querySelector('#signal-input-direction').textContent='GROUPS X';
  document.querySelector('#signal-output-direction').textContent='GROUPS Y';
- const descriptions={route:'Channels follow parallel direct routes through ERAU between module and peripherals; routing is bi-directional.',cross:'Cross-route connections are shown without Group X1 CH3.',fanout:'One source signal (Group X1 CH0) branches to multiple peripheral channels.',loopback:'A single signal travels from a module channel through ERAU, curves around and returns on a lower path to the module input, as in Jens’s loop example.'};
+ const descriptions={route:'Channels follow parallel direct routes through ERAU between module and peripherals; routing is bi-directional.',cross:'Cross-route connections are shown without Group X1 CH3.',fanout:'One source signal (Group X1 CH0) branches to multiple peripheral channels.',loopback:'A single signal travels through ERAU and returns on a lower path to a module input.'};
  routingDescription.textContent=descriptions[mode];
  signalDiagram.setAttribute('aria-label',descriptions[mode]);
  const svg=signalDiagram.querySelector('.erau-map');if(svg)svg.setAttribute('aria-label',descriptions[mode]);

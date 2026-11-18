@@ -120,6 +120,9 @@ function slot(p){
  const n=group(p,'Mercury socket and retention clips',-41.1,1.29,0);
  box(n,0,1.65,0,5.0,3.3,69.0/(80/78),M.black,'Socket main rail',.25);
  box(n,2.30,1.65,0,.32,1,62.8,M.inner,'Card edge insertion channel');
+ // The plastic lip overlaps the full contact strip in the board photograph.
+ box(n,-.3,3.85,0,4.2,1.35,69.0/(80/78),M.black,'Socket lip support',.12);
+ box(n,3.85,4.63,0,8.1,.64,69.6/(80/78),M.black,'Plastic socket lip',.12);
  for(const physicalZ of contactCenters){const z=physicalZ/(80/78);box(n,2.58,2.7,z,.75,.10,.19,M.gold,'Socket contact');box(n,-2.9,.11,z,1.15,.16,.20,M.solder,'Socket solder tail');}
  for(const s of [-1,1]){
   box(n,9.6,1.55,s*34.4,21.5,3.1,1.35,M.black,'Retention arm',.18);
@@ -262,13 +265,6 @@ export async function buildDetailedModel({full=2048,finishWidth=1536,shouldStop=
  root.userData.materials='Visual appearance inferred from actual campaign photographs. Authored roughness; no measured material scans or confirmed plating composition.';
  const base=group(root,'UniJack_baseboard'),mercury=group(root,'Mercury_module'),peri=group(root,'PeriBoard');
  board(base,160,78,'gallery-3.jpg',crops.base,{holes:[[...baseCoord(609,353),.85],[...baseCoord(644,353),.85]]});slot(base);
-// A narrow exposed socket lip keeps the gold connector identifiable when
-// Mercury is seated. This is a visual illustration, not a measured CAD part.
-box(base,-40.50,5.30,0,1.10,.42,63.8,M.black,'Exposed socket carrier',.12);
-for(const z0 of contactCenters){
- const z=z0/(D.module.length/66);
- box(base,-40.49,5.57,z,.68,.14,.30,M.gold,'Visible connector contact');
-}
 power(base,-73.8,-27.6);terminal(base);usb(base,-72.1,6.0);ethernet(base,-72.5,27.8);
  await pause();
  // Project each package and its own marking from the same image rectangle.

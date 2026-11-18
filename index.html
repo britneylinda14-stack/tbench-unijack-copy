@@ -10,9 +10,9 @@
 <meta property="og:description" content="The UniJack platform, Mercury controller, PeriBoard and ERAU signal routing.">
 <meta property="og:image" content="https://britneylinda14-stack.github.io/tbench-unijack-copy/assets/gallery-1.jpg">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23080b10'/%3E%3Cpath d='M8 7v12a8 8 0 0016 0V7h-4v12a4 4 0 01-8 0V7z' fill='%2374e2f4'/%3E%3C/svg%3E">
-<link rel="stylesheet" href="./tokens.css?v=apple-16">
+<link rel="stylesheet" href="./tokens.css?v=unijack-2.0">
 <link rel="stylesheet" href="./tbench/shared-nav.css?v=apple-16">
-<link rel="stylesheet" href="./style.css?v=apple-16">
+<link rel="stylesheet" href="./style.css?v=unijack-2.0-assembly">
 <script>
 // Decide the layout before first paint: the pinned scroll story needs WebGL
 // (with reduced motion it steps between stops); otherwise the static layout.
@@ -20,19 +20,21 @@
 d.dataset.saveData=s?'on':'off';d.dataset.motion=r?'reduced':'full';d.dataset.story=!s&&!!window.WebGLRenderingContext?'on':'off';})(document.documentElement);
 </script>
 <!-- The page's own modules are versioned here, so a browser never runs a stale cached copy after an update. -->
-<script type="importmap">{"imports":{"three":"./vendor/three.module.min.js","three/addons/":"./vendor/","./story.js":"./story.js?v=apple-16","./motion.js":"./motion.js?v=apple-16","./story-scene.js":"./story-scene.js?v=apple-16","./detailed-model.js":"./detailed-model.js?v=apple-16","./material-finish.js":"./material-finish.js?v=apple-16","./dimensions.js":"./dimensions.js?v=apple-16"}}</script>
-<link rel="modulepreload" href="./app.js?v=apple-16">
-<link rel="modulepreload" href="./story.js?v=apple-16">
-<link rel="modulepreload" href="./motion.js?v=apple-16">
+<script type="importmap">{"imports":{"three":"./vendor/three.module.min.js","three/addons/":"./vendor/","./story.js":"./story.js?v=unijack-2.0","./motion.js":"./motion.js?v=unijack-2.0","./story-scene.js":"./story-scene.js?v=unijack-2.0","./detailed-model.js":"./detailed-model.js?v=unijack-2.0","./material-finish.js":"./material-finish.js?v=unijack-2.0","./dimensions.js":"./dimensions.js?v=unijack-2.0"}}</script>
+<link rel="modulepreload" href="./app.js?v=unijack-2.0">
+<link rel="modulepreload" href="./story.js?v=unijack-2.0">
+<link rel="modulepreload" href="./motion.js?v=unijack-2.0">
 <script>
 // Start three.js, the scene modules and the tiny texture previews with the page
 // (not after it), unless the visitor has Save-Data on.
 (function(d){if(d.documentElement.dataset.saveData==='on')return;var h=d.head;
-['./vendor/three.module.min.js','./vendor/three.core.min.js','./story-scene.js?v=apple-16','./detailed-model.js?v=apple-16','./material-finish.js?v=apple-16','./dimensions.js?v=apple-16','./vendor/RoundedBoxGeometry.js','./vendor/BufferGeometryUtils.js'].forEach(function(u){var l=d.createElement('link');l.rel='modulepreload';l.href=u;h.appendChild(l);});
+['./vendor/three.module.min.js','./vendor/three.core.min.js','./story-scene.js?v=unijack-2.0','./detailed-model.js?v=unijack-2.0','./material-finish.js?v=unijack-2.0','./dimensions.js?v=unijack-2.0','./vendor/RoundedBoxGeometry.js','./vendor/BufferGeometryUtils.js'].forEach(function(u){var l=d.createElement('link');l.rel='modulepreload';l.href=u;h.appendChild(l);});
 ['gallery-3','gallery-4','gallery-2'].forEach(function(n){var l=d.createElement('link');l.rel='preload';l.as='image';l.crossOrigin='anonymous';l.href='./assets/textures/'+n+'-tiny.webp';h.appendChild(l);});})(document);
 </script>
 <noscript><style>.scene-controls,.insertion-control,.part-tabs,.routing-switch{display:none}</style></noscript>
-<script defer src="./tbench/shared-nav.js?v=apple-16"></script></head>
+<script defer src="./tbench/shared-nav.js?v=apple-16"></script><link rel="stylesheet" href="./legal.css">
+<script defer src="./legal.js"></script>
+</head>
 <body class="page-unijack">
 <a class="skip-link" href="#main">Skip to content</a>
 <header class="tb-header" id="tb-unified-header" data-menu-open="false"><div class="tb-header-inner">
@@ -85,10 +87,10 @@ d.dataset.saveData=s?'on':'off';d.dataset.motion=r?'reduced':'full';d.dataset.st
 <div class="logic-options" id="logic-options" hidden><label for="logic-gate">Logic gate</label><select id="logic-gate" aria-label="Choose logical operation"><option value="AND">AND</option><option value="NAND">NAND</option><option value="OR">OR</option><option value="NOR">NOR</option><option value="XOR">XOR</option><option value="NOT">NOT</option></select></div>
 <div class="signal-diagram erau-system erau-sketch-layout" data-signal-mode="route" data-logic-gate="AND" role="group" aria-label="ERAU sketch-inspired diagram showing Groups X on the left and Groups Y on the right, with direct, cross, fan-out, loop and logic paths">
 <div class="erau-legend" aria-label="Five routing mechanisms"><span class="legend-direct"><i></i>Direct Route</span><span class="legend-cross"><i></i>Cross-Route</span><span class="legend-loop"><i></i>Loop</span><span class="legend-fanout"><i></i>Fan-Out</span><span class="legend-logic"><i></i>Logic Operation</span></div>
-<div class="erau-sketch-caption">MODULE <span>INPUT / OUTPUT</span><strong>ERAU</strong><span>INPUT / OUTPUT</span> PERIPHERALS</div>
-<p class="erau-mobile-hint">Swipe the diagram horizontally to inspect both channel groups and the full routing paths.</p><div class="approved-routing-window" tabindex="0" role="region" aria-label="Interactive approved routing schematic, scroll horizontally to inspect"><svg xmlns="http://www.w3.org/2000/svg" width="1672" height="941" viewBox="0 0 1672 941" class="approved-routing-graphic" role="img" aria-labelledby="erau-title erau-desc">
+<div class="erau-sketch-caption"><div>MODULE <span>IN / OUT</span></div><strong>ERAU</strong><div>PERIPHERALS <span>IN / OUT</span></div></div>
+<div class="approved-routing-window"><svg xmlns="http://www.w3.org/2000/svg" width="1672" height="941" viewBox="0 0 1672 941" class="approved-routing-graphic" role="img" aria-labelledby="erau-title erau-desc">
 <title id="erau-title">ERAU signal-routing schematic based on Jens's annotated drawing</title>
-<desc id="erau-desc">Illustration showing Group X0 and Group X1 on the module side, Group Y0 and Group Y1 on the peripheral side, direct routes in orange, cross-routes in green, loops in yellow, fan-out in blue, and logic operation as dashed orange lines through an AND gate inside the ERAU fabric.</desc>
+<desc id="erau-desc">Illustration showing Group X0 and Group X1 on the module side, Group Y0 and Group Y1 on the peripheral side, direct routes in orange, cross-routes in green, loops in yellow, fan-out in blue, and logic operation as dashed orange lines through the selected gate inside the ERAU fabric.</desc>
 <defs>
 <pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse"><path d="M24 0H0V24" stroke="#16405a" stroke-width="0.8" fill="none" opacity=".58"/></pattern>
 <marker id="arr-left" markerWidth="7" markerHeight="7" refX="2" refY="3.5" orient="auto"><path d="M7 0L0 3.5L7 7Z" fill="#2ddd66"/></marker>
@@ -104,12 +106,12 @@ text{font-family:Arial,Helvetica,sans-serif;fill:#b6d0fa}.heading{font-size:26px
 <polyline points="926,58 1005,58" class="trace" stroke="#0d9ff4" /><text x="1020" y="66" fill="#0d9ff4">Fan-out</text>
 <polyline points="1135,58 1205,58" class="trace" stroke="#ff842a" stroke-dasharray="12 9"/><text x="1221" y="66" fill="#ff842a">Logic Operation</text>
 </g>
-<rect x="99" y="111" width="170" height="45" rx="10" fill="none" stroke="#81a9e0" stroke-width="2"/>
-<text x="183" y="141" class="heading" text-anchor="middle">Module</text>
-<text x="184" y="174" class="heading" text-anchor="middle" font-style="italic">IN / OUT</text>
-<rect x="1408" y="111" width="154" height="45" rx="10" fill="none" stroke="#81a9e0" stroke-width="2"/>
-<text x="1485" y="141" class="heading" text-anchor="middle">Peripherals</text>
-<text x="1485" y="174" class="heading" text-anchor="middle" font-style="italic">IN / OUT</text>
+<rect x="99" y="98" width="170" height="45" rx="10" fill="none" stroke="#81a9e0" stroke-width="2"/>
+<text x="183" y="128" class="heading" text-anchor="middle">Module</text>
+<text x="184" y="177" class="heading" text-anchor="middle" font-style="italic">IN / OUT</text>
+<rect x="1408" y="98" width="154" height="45" rx="10" fill="none" stroke="#81a9e0" stroke-width="2"/>
+<text x="1485" y="128" class="heading" text-anchor="middle">Peripherals</text>
+<text x="1485" y="177" class="heading" text-anchor="middle" font-style="italic">IN / OUT</text>
 <rect x="1206" y="111" width="180" height="45" rx="10" fill="none" stroke="#81a9e0" stroke-width="2"/>
 <text x="1283" y="140" class="small" text-anchor="middle">Logic &amp; etc.</text>
 <rect x="1336" y="117" width="44" height="33" fill="url(#grid)" stroke="#a3c5fa" stroke-width="2"/>
@@ -135,27 +137,19 @@ text{font-family:Arial,Helvetica,sans-serif;fill:#b6d0fa}.heading{font-size:26px
 <polyline points="270,200 544,200 544,273 1210,273 1210,204 1387,204" class="trace approved-path path-route" stroke="#ff862f" />
 <polyline points="270,238 493,238 493,296 1232,296 1232,238 1387,238" class="trace approved-path path-route" stroke="#ff862f" />
 <polyline points="270,746 1387,746" class="trace approved-path path-route" stroke="#ff862f" />
-<polyline points="270,274 455,274 455,314 928,314 949,337 1387,337" class="trace approved-path path-cross" stroke="#2fdc64" />
+<polyline points="270,274 455,274 455,314 949,314 949,337 1387,337" class="trace approved-path path-cross" stroke="#2fdc64" />
 <polyline points="270,308 416,308 416,341 731,341 731,428 1000,428 1000,503 1387,503" class="trace approved-path path-cross" stroke="#2fdc64" />
 
-<path d="M270 429 H780 C890 429 958 450 968 510 L968 633 C968 679 943 700 860 707 H270" class="trace approved-path path-loopback" stroke="#ffe11d" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M270 429 H968 V707 H270" class="trace approved-path path-loopback" stroke="#ffe11d" stroke-linejoin="miter" />
 
-<polyline points="270,510 1005,510" class="trace approved-path path-fanout" stroke="#129cf4" />
-<polyline points="1005,510 1387,510" class="trace approved-path path-fanout" stroke="#129cf4" />
-<polyline points="1005,510 1054,510 1054,545 1387,545" class="trace approved-path path-fanout" stroke="#129cf4" />
-<polyline points="1005,510 1080,510 1080,596 1387,596" class="trace approved-path path-fanout" stroke="#129cf4" />
-<polyline points="1005,510 1108,510 1108,635 1387,635" class="trace approved-path path-fanout" stroke="#129cf4" />
+<path d="M270 510 H1387 M1054 510 V635 H1387 M1054 545 H1387 M1054 596 H1387" class="trace approved-path path-fanout" stroke="#129cf4" />
 
-
-
-<polyline points="270,363 716,363 716,636 829,636" class="trace approved-path path-logic" stroke="#ff862f" stroke-dasharray="12 9"/>
-<polyline points="270,398 684,398 684,656 829,656" class="trace approved-path path-logic" stroke="#ff862f" stroke-dasharray="12 9"/>
-<polyline points="891,646 927,646 927,315 1387,315" class="trace approved-path path-logic" stroke="#ff862f" stroke-dasharray="12 9"/>
+<polyline points="270,363 716,363 716,636 829,636" class="trace approved-path path-logic logic-input-pair" stroke="#ff862f" stroke-dasharray="12 9"/>
+<polyline points="270,398 684,398 684,656 829,656" class="trace approved-path path-logic logic-input-pair" stroke="#ff862f" stroke-dasharray="12 9"/>
+<polyline points="270,363 716,363 716,646 829,646" class="trace approved-path path-logic logic-input-single" stroke="#ff862f" stroke-dasharray="12 9"/>
+<polyline id="logic-output-trace" points="879,646 927,646 927,315 1387,315" class="trace approved-path path-logic" stroke="#ff862f" stroke-dasharray="12 9"/>
 </g>
-<circle cx="1005" cy="510" r="7" fill="#129cf4"/>
-
-<circle cx="927" cy="315" r="6" fill="#ff862f"/>
-<g id="logic-gate-symbol" transform="translate(574 553)"><path class="gate-shape" d="M255 75H275A30 30 0 0 1 275 135H255Z"/></g>
+<g id="logic-gate-symbol" transform="translate(574 541)"><path class="gate-shape" d="M255 75H275A30 30 0 0 1 275 135H255Z"/></g>
 <text id="erau-gate-caption" x="863" y="706" class="small" text-anchor="middle">AND</text><text id="logic-expression" x="936" y="706" class="small" text-anchor="start"></text>
 <path d="M642 799H1077M642 799l14 -7m-14 7 14 7M1077 799l-14 -7m14 7 -14 7" stroke="#86b3e9" stroke-width="2" fill="none"/>
 <text x="854" y="834" class="heading" text-anchor="middle">Bi-directional</text>
@@ -164,11 +158,15 @@ text{font-family:Arial,Helvetica,sans-serif;fill:#b6d0fa}.heading{font-size:26px
 <div class="erau-diagram-footer"><span id="signal-input-direction">GROUPS X</span><span id="signal-output-direction">GROUPS Y</span></div></div>
 <p id="routing-description" aria-live="polite">The ERAU sketch shows grouped channels, direct and crossed paths, loopback, fan-out and integrated logical operations. Choose a tab to highlight each mechanism.</p><div class="routing-disclaimer">Illustrative paths from Jens’s template · bi-directional per group · not measured timing</div></div>
 </section>
-<section class="section products-section tb-section--product" id="products"><div class="section-topline"><div><span class="eyebrow">HARDWARE COMPONENTS</span><h2>The hardware,<br><span>up close.</span></h2></div><p>Three core components.<br>Designed to work together.</p></div><div class="product-cards"><article class="product-card"><div class="photo-window photo-base"><img src="./assets/products/unijack.jpg?v=3" srcset="./assets/responsive/unijack-720.webp?v=3 720w, ./assets/responsive/unijack-1200.webp?v=3 1200w" sizes="(max-width: 959px) 100vw, 34vw" alt="Bare UniJack development platform from the campaign gallery" loading="lazy" width="1478" height="729"><span class="photo-index">01 / PLATFORM</span></div><div class="product-card-body"><h3>UniJack™</h3><p>The base platform connecting the controller, expansion interfaces and ERAU routing fabric.</p><div class="product-tags"><span>Modular platform</span><span>ERAU</span></div><a href="https://www.tbenchsolutions.com/products/unijack/" target="_blank" rel="noopener" class="card-link">View UniJack details <span aria-hidden="true">↗</span></a></div></article><article class="product-card"><div class="photo-window photo-mercury"><img src="./assets/products/mercury-straight-approved.avif" alt="Mercury Module front face, straightened as approved" loading="lazy" width="138" height="256"><span class="photo-index">02 / CONTROLLER</span></div><div class="product-card-body"><h3>Mercury Module</h3><p>The Mercury controller module uses an Infineon AURIX TC356.</p><div class="product-tags"><span>AURIX TC356</span><span>Up to 300 MHz*</span></div><a href="./tbench/products/mercury/" class="card-link">View Mercury details <span aria-hidden="true">↗</span></a></div></article><article class="product-card"><div class="photo-window photo-peri"><img src="./assets/products/periboard-straight-approved.avif" alt="PeriBoard peripheral expansion board, straightened as approved" loading="lazy" width="346" height="190"><span class="photo-index">03 / EXPANSION</span></div><div class="product-card-body"><h3>PeriBoard</h3><p>The peripheral interface board for adding and testing connected hardware.</p><div class="product-tags"><span>Peripheral expansion</span><span>Open interface*</span></div><a href="./tbench/products/periboard/" class="card-link">View platform details <span aria-hidden="true">↗</span></a></div></article></div><div class="venus-family"><span class="eyebrow">ADDITIONAL MODULES</span><a href="./tbench/products/venus-mxo4/">Venus-MXO4 Module <span aria-hidden="true">↗</span></a><a href="./tbench/products/venus-mxo5/">Venus-MXO5 Module <span aria-hidden="true">↗</span></a></div></section>
+<section class="section products-section tb-section--product" id="products"><div class="section-topline"><div><span class="eyebrow">HARDWARE COMPONENTS</span><h2>The hardware,<br><span>up close.</span></h2></div><p>Three core components.<br>Designed to work together.</p></div><div class="product-cards"><article class="product-card"><div class="photo-window photo-base"><img src="./assets/products/unijack.jpg?v=3" srcset="./assets/responsive/unijack-720.webp?v=3 720w, ./assets/responsive/unijack-1200.webp?v=3 1200w" sizes="(max-width: 959px) 100vw, 34vw" alt="Bare UniJack development platform from the campaign gallery" loading="lazy" width="1478" height="729"><span class="photo-index">01 / PLATFORM</span></div><div class="product-card-body"><h3>UniJack™</h3><p>The base platform connecting the controller, expansion interfaces and ERAU routing fabric.</p><div class="product-tags"><span>Modular platform</span><span>ERAU</span></div><a href="https://www.tbenchsolutions.com/products/unijack/" target="_blank" rel="noopener" class="card-link">View UniJack details <span aria-hidden="true">↗</span></a></div></article><article class="product-card"><div class="photo-window photo-mercury"><img src="./assets/products/mercury.jpg" srcset="./assets/responsive/mercury-400.webp 400w, ./assets/products/mercury.jpg 801w" sizes="(max-width: 959px) 240px, 180px" alt="Straight-on photograph of the Mercury Module" loading="lazy" width="801" height="1569"><span class="photo-index">02 / CONTROLLER</span></div><div class="product-card-body"><h3>Mercury Module</h3><p>The Mercury controller module uses an Infineon AURIX TC356.</p><div class="product-tags"><span>AURIX TC356</span><span>Up to 300 MHz*</span></div><a href="./tbench/products/mercury/" class="card-link">View Mercury details <span aria-hidden="true">↗</span></a></div></article><article class="product-card"><div class="photo-window photo-peri"><img src="./assets/products/periboard-straight-approved.avif" alt="PeriBoard peripheral expansion board, straightened as approved" loading="lazy" width="346" height="190"><span class="photo-index">03 / EXPANSION</span></div><div class="product-card-body"><h3>PeriBoard</h3><p>The peripheral interface board for adding and testing connected hardware.</p><div class="product-tags"><span>Peripheral expansion</span><span>Open interface*</span></div><a href="./tbench/products/periboard/" class="card-link">View platform details <span aria-hidden="true">↗</span></a></div></article></div><div class="venus-family"><span class="eyebrow">ADDITIONAL MODULES</span><a href="./tbench/products/venus-mxo4/">Venus-MXO4 Module <span aria-hidden="true">↗</span></a><a href="./tbench/products/venus-mxo5/">Venus-MXO5 Module <span aria-hidden="true">↗</span></a></div></section>
 <section class="applications-section" id="applications"><div class="section applications-inner"><div class="eyebrow">APPLICATIONS</div><h2>Built for<br><span>hands-on development.</span></h2><div class="application-grid"><div><span class="application-number">DEVELOPMENT</span><h3>Embedded development</h3><p>Evaluate controller functionality, I/O and peripherals on a modular hardware platform.</p></div><div><span class="application-number">EDUCATION</span><h3>Teaching &amp; research</h3><p>Demonstrate the relationship between modules, interfaces and signal routing.</p></div><div><span class="application-number">EXPANSION</span><h3>Peripheral integration</h3><p>Explore application-specific peripherals with the TBench team.</p></div></div></div></section>
 <section class="section contact-section" id="contact"><div class="eyebrow">CONTACT TBENCH</div><div class="contact-grid"><h2>Explore UniJack<br><span>with TBench.</span></h2><div><p>For product specifications, application questions or integration discussions, connect with TBench directly. You can also follow the Crowd Supply campaign for updates.</p><div class="contact-actions"><a class="button primary" href="https://www.tbenchsolutions.com/products/unijack/" target="_blank" rel="noopener">Contact TBench</a><a class="button" href="https://www.crowdsupply.com/tbench-solutions/unijack-and-mercury-module" target="_blank" rel="noopener">Crowd Supply updates</a></div></div></div></section>
 <section class="footnotes"><div class="footnotes-inner"><div class="product-evidence"><span>*Specifications and interface claims are vendor-stated; unverified on hardware.</span><a href="https://www.crowdsupply.com/tbench-solutions/unijack-and-mercury-module" target="_blank" rel="noopener">View product source</a></div><details class="evidence-details"><summary>Technical notes &amp; sources</summary><div><p>Product descriptions and specifications are published by TBench on its <a href="https://www.tbenchsolutions.com/products/unijack/" target="_blank" rel="noopener">UniJack product page</a> and <a href="https://www.crowdsupply.com/tbench-solutions/unijack-and-mercury-module" target="_blank" rel="noopener">Crowd Supply campaign</a>. They remain vendor-stated, with no independent hardware validation supplied for this website.</p><p>The 3D views use the detailed photo-based reconstruction, with raised chips, open connector shells, contact pins and board materials informed by the campaign photographs. Module and connector proportions use reference dimensions; board outlines, component heights, housing lengths and placement remain estimates. The fitted connector part numbers are unconfirmed. This is an illustrative model, not measured CAD. Signal animations explain a concept; their paths, speeds and colors do not represent hardware measurements. No product certification or timing guarantee is claimed.</p><p>Photography credited to TBench Solutions / Crowd Supply. Product images and diagrams are provided for information; confirm specifications and availability with TBench.</p></div></details></div></section>
 </main>
-<footer class="footer"><a class="brand" href="#" aria-label="TBench Solutions home"><img class="brand-logo" src="./assets/tbench-official-logo.svg?v=20261109" alt="TBench Solutions" width="2048" height="659" decoding="async"></a><span>UniJack · TBench Solutions</span><a href="tel:+494021979813">+49 40 21979813</a><a href="https://www.tbenchsolutions.com/" target="_blank" rel="noopener">Official TBench website</a></footer>
-<script type="module" src="./app.js?v=apple-16"></script>
+<footer class="footer"><a class="brand" href="#" aria-label="TBench Solutions home"><img class="brand-logo" src="./assets/tbench-official-logo.svg?v=20261109" alt="TBench Solutions" width="2048" height="659" decoding="async"></a><span>UniJack · TBench Solutions</span><a href="tel:+494021979813">+49 40 21979813</a><a href="https://www.tbenchsolutions.com/" target="_blank" rel="noopener">Official TBench website</a><nav class="legal-links" aria-label="Legal">
+<a href="./imprint.html">Imprint</a>
+<a href="./privacy.html">Privacy Policy</a>
+<a href="./privacy.html#cookie-settings" data-cookie-settings>Cookie Settings</a>
+</nav></footer>
+<script type="module" src="./app.js?v=unijack-2.0"></script>
 </body></html>
