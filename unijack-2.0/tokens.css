@@ -1,0 +1,84 @@
+/* TBench / UniJack shared foundations — used by the UniJack page and every
+   /tbench/ page. Product-page system: black and light grey bands, system type,
+   cyan kept as the single signal colour (active states, traces, focus). */
+
+/* Inter is the fallback for devices without the Apple system font.
+   Only the two weights the system uses ship (OFL, see assets/fonts/Inter-OFL.txt). */
+@font-face{font-family:'Inter';src:url('./assets/fonts/inter-latin-400-normal.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Inter';src:url('./assets/fonts/inter-latin-600-normal.woff2') format('woff2');font-weight:600;font-style:normal;font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+
+:root{
+ color-scheme:dark;
+ /* Dark bands */
+ --c-black:#000;
+ --c-tile:#1d1d1f;          /* tiles and panels on black */
+ --c-tile-2:#2a2a2d;
+ --c-on-dark:#f5f5f7;
+ --c-on-dark-2:#a1a1a6;     /* body copy on black, 8.4:1 */
+ --c-on-dark-3:#86868b;     /* quiet labels on black, 5.7:1 */
+ --c-line-dark:rgba(255,255,255,.14);
+ --c-line-dark-2:rgba(255,255,255,.24);
+ /* Light bands */
+ --c-light:#f5f5f7;
+ --c-white:#fff;
+ --c-on-light:#1d1d1f;
+ --c-on-light-2:#6e6e73;    /* 4.7:1 on #f5f5f7, 5.1:1 on #fff */
+ --c-line-light:#d2d2d7;
+ /* Signal */
+ --c-cyan:#74e2f4;          /* on black only */
+ --c-cyan-2:#a9eefa;
+ --c-cyan-ink:#04161c;
+ --c-cyan-deep:#00707f;     /* cyan on light bands: text, focus, 5.4:1 on #f5f5f7 */
+ --c-accent:var(--c-cyan);  /* UniJack's signature colour; light bands switch to --c-cyan-deep */
+
+ /* Legacy names used by the /tbench/ stylesheets, mapped onto the new system. */
+ --c-ground:var(--c-black);--c-ground-2:var(--c-black);--c-surface:var(--c-tile);--c-surface-2:var(--c-tile-2);--c-raised:var(--c-tile-2);
+ --c-line:var(--c-line-dark);--c-line-2:var(--c-line-dark-2);
+ --c-ink:var(--c-on-dark);--c-ink-2:var(--c-on-dark-2);--c-ink-3:var(--c-on-dark-3);
+ --c-paper:var(--c-light);--c-paper-2:var(--c-white);--c-paper-line:var(--c-line-light);
+ --c-paper-ink:var(--c-on-light);--c-paper-ink-2:var(--c-on-light-2);--c-paper-accent:var(--c-cyan-deep);
+ --c-service:var(--c-black);--c-service-line:var(--c-line-dark);--c-service-ink:var(--c-on-dark);--c-service-ink-2:var(--c-on-dark-2);--c-service-accent:var(--c-on-dark);
+
+ --font-sans:-apple-system,BlinkMacSystemFont,'Inter',system-ui,sans-serif;
+ --font-mono:ui-monospace,'SF Mono',SFMono-Regular,Menlo,Consolas,monospace;
+
+ /* Type scale: 390px → 1440px */
+ --t-hero:clamp(3rem,1.2rem + 5.6vw,6rem);          /* 48 → 96 */
+ --t-h2:clamp(2.5rem,1.3rem + 3.9vw,5rem);          /* 40 → 77 */
+ --t-h3:clamp(1.75rem,1.35rem + 1.2vw,2.5rem);      /* 28 → 40 */
+ --t-h4:clamp(1.3125rem,1.15rem + .5vw,1.75rem);    /* 21 → 28 */
+ --t-stat:clamp(5.5rem,2rem + 9vw,10rem);           /* 88 → 160 */
+ --t-eyebrow:clamp(1.0625rem,.92rem + .45vw,1.3125rem); /* 17 → 21 */
+ --t-lead:clamp(1.1875rem,1rem + .55vw,1.5rem);     /* 19 → 24 */
+ --t-body:1.0625rem;                                /* 17 */
+ --t-small:.875rem;                                 /* 14 */
+ --t-caption:.75rem;                                /* 12 */
+ /* Older names */
+ --text-xs:var(--t-caption);--text-sm:var(--t-small);--text-md:var(--t-body);--text-lg:var(--t-lead);
+ --text-xl:var(--t-h4);--text-2xl:var(--t-h3);--text-3xl:var(--t-h2);--text-4xl:var(--t-hero);
+
+ /* 8px grid */
+ --s-1:4px;--s-2:8px;--s-3:12px;--s-4:16px;--s-5:24px;--s-6:32px;--s-7:48px;--s-8:64px;--s-9:96px;--s-10:140px;
+ --section:clamp(88px,3.5rem + 5.6vw,140px);
+ --gutter:clamp(16px,4vw,48px);
+ --max:1260px;      /* compare rows, bento */
+ --content:980px;   /* headlines, panels */
+ --read:680px;      /* long text */
+ --header:44px;     /* global header */
+ --local:52px;      /* sticky local nav */
+ --radius:12px;
+ --radius-lg:18px;
+ --radius-tile:28px;
+ --pill:980px;
+
+ --ease-out:cubic-bezier(.23,1,.32,1);
+ --ease-in-out:cubic-bezier(.77,0,.175,1);
+ --dur-1:140ms;--dur-2:200ms;--dur-3:260ms;
+}
+@media (max-width:833px){:root{--local:48px}}
+
+/* Browser surfaces carry the palette too. */
+::selection{background:rgba(116,226,244,.32);color:inherit}
+html{scrollbar-color:#3a3a3d var(--c-black);accent-color:var(--c-cyan);caret-color:var(--c-cyan)}
+:focus-visible{outline:2px solid var(--c-cyan);outline-offset:3px;border-radius:4px}
+.on-light :focus-visible,:is([data-band=light],.band-light) :focus-visible{outline-color:var(--c-cyan-deep)}
