@@ -12,7 +12,7 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23080b10'/%3E%3Cpath d='M8 7v12a8 8 0 0016 0V7h-4v12a4 4 0 01-8 0V7z' fill='%2374e2f4'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="./tokens.css?v=unijack-2.0">
 <link rel="stylesheet" href="./tbench/shared-nav.css?v=apple-16">
-<link rel="stylesheet" href="./style.css?v=unijack-2.0-routing-board">
+<link rel="stylesheet" href="./style.css?v=unijack-2.0-hardware-transition">
 <script>
 // Decide the layout before first paint: the pinned scroll story needs WebGL
 // (with reduced motion it steps between stops); otherwise the static layout.
@@ -20,9 +20,9 @@
 d.dataset.saveData=s?'on':'off';d.dataset.motion=r?'reduced':'full';d.dataset.story=!s&&!!window.WebGLRenderingContext?'on':'off';})(document.documentElement);
 </script>
 <!-- The page's own modules are versioned here, so a browser never runs a stale cached copy after an update. -->
-<script type="importmap">{"imports":{"three":"./vendor/three.module.min.js","three/addons/":"./vendor/","./story.js":"./story.js?v=unijack-2.0-routing-board","./motion.js":"./motion.js?v=unijack-2.0-routing-board","./story-scene.js":"./story-scene.js?v=unijack-2.0-routing-board","./detailed-model.js":"./detailed-model.js?v=unijack-2.0","./material-finish.js":"./material-finish.js?v=unijack-2.0","./dimensions.js":"./dimensions.js?v=unijack-2.0"}}</script>
+<script type="importmap">{"imports":{"three":"./vendor/three.module.min.js","three/addons/":"./vendor/","./story.js":"./story.js?v=unijack-2.0-hardware-transition","./motion.js":"./motion.js?v=unijack-2.0-routing-board","./story-scene.js":"./story-scene.js?v=unijack-2.0-routing-board","./detailed-model.js":"./detailed-model.js?v=unijack-2.0","./material-finish.js":"./material-finish.js?v=unijack-2.0","./dimensions.js":"./dimensions.js?v=unijack-2.0"}}</script>
 <link rel="modulepreload" href="./app.js?v=unijack-2.0">
-<link rel="modulepreload" href="./story.js?v=unijack-2.0-routing-board">
+<link rel="modulepreload" href="./story.js?v=unijack-2.0-hardware-transition">
 <link rel="modulepreload" href="./motion.js?v=unijack-2.0-routing-board">
 <script>
 // Start three.js, the scene modules and the tiny texture previews with the page

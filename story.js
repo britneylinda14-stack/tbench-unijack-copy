@@ -561,10 +561,10 @@ function layoutHardware(){
  const st = stage.getBoundingClientRect();
  const h = vh - headerBottom - 48, top = Math.min(Math.max(headerBottom + 24, cr.top), cr.bottom - h);
  const r = {x:0, y:top, w:Math.round(vw * .56), h};
- // The board never spreads over the cards: the canvas fades out at the region's edge.
+ // Fade beside the cards and clip to their vertical span so the board never covers the heading.
  stage.style.setProperty('--hw-right', `${Math.round(r.x + r.w - st.left)}px`);
- stage.style.setProperty('--hw-top', `${Math.round(r.y - st.top)}px`);
- stage.style.setProperty('--hw-bottom', `${Math.round(r.y + r.h - st.top)}px`);
+ stage.style.setProperty('--hw-clip-top', `${Math.max(0, cr.top - st.top)}px`);
+ stage.style.setProperty('--hw-clip-bottom', `${Math.max(0, st.bottom - cr.bottom)}px`);
  hwRegion = r;
  // Entering: the board rises in as the cards arrive.
  const enter = easeOut(clamp01((vh - cr.top) / (vh * .45)));
@@ -715,8 +715,9 @@ function update(force = false){
  scene?.setActive(visible && !document.hidden);
  if (!visible) layer.style.visibility = 'hidden';
  if (scene) {
-  if (jumped && !inPreview && !wasInPreview) scene.crossfadeTo(s);
-  else scene.setProgress(s, {jump: inPreview || wasInPreview || !!hwRegion !== (lastFrame?.phase === 'hardware')});
+  const phaseChanged = pose.phase !== lastFrame?.phase;
+  if (jumped && !inPreview && !wasInPreview && !phaseChanged) scene.crossfadeTo(s);
+  else scene.setProgress(s, {jump: inPreview || wasInPreview || phaseChanged});
  }
  if (!hwRegion) drawSchematic(s, h);
  syncInsertion(pose);
@@ -768,6 +769,7 @@ function showStill(){
 function onFrame(frame){
  if (abandoned) return;
  lastFrame = frame;
+ if (stage.dataset.renderedPhase !== frame.phase) stage.dataset.renderedPhase = frame.phase;
  stage.style.setProperty('--intro', frame.intro.toFixed(3));
  drawAnnotations();
 }
