@@ -12,7 +12,7 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23080b10'/%3E%3Cpath d='M8 7v12a8 8 0 0016 0V7h-4v12a4 4 0 01-8 0V7z' fill='%2374e2f4'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="./tokens.css?v=unijack-2.0">
 <link rel="stylesheet" href="./tbench/shared-nav.css?v=apple-16">
-<link rel="stylesheet" href="./style.css?v=unijack-2.0-routing">
+<link rel="stylesheet" href="./style.css?v=unijack-2.0-round-loop">
 <script>
 // Decide the layout before first paint: the pinned scroll story needs WebGL
 // (with reduced motion it steps between stops); otherwise the static layout.
@@ -20,9 +20,9 @@
 d.dataset.saveData=s?'on':'off';d.dataset.motion=r?'reduced':'full';d.dataset.story=!s&&!!window.WebGLRenderingContext?'on':'off';})(document.documentElement);
 </script>
 <!-- The page's own modules are versioned here, so a browser never runs a stale cached copy after an update. -->
-<script type="importmap">{"imports":{"three":"./vendor/three.module.min.js","three/addons/":"./vendor/","./story.js":"./story.js?v=unijack-2.0-routing","./motion.js":"./motion.js?v=unijack-2.0","./story-scene.js":"./story-scene.js?v=unijack-2.0","./detailed-model.js":"./detailed-model.js?v=unijack-2.0","./material-finish.js":"./material-finish.js?v=unijack-2.0","./dimensions.js":"./dimensions.js?v=unijack-2.0"}}</script>
+<script type="importmap">{"imports":{"three":"./vendor/three.module.min.js","three/addons/":"./vendor/","./story.js":"./story.js?v=unijack-2.0-round-loop","./motion.js":"./motion.js?v=unijack-2.0","./story-scene.js":"./story-scene.js?v=unijack-2.0","./detailed-model.js":"./detailed-model.js?v=unijack-2.0","./material-finish.js":"./material-finish.js?v=unijack-2.0","./dimensions.js":"./dimensions.js?v=unijack-2.0"}}</script>
 <link rel="modulepreload" href="./app.js?v=unijack-2.0">
-<link rel="modulepreload" href="./story.js?v=unijack-2.0-routing">
+<link rel="modulepreload" href="./story.js?v=unijack-2.0-round-loop">
 <link rel="modulepreload" href="./motion.js?v=unijack-2.0">
 <script>
 // Start three.js, the scene modules and the tiny texture previews with the page
@@ -140,7 +140,7 @@ text{font-family:Arial,Helvetica,sans-serif;fill:#b6d0fa}.heading{font-size:26px
 <polyline points="270,274 455,274 455,314 949,314 949,337 1387,337" class="trace approved-path path-cross" stroke="#2fdc64" />
 <polyline points="270,308 416,308 416,341 731,341 731,428 1000,428 1000,503 1387,503" class="trace approved-path path-cross" stroke="#2fdc64" />
 
-<path d="M270 429 H950 V597 H730 V707 H270 M730 597 V429 M950 429 V332" class="trace approved-path path-loopback" stroke="#ffe11d" />
+<path d="M270 429 H878 A90 90 0 0 1 968 519 V617 A90 90 0 0 1 878 707 H270" class="trace approved-path path-loopback" stroke="#ffe11d" />
 
 <path d="M270 510 H1387 M1010 510 V545 H1387 M1054 545 V596 H1387 M1098 596 V635 H1387" class="trace approved-path path-fanout" stroke="#129cf4" />
 
