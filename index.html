@@ -20,9 +20,9 @@
 d.dataset.saveData=s?'on':'off';d.dataset.motion=r?'reduced':'full';d.dataset.story=!s&&!!window.WebGLRenderingContext?'on':'off';})(document.documentElement);
 </script>
 <!-- The page's own modules are versioned here, so a browser never runs a stale cached copy after an update. -->
-<script type="importmap">{"imports":{"three":"./vendor/three.module.min.js","three/addons/":"./vendor/","./story.js":"./story.js?v=unijack-2.0-fanout","./motion.js":"./motion.js?v=unijack-2.0","./story-scene.js":"./story-scene.js?v=unijack-2.0","./detailed-model.js":"./detailed-model.js?v=unijack-2.0","./material-finish.js":"./material-finish.js?v=unijack-2.0","./dimensions.js":"./dimensions.js?v=unijack-2.0"}}</script>
+<script type="importmap">{"imports":{"three":"./vendor/three.module.min.js","three/addons/":"./vendor/","./story.js":"./story.js?v=unijack-2.0-fanout-ch3","./motion.js":"./motion.js?v=unijack-2.0","./story-scene.js":"./story-scene.js?v=unijack-2.0","./detailed-model.js":"./detailed-model.js?v=unijack-2.0","./material-finish.js":"./material-finish.js?v=unijack-2.0","./dimensions.js":"./dimensions.js?v=unijack-2.0"}}</script>
 <link rel="modulepreload" href="./app.js?v=unijack-2.0">
-<link rel="modulepreload" href="./story.js?v=unijack-2.0-fanout">
+<link rel="modulepreload" href="./story.js?v=unijack-2.0-fanout-ch3">
 <link rel="modulepreload" href="./motion.js?v=unijack-2.0">
 <script>
 // Start three.js, the scene modules and the tiny texture previews with the page
@@ -144,14 +144,14 @@ text{font-family:Arial,Helvetica,sans-serif;fill:#b6d0fa}.heading{font-size:26px
          M1373 405 l14 8 -14 8
          M1373 435 l14 8 -14 8
          M1373 467 l14 8 -14 8" class="trace approved-path path-fanout" stroke="#129cf4" />
-<path d="M1387 545 H1150 V580 H670 V614 H270
-         M670 580 V510 H270
+<path d="M1387 545 L270 614
+         M670 589.29 V510 H270
          M670 545 H270
          M670 580 H270
          M284 502 l-14 8 14 8
          M284 537 l-14 8 14 8
          M284 572 l-14 8 14 8
-         M284 606 l-14 8 14 8" class="trace approved-path path-fanout" stroke="#129cf4" />
+         M284 605 L270 614 L285 621" class="trace approved-path path-fanout" stroke="#129cf4" />
 
 <polyline points="270,363 716,363 716,636 829,636" class="trace approved-path path-logic logic-input-pair" stroke="#ff862f" stroke-dasharray="12 9"/>
 <polyline points="270,398 684,398 684,656 829,656" class="trace approved-path path-logic logic-input-pair" stroke="#ff862f" stroke-dasharray="12 9"/>

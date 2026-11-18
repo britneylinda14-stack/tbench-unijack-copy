@@ -56,14 +56,14 @@ text{font-family:Arial,Helvetica,sans-serif;fill:#b6d0fa}.heading{font-size:26px
          M1373 405 l14 8 -14 8
          M1373 435 l14 8 -14 8
          M1373 467 l14 8 -14 8" class="trace" stroke="#129cf4" />
-<path d="M1387 545 H1150 V580 H670 V614 H270
-         M670 580 V510 H270
+<path d="M1387 545 L270 614
+         M670 589.29 V510 H270
          M670 545 H270
          M670 580 H270
          M284 502 l-14 8 14 8
          M284 537 l-14 8 14 8
          M284 572 l-14 8 14 8
-         M284 606 l-14 8 14 8" class="trace" stroke="#129cf4" />
+         M284 605 L270 614 L285 621" class="trace" stroke="#129cf4" />
 <polyline points="270,363 716,363 716,636 829,636" class="trace" stroke="#ff862f" stroke-dasharray="12 9"/>
 <polyline points="270,398 684,398 684,656 829,656" class="trace" stroke="#ff862f" stroke-dasharray="12 9"/>
 <polyline points="879,646 927,646 927,315 1387,315" class="trace" stroke="#ff862f" stroke-dasharray="12 9"/>
