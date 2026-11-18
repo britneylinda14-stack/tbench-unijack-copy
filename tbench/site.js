@@ -1,6 +1,8 @@
 (()=>{
 const header=document.querySelector('#site-header'),toggle=document.querySelector('.menu-toggle');
 if(header&&toggle){const close=()=>{header.dataset.menu='false';toggle.setAttribute('aria-expanded','false');toggle.setAttribute('aria-label','Open navigation')};toggle.addEventListener('click',()=>{const on=header.dataset.menu!=='true';header.dataset.menu=String(on);toggle.setAttribute('aria-expanded',String(on));toggle.setAttribute('aria-label',on?'Close navigation':'Open navigation')});header.querySelectorAll('nav a').forEach(a=>a.addEventListener('click',close));document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});document.addEventListener('click',e=>{if(!header.contains(e.target))close()});window.matchMedia('(min-width:761px)').addEventListener('change',e=>{if(e.matches)close()})}
+// Photo frames show a soft preview until the photo has arrived, then the photo fades in.
+document.querySelectorAll('.related-photo img').forEach(img=>{if(img.complete&&img.naturalWidth)return;const frame=img.parentElement,done=()=>{delete frame.dataset.loading};frame.dataset.loading='';img.addEventListener('load',done,{once:true});img.addEventListener('error',done,{once:true})});
 const carousel=document.querySelector('#audience-carousel');if(!carousel)return;
 const tabs=[...carousel.querySelectorAll('[data-to]')],panels=[...carousel.querySelectorAll('[data-slide]')],counter=carousel.querySelector('#slide-count'),live=carousel.querySelector('#slide-status');
 let current=0,interval=null,paused=false;const reduce=window.matchMedia('(prefers-reduced-motion: reduce)');

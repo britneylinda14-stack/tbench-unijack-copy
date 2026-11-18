@@ -50,9 +50,16 @@ export function setupStudioEnvironment(scene,renderer){
 
 // Photograph-derived finish separation only: the blue mask is satin, the
 // white printed ink is matte, exposed pads glossier. Not a measured scan.
-export function photoFinish(texture){
+export function photoFinish(texture,width=1536){
  const canvas=document.createElement('canvas'),source=texture.image;
- canvas.width=1536;canvas.height=Math.round(source.height/source.width*canvas.width);
+ canvas.width=width;canvas.height=Math.round(source.height/source.width*canvas.width);
+ paintFinish(canvas,source);
+ const map=new THREE.CanvasTexture(canvas);map.name='Photo-derived satin mask and matte ink';map.anisotropy=12;
+ return map;
+}
+// Re-derive a finish map from a sharper photo (used after the progressive swap).
+export function refinePhotoFinish(map,source,width=1536){const c=map.image;c.width=width;c.height=Math.round(source.height/source.width*width);paintFinish(c,source);map.needsUpdate=true;}
+function paintFinish(canvas,source){
  const ctx=canvas.getContext('2d',{willReadFrequently:true});ctx.drawImage(source,0,0,canvas.width,canvas.height);
  const pixels=ctx.getImageData(0,0,canvas.width,canvas.height);
  for(let i=0;i<pixels.data.length;i+=4){
@@ -64,6 +71,4 @@ export function photoFinish(texture){
   pixels.data[i]=pixels.data[i+1]=pixels.data[i+2]=value;
  }
  ctx.putImageData(pixels,0,0);
- const map=new THREE.CanvasTexture(canvas);map.name='Photo-derived satin mask and matte ink';map.anisotropy=12;
- return map;
 }

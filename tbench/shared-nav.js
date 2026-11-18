@@ -39,5 +39,27 @@
     else if(header.dataset.menuOpen==='true'){setMenu(false);toggle.focus()}
   });
   window.matchMedia('(min-width:1121px)').addEventListener('change',e=>{if(e.matches)setMenu(false)});
+  // The header blends with the band beneath it: light over light sections,
+  // dark otherwise. Checked a few times a second while scrolling.
+  const themeOf=new WeakMap();let themeTimer=0;
+  const bandTheme=()=>{
+    themeTimer=0;let theme='dark';
+    if(header.dataset.menuOpen!=='true'){
+      const under=y=>document.elementsFromPoint(innerWidth/2,y).find(el=>!header.contains(el)&&!el.closest('.local-nav'));
+      const bottom=header.getBoundingClientRect().bottom;
+      // Sample the band behind the bar; at the very top of a page only the page ground is there, so look just below.
+      let top=under(bottom*.6);if(!top||top===document.body||top===document.documentElement)top=under(bottom+2);
+      for(let n=top;n&&n.nodeType===1;n=n.parentElement){
+        let t=themeOf.get(n);
+        if(t===undefined){const c=getComputedStyle(n).backgroundColor.match(/[\d.]+/g);t=null;if(c&&(c.length<4||+c[3]>.5))t=(.2126*c[0]+.7152*c[1]+.0722*c[2])/255>.6?'light':'dark';themeOf.set(n,t)}
+        if(t){theme=t;break}
+      }
+    }
+    if(header.dataset.theme!==theme){header.dataset.theme=theme;document.documentElement.dataset.headerTheme=theme}
+  };
+  const queueTheme=()=>{if(!themeTimer)themeTimer=setTimeout(bandTheme,120)};
+  addEventListener('scroll',queueTheme,{passive:true});addEventListener('resize',queueTheme);
+  toggle.addEventListener('click',()=>setTimeout(bandTheme,0));
+  bandTheme();
   document.documentElement.dataset.tbenchNavReady='true';
 })();

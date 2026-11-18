@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { RoundedBoxGeometry } from './vendor/RoundedBoxGeometry.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 import { DIMENSIONS as D, contactCenters } from './dimensions.js';
-import { microFinish, photoFinish } from './material-finish.js';
+import { microFinish, photoFinish, refinePhotoFinish } from './material-finish.js';
 
 // Model units are millimetres. Reference dimensions and inferred dimensions are separated in dimensions.js.
 // Source coordinates refer to the campaign photos at a 2048px-wide display scale.
@@ -12,6 +12,10 @@ const periPhotoQuad=[[1407,44],[1955,43],[1984,1105],[1421,1106]];
 const loader = new THREE.TextureLoader();
 const originals = {};
 const photoFinishes = {};
+// Progressive photos: the model is built on tiny previews (a few KB), then the
+// full WebP textures replace them. UVs are normalised, so any size maps the same.
+const clonesOf = {}, finishClonesOf = {};
+const photoURL = (file, size) => new URL(`./assets/textures/${file.replace('.jpg', '')}-${size}.webp`, import.meta.url).href;
 const makeMat=(name,color,metalness,roughness)=>Object.assign(new THREE.MeshPhysicalMaterial({color,metalness,roughness}),{name});
 const M={
  pcb:makeMat('Teal solder mask','#006277',0,.32), blue:makeMat('Mercury solder mask','#06304e',0,.32),
@@ -40,11 +44,11 @@ function strip(p,points,width,thickness,mat,name){
  const shape=new THREE.Shape([...a,...b.reverse()]);const geo=new THREE.ExtrudeGeometry(shape,{depth:width,bevelEnabled:false});geo.translate(0,0,-width/2);return mesh(p,geo,mat,name);
 }
 function solderFoot(p,x,z,w,d){return box(p,x,.08,z,w,.16,d,M.solder,'Solder land',.035);}
-function mapFrom(file,rect){const t=originals[file].clone();t.needsUpdate=true;t.repeat.set(rect[2]/2048,rect[3]/1152);t.offset.set(rect[0]/2048,1-(rect[1]+rect[3])/1152);t.anisotropy=12;return t;}
+function mapFrom(file,rect){const t=originals[file].clone();(clonesOf[file]??=[]).push(t);t.needsUpdate=true;t.repeat.set(rect[2]/2048,rect[3]/1152);t.offset.set(rect[0]/2048,1-(rect[1]+rect[3])/1152);t.anisotropy=12;return t;}
 function photoMat(file,rect,name){
  const board=/solder mask|back photographic/.test(name),cap=/capacitor/.test(name);
  const mat=new THREE.MeshPhysicalMaterial({map:mapFrom(file,rect),color:board?'#d3dbdf':'#d5d5d5',metalness:cap?.7:0,roughness:board?1:cap?.36:.86,clearcoat:board?.16:0,clearcoatRoughness:.38,specularIntensity:board?.65:.7});
- if(board){const finish=photoFinishes[file].clone();finish.repeat.copy(mat.map.repeat);finish.offset.copy(mat.map.offset);finish.needsUpdate=true;mat.roughnessMap=finish;}
+ if(board){const finish=photoFinishes[file].clone();(finishClonesOf[file]??=[]).push(finish);finish.repeat.copy(mat.map.repeat);finish.offset.copy(mat.map.offset);finish.needsUpdate=true;mat.roughnessMap=finish;}
  return Object.assign(mat,{name});
 }
 function plane(p,x,y,z,w,d,m){const n=mesh(p,new THREE.PlaneGeometry(w,d),m);n.rotation.x=-Math.PI/2;n.position.set(x,y,z);return n;}
@@ -221,10 +225,12 @@ function mountReport(part){
  const details=part.children.filter(n=>n.userData.boardMounted).map(n=>{const b=new THREE.Box3();n.traverse(m=>{if(m.isMesh){m.geometry.computeBoundingBox();b.union(m.geometry.boundingBox.clone().applyMatrix4(inv.clone().multiply(m.matrixWorld)));}});return {name:n.name,gapMm:Math.max(0,b.min.y-1.29)};});
  return {count:details.length,maxGapMm:Math.max(0,...details.map(n=>n.gapMm)),details};
 }
-function optimize(root){
- for(const major of root.children){major.updateMatrixWorld(true);const inv=major.matrixWorld.clone().invert(),byMaterial=new Map();
-  major.traverse(n=>{if(!n.isMesh)return;const mat=n.material;if(Array.isArray(mat))return;const geo=n.geometry.clone().applyMatrix4(inv.clone().multiply(n.matrixWorld));const clean=geo.index?geo.toNonIndexed():geo;clean.deleteAttribute('uv1');if(!clean.attributes.uv)clean.setAttribute('uv',new THREE.Float32BufferAttribute(new Float32Array(clean.attributes.position.count*2),2));if(!byMaterial.has(mat))byMaterial.set(mat,[]);byMaterial.get(mat).push(clean);});
-  major.clear();for(const [mat,geos] of byMaterial){const merged=mergeGeometries(geos,false);
+async function optimize(root,pause,tick){
+ for(const major of root.children){await pause();major.updateMatrixWorld(true);const inv=major.matrixWorld.clone().invert(),byMaterial=new Map();
+  const meshes=[];major.traverse(n=>{if(n.isMesh)meshes.push(n);});
+  for(const n of meshes){await tick();const mat=n.material;if(Array.isArray(mat))continue;const geo=n.geometry.clone().applyMatrix4(inv.clone().multiply(n.matrixWorld));const clean=geo.index?geo.toNonIndexed():geo;clean.deleteAttribute('uv1');if(!clean.attributes.uv)clean.setAttribute('uv',new THREE.Float32BufferAttribute(new Float32Array(clean.attributes.position.count*2),2));if(!byMaterial.has(mat))byMaterial.set(mat,[]);byMaterial.get(mat).push(clean);}
+  // Large groups merge in batches so each step stays short on slow phones.
+  major.clear();for(const [mat,all] of byMaterial)for(let k=0;k<all.length;k+=400){await tick();const geos=all.slice(k,k+400);const merged=mergeGeometries(geos,false);
    if(mat.normalMap){
     // Embed a tangent basis so normal maps survive GLB imports consistently.
     merged.setIndex(Array.from({length:merged.attributes.position.count},(_,i)=>i));merged.computeTangents();merged.setIndex(null);
@@ -234,15 +240,24 @@ function optimize(root){
    const obj=new THREE.Mesh(merged,mat);obj.name=mat.name;obj.castShadow=true;obj.receiveShadow=true;major.add(obj);geos.forEach(g=>g.dispose());}
  }
 }
-export async function buildDetailedModel(){
+export async function buildDetailedModel({full=2048,finishWidth=1536,shouldStop=()=>false}={}){
  primitives=0;passives=0;
  const metalGrain=microFinish('metal'),polymerGrain=microFinish('polymer');
  for(const mat of [M.silver,M.solder,M.ceramic]){mat.roughnessMap=metalGrain.roughness;mat.normalMap=metalGrain.normal;mat.normalScale.set(.24,.08);}
  for(const mat of [M.black,M.chip,M.ivory,M.tan,M.bronze,M.green,M.rugged]){mat.roughnessMap=polymerGrain.roughness;mat.normalMap=polymerGrain.normal;mat.normalScale.set(.045,.045);}
  M.rugged.normalScale.set(.35,.35);
  for(const mat of [M.pcb,M.blue]){mat.clearcoat=.30;mat.clearcoatRoughness=.25;}
- await Promise.all(Object.values(photoFiles).map(async f=>{if(!originals[f]){const t=await loader.loadAsync(new URL(`./assets/${f}`,import.meta.url).href);t.colorSpace=THREE.SRGBColorSpace;originals[f]=t;}}));
- for(const file of Object.keys(originals))photoFinishes[file]??=photoFinish(originals[file]);
+ await Promise.all(Object.values(photoFiles).map(async f=>{if(!originals[f]){const t=await loader.loadAsync(photoURL(f,'tiny'));t.colorSpace=THREE.SRGBColorSpace;originals[f]=t;}}));
+ performance.mark('uj:previews-loaded');
+ // Yield between build stages so the still-photo time limit can interrupt a slow build.
+ let lastYield=performance.now();
+ const yieldNow=globalThis.scheduler?.yield?()=>scheduler.yield():()=>new Promise(r=>{const c=new MessageChannel();c.port1.onmessage=()=>r();c.port2.postMessage(0);});
+ const pause=async()=>{await yieldNow();lastYield=performance.now();if(shouldStop())throw new Error('cancelled');};
+ const tick=()=>performance.now()-lastYield>30?pause():null;
+ await pause();
+ // Satin masks start small (from the previews) and are re-derived at full size later.
+ for(const file of Object.keys(originals))photoFinishes[file]??=photoFinish(originals[file],256);
+ await pause();
  const root=new THREE.Group();root.name='UniJack_photo_reconstruction_v2';root.userData={status:'PHOTO-BASED APPROXIMATION — NOT CAD',scale:'Model units: millimetres. Connector reference dimensions; Mercury depth and carrier outline inferred, not measured.',sources:['Crowd Supply UniJack campaign gallery 1–4'],underside:'Base and PeriBoard underside not photographed; plain inferred surfaces'};
  root.userData.materials='Visual appearance inferred from actual campaign photographs. Authored roughness; no measured material scans or confirmed plating composition.';
  const base=group(root,'UniJack_baseboard'),mercury=group(root,'Mercury_module'),peri=group(root,'PeriBoard');
@@ -255,6 +270,7 @@ for(const z0 of contactCenters){
  box(base,-40.49,5.57,z,.68,.14,.30,M.gold,'Visible connector contact');
 }
 power(base,-73.8,-27.6);terminal(base);usb(base,-72.1,6.0);ethernet(base,-72.5,27.8);
+ await pause();
  // Project each package and its own marking from the same image rectangle.
  // This prevents a second offset chip from showing through beside the mesh.
  chipFromPhoto(base,[968,178,88,80],{height:1.35});
@@ -268,6 +284,7 @@ power(base,-73.8,-27.6);terminal(base);usb(base,-72.1,6.0);ethernet(base,-72.5,2
  mezzanine(base,60.0,-34.0,36.8,0,false);mezzanine(base,60.0,34.0,36.8,0,false);mezzanine(base,43.5,-4.5,32.9,Math.PI/2,false);
  for(const [x,z,rows] of [[6.5,32.9,4],[17.8,32.4,5],[29.7,32.0,5]])header(base,x,z,rows,2);
  for(let i=0;i<9;i++){const n=group(base,'Status LED package',-57+i*4.9,1.29,37.6);box(n,0,.29,0,2.1,.5,.8,M.led,'LED ceramic body',.05);for(const side of [-1,1])solderFoot(n,side*1.0,0,.44,.85);}
+ await pause();
  // Individually placed passives, selected from visible solder lands in gallery 3.
  const clusters=[[878,35,8,15,0],[912,56,7,17,0],[955,45,4,21,0],[1088,72,3,14,0],[1326,171,7,0,13],[1359,188,4,14,0],[1394,161,4,15,0],[1404,273,4,15,0],[1448,317,4,0,14],[1453,355,3,0,13],[1476,228,3,14,0],[1465,287,2,15,0],[1120,278,3,13,0],[1058,224,3,12,0],[686,93,3,14,0]];
  clusters.forEach(([px,pz,count,dx,dz],j)=>{for(let i=0;i<count;i++){const [x,z]=baseCoord(px+i*dx,pz+i*dz);smd(base,x,z,j%4?1.05:1.55,j%4?.57:.78,.5,j%3?M.tan:M.black,1.29,dx?Math.PI/2:0);}});
@@ -275,7 +292,9 @@ power(base,-73.8,-27.6);terminal(base);usb(base,-72.1,6.0);ethernet(base,-72.5,2
  const [dx,dz]=baseCoord(624,150);smd(base,dx,dz,5,2.2,1.5,M.black,1.29);topPhoto(base,dx,dz,4.3,2.15,2.80,'gallery-3.jpg',[608,143,31,15]);
  // Crystal can and its rolled rim; the original printed marking is retained.
  {const [x,z]=baseCoord(943,233),n=group(base,'Crystal resonator',x,1.29,z);box(n,0,.22,0,4.9,.44,3.7,M.solder,'Crystal mounting rim',.12);box(n,0,.8,0,4.35,1.2,3.15,M.ceramic,'Crystal can',.25);topPhoto(n,0,0,4.15,3.0,1.41,'gallery-3.jpg',[928,223,29,21]);}
+ await pause();
  smallUSB(base,78.5,-22.2,{mini:true});smallUSB(base,78.5,13.8);
+ await pause();
  // Mercury: source-proportioned board, actual through-holes, notch and dual-side contact fingers.
  const mh=[[-11.0,-31.2,1.05],[13.6,-31.2,1.05],[-11,31.2,1.05],[13.6,31.2,1.05]];
  board(mercury,33.2,66,'gallery-4.jpg',crops.module,{holes:mh,module:true,bottom:crops.back});
@@ -291,6 +310,7 @@ power(base,-73.8,-27.6);terminal(base);usb(base,-72.1,6.0);ethernet(base,-72.5,2
  for(const [pos,r,h,rect] of [[cap1,3.25,6.92,[575,118,89,92]],[cap2,2.53,5.62,[847,390,77,77]]]){const disc=mesh(mercury,new THREE.CircleGeometry(r,48),photoMat('gallery-4.jpg',rect,'Photographic capacitor marking'));disc.rotation.x=-Math.PI/2;disc.position.set(pos[0],h,pos[1]);}
  const ic1=cv(805,204);gullwing(mercury,...ic1,4.2,4.7,1.25,8);topPhoto(mercury,...ic1,4.2,4.7,2.57,'gallery-4.jpg',[771,165,69,76]);
  const ic2=cv(890,545);gullwing(mercury,...ic2,2.65,3.2,.9,5);
+ await pause();
  // Individually raised passive clusters following the visible component distribution.
  const rows=[
   [750,133,5,21,0],[725,160,1,0,21],[894,174,2,23,0],[886,219,2,23,0],
@@ -309,6 +329,7 @@ power(base,-73.8,-27.6);terminal(base);usb(base,-72.1,6.0);ethernet(base,-72.5,2
  // Module underside packages and passives are supported by the supplied back photograph.
  // Mounts start at the bottom copper surface. The helpers' 1.3 mm default
  // belongs to the TOP face and must not be reused after inverting a group.
+ await pause();
  const underside=group(mercury,'Mercury underside components');underside.rotation.z=Math.PI;underside.position.y=-.015;
  const backPosition=(px,pz)=>[(px-1091)/536*33.2-16.6,(pz-42)/1065*66-33];
  const backChip=backPosition(1405,214);gullwing(underside,...backChip,4.5,4.6,1.05,4,false,0);topPhoto(underside,...backChip,4.5,4.6,1.05,'gallery-4.jpg',[1369,178,72,73]);
@@ -320,6 +341,7 @@ power(base,-73.8,-27.6);terminal(base);usb(base,-72.1,6.0);ethernet(base,-72.5,2
  mercury.updateMatrixWorld(true);const inverseMercury=mercury.matrixWorld.clone().invert();
  const mounting=underside.children.filter(part=>part.isGroup).map(part=>{part.updateWorldMatrix(true,true);const bounds=new THREE.Box3();part.traverse(n=>{if(n.isMesh){n.geometry.computeBoundingBox();bounds.union(n.geometry.boundingBox.clone().applyMatrix4(inverseMercury.clone().multiply(n.matrixWorld)));}});return {name:part.name,gapMm:Math.max(0,-.015-bounds.max.y)};});
  root.userData.undersideMounting={count:mounting.length,maxGapMm:Math.max(...mounting.map(p=>p.gapMm)),surfaceY:-.015,details:mounting};
+ await pause();
  // PeriBoard: photo-derived silk, open receptacles and 16 discrete pin banks.
  board(peri,37.6,78,'gallery-2.jpg',crops.peri,{quad:periPhotoQuad});mezzanine(peri,0,-33.6,34.6);mezzanine(peri,0,35.1,34.6);mezzanine(peri,-12.1,-6.7,35.0,Math.PI/2);
  const periCoord=(px,pz)=>{const v=(pz-44)/1061,left=1407+14*v,right=1955+29*v;return [(px-left)/(right-left)*37.6-18.8,v*78-39];};
@@ -330,7 +352,23 @@ power(base,-73.8,-27.6);terminal(base);usb(base,-72.1,6.0);ethernet(base,-72.5,2
  peri.scale.set(D.peri.width/37.6,1,D.peri.depth/78);
  mercury.position.set(-22.2,4.35,0);peri.position.set(62.6,5.15,0);
  root.userData.dimensionReferences=D;root.userData.boardMounting={base:mountReport(base),peri:mountReport(peri)};
- const before=primitives;optimize(root);let triangles=0,drawCalls=0;root.traverse(n=>{if(n.isMesh){drawCalls++;triangles+=n.geometry.attributes.position.count/3;}});
+ await pause();
+ const before=primitives;await optimize(root,pause,tick);let triangles=0,drawCalls=0;root.traverse(n=>{if(n.isMesh){drawCalls++;triangles+=n.geometry.attributes.position.count/3;}});
  root.userData.geometry={authoredPrimitives:before,raisedPassives:passives,triangles,materialBatches:drawCalls};
- return {root,base,mercury,peri,stats:root.userData.geometry,rest:{mercury:mercury.position.clone(),peri:peri.position.clone()}};
+ // Fetch and decode the full photos; resolves with apply() (texture swap) and
+ // refineFinish() (re-derives the satin masks; heavier, run when idle).
+ async function upgradeTextures(){
+  const images = {};
+  await Promise.all(Object.keys(originals).map(async f => {
+   const img = new Image(); img.decoding = 'async'; img.src = photoURL(f, full);
+   await img.decode(); images[f] = img;
+  }));
+  return {
+   // GPU storage was sized for the preview: release it so it is reallocated.
+   apply(){ for (const f of Object.keys(images)) { originals[f].image = images[f]; for (const t of [originals[f], ...(clonesOf[f] || [])]) { t.dispose(); t.needsUpdate = true; } } },
+   // One step per photo, so the caller can spread the work over separate idle moments.
+   refineSteps: Object.keys(images).map(f => () => { const map = photoFinishes[f]; refinePhotoFinish(map, images[f], finishWidth); for (const t of [map, ...(finishClonesOf[f] || [])]) { t.dispose(); t.needsUpdate = true; } })
+  };
+ }
+ return {root,base,mercury,peri,upgradeTextures,stats:root.userData.geometry,rest:{mercury:mercury.position.clone(),peri:peri.position.clone()}};
 }
