@@ -301,6 +301,12 @@ html:not([data-story=on]) .routing-section{padding-top:0}
 [data-story=on] #product-stage.no-webgl::before{opacity:0;transition:opacity 300ms ease;animation:none}
 [data-story=on] #product-stage.no-webgl .scene-fallback{display:block;left:50%;top:var(--still-top,45%);width:var(--still-w,60vw);height:var(--still-h,34vw);transform:translateX(-50%);object-fit:cover;border-radius:var(--radius-lg);opacity:0;transition:opacity 300ms ease}
 [data-story=on] #product-stage.no-webgl .scene-fallback.is-loaded{opacity:1}
+.routing-board-fallback{display:none}
+[data-story=on][data-stop=routing-preview] #product-stage:not(.ready) .routing-board-fallback{position:absolute;inset:var(--routing-board-top) 0 100px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;margin:0;color:var(--c-on-dark);font-size:var(--t-caption)}
+.routing-board-fallback img{width:min(72%,936px);min-height:0;object-fit:contain}
+[data-story=on][data-stop=routing-preview] #product-stage :is(.scene-fallback,.stage-webgl-snap,.scene-footnote),
+[data-story=on][data-stop=routing-preview] #product-stage::before{visibility:hidden}
+[data-story=on][data-stop=routing-preview] #product-stage .stage-canvas{pointer-events:none}
 /* Time-limit still: the "3D unavailable" notes apply only when WebGL is actually missing. */
 [data-still=timeout] #scene-hint,[data-still=timeout] .assembly-stage .assembly-note{display:none}
 [data-still=timeout] #scene-hint+span::before{content:none}
@@ -354,12 +360,12 @@ html[data-story=on][data-snap=on]{scroll-snap-type:y proximity}
 [data-story=on] #platform{max-width:none;padding:0}
 /* Fallback heights (≈ the timeline) until story.js sets exact ones, so the page
    is full length at first paint and later images stay outside the lazy-load range. */
-[data-story=on] #platform{height:56svh}
+[data-story=on] #platform{height:108svh}
 [data-story=on] .assembly-section{height:232svh}
 [data-story=on] .beat-routing{height:68svh}
 [data-story=on] .beat-stats{height:110svh}
 @media (max-width:959px){
- [data-story=on] #platform{height:74svh}
+ [data-story=on] #platform{height:126svh}
  [data-story=on] .assembly-section{height:223svh}
  [data-story=on] .beat-routing{height:110svh}
  [data-story=on] .beat-stats{height:98svh}
