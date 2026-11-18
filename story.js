@@ -10,6 +10,7 @@ const reduced = matchMedia('(prefers-reduced-motion: reduce)');
 const compact = matchMedia('(max-width: 959px)');
 const stage = document.querySelector('#product-stage');
 const $ = s => document.querySelector(s);
+const header = $('#tb-unified-header');
 const sections = {
  proof: $('.beat-proof'), platform: $('#platform'), assembly: $('.assembly-section'),
  routing: $('#routing'), beatRouting: $('.beat-routing'), beatStats: $('.beat-stats'),
@@ -424,9 +425,9 @@ function measureText(){
   t.rest = t.els.map(el => { const r = el.getBoundingClientRect(); return {top:r.top, height:r.height}; });
   t.top = Math.min(...t.rest.map(r => r.top)); t.height = Math.max(...t.rest.map(r => r.top + r.height)) - t.top;
  }
- const localBottom = $('#local-nav').getBoundingClientRect().bottom;
+ const headerBottom = header.getBoundingClientRect().bottom;
  const tallest = Math.max(...TEXT.map(t => t.height));
- band.top = localBottom + (compact.matches ? 10 : 18);
+ band.top = headerBottom + (compact.matches ? 10 : 18);
  band.bottom = band.top + Math.min(tallest + 8, vh * .4);
 }
 // Phones: text and board take turns. During a stop's "read" stretch its copy
@@ -553,9 +554,9 @@ function hardwareX(y){
 function layoutHardware(){
  if (!hwActive()) { if (hwRegion) { hwRegion = null; stage.dataset.phase = 'story'; stage.style.removeProperty('--hw-shift'); } return; }
  stage.dataset.phase = 'hardware';
- const cr = sections.cards.getBoundingClientRect(), localBottom = $('#local-nav').getBoundingClientRect().bottom;
+ const cr = sections.cards.getBoundingClientRect(), headerBottom = header.getBoundingClientRect().bottom;
  const st = stage.getBoundingClientRect();
- const h = vh - localBottom - 48, top = Math.min(Math.max(localBottom + 24, cr.top), cr.bottom - h);
+ const h = vh - headerBottom - 48, top = Math.min(Math.max(headerBottom + 24, cr.top), cr.bottom - h);
  const r = {x:0, y:top, w:Math.round(vw * .56), h};
  // The board never spreads over the cards: the canvas fades out at the region's edge.
  stage.style.setProperty('--hw-right', `${Math.round(r.x + r.w - st.left)}px`);

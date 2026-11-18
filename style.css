@@ -5,7 +5,7 @@
    [data-story=off] static layout in normal flow (reduced motion, Save-Data, no JS) */
 
 *,*::before,*::after{box-sizing:border-box}
-html{scroll-padding-top:calc(var(--local) + 16px);-webkit-text-size-adjust:100%;background:var(--c-black)}
+html{scroll-padding-top:calc(var(--header) + 16px);-webkit-text-size-adjust:100%;background:var(--c-black)}
 body{margin:0;background:var(--c-black);color:var(--c-on-dark);font:400 var(--t-body)/1.47 var(--font-sans);letter-spacing:-.01em;font-kerning:normal;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;overflow-x:clip}
 img,svg,canvas{display:block;max-width:100%}
 a{color:inherit;text-decoration:none}
@@ -44,26 +44,8 @@ h1 span,h2 span{color:var(--c-on-dark-3)}
  .text-link:hover{text-decoration-color:currentColor}
 }
 
-/* ---------- Local nav ---------- */
-/* One bar: the global header is fixed and the product nav is a child of it,
-   right-aligned before the menu button (or after the header's own action),
-   so the whole bar is painted as a single background layer. */
-.page-unijack{--header:var(--local)}
-.page-unijack main{padding-top:var(--local)}
-.page-unijack .tb-header .tb-header-inner{max-width:1260px}
-.local-nav{position:absolute;top:0;right:var(--gutter);height:100%;pointer-events:none}
-.local-nav-inner{display:flex;align-items:center;gap:12px;height:100%;pointer-events:auto}
-.local-nav-title{display:inline-flex;align-items:center;min-height:44px;font-size:17px;font-weight:600;letter-spacing:-.015em;white-space:nowrap;transition:color var(--dur-2) ease}
-html[data-header-theme=light] .local-nav-title{color:var(--c-on-light)}
-html[data-header-theme=light] .local-nav :focus-visible{outline-color:var(--c-cyan-deep)}
-@media (min-width:1068px){.page-unijack .tb-header .tb-header-inner{padding-right:calc(var(--gutter) + 216px)}}
-/* Between 1068 and 1279px the bar has no room for both actions: the header's own "Discuss a project" link yields to the product's "Contact TBench". */
-@media (min-width:1068px) and (max-width:1279px){.page-unijack .tb-header .tb-contact{display:none}}
-@media (max-width:1067px){.local-nav{right:calc(var(--gutter) + 40px)}.page-unijack .tb-header .tb-brand img{width:84px}}
-.tb-header .local-nav-cta{position:relative;display:inline-flex;align-items:center;min-height:28px;padding:0 12px;border-radius:var(--pill);background:var(--c-cyan);color:var(--c-cyan-ink);font-size:12px;font-weight:600;letter-spacing:0;white-space:nowrap;transition:background-color var(--dur-2) ease}
-.local-nav-cta::after{content:'';position:absolute;inset:-8px -4px}
-.tb-header .local-nav-cta:focus-visible{border-radius:var(--pill)}
-@media (hover:hover) and (pointer:fine){.local-nav-cta:hover{background:var(--c-cyan-2)}}
+/* Offset the page for the fixed shared header. */
+.page-unijack main{padding-top:var(--header)}
 
 /* ---------- Bands ---------- */
 .section{width:100%;max-width:var(--content);margin-inline:auto;padding:var(--section) var(--gutter);text-align:center}
@@ -301,9 +283,9 @@ html:not([data-story=on]) .routing-section{padding-top:0}
    story.js sizes the sections from them. Copy scrolls through a band above
    the board; annotations on the model carry the story.
    ===================================================================== */
-[data-story=on]{--band-top:calc(var(--local) + 18px)}
+[data-story=on]{--band-top:calc(var(--header) + 18px)}
 /* Sized in svh so Safari's address bar and toolbar never resize the stage. */
-[data-story=on] #product-stage{position:fixed;inset:var(--local) 0 auto 0;height:calc(100vh - var(--local));height:calc(100svh - var(--local));z-index:0;pointer-events:none;opacity:var(--fade,1)}
+[data-story=on] #product-stage{position:fixed;inset:var(--header) 0 auto 0;height:calc(100vh - var(--header));height:calc(100svh - var(--header));z-index:0;pointer-events:none;opacity:var(--fade,1)}
 [data-story=on] #product-stage[data-visible=false]{visibility:hidden}
 [data-story=on] #product-stage .stage-canvas{inset:0;pointer-events:auto}
 /* Nothing shows before the board enters; the reveal sets --intro. */
@@ -357,7 +339,7 @@ html[data-story=on][data-snap=on]{scroll-snap-type:y proximity}
 
 [data-story=on] :is(main>.hero,.beat-proof,#platform,.assembly-section,#routing){position:relative;z-index:1;pointer-events:none}
 [data-story=on] :is(.hero-copy,.hero-bottom)>*{pointer-events:auto}
-[data-story=on] .hero{min-height:calc(100svh - var(--local))}
+[data-story=on] .hero{min-height:calc(100svh - var(--header))}
 /* Breathing room between the header and the hero copy. */
 [data-story=on] .hero-copy{padding-top:clamp(40px,6svh,64px)}
 [data-story=on] .hero-bottom{position:absolute;left:0;right:0;bottom:0;height:96px;pointer-events:none}
