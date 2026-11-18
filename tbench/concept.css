@@ -150,7 +150,7 @@ p{text-wrap:pretty}
 .page-product .sub-hero-card{background:#fff!important}
 .sub-card-header span[aria-hidden],.sub-card-header span:last-child:not(:first-child){display:none}
 .sub-product-photo{border:0!important;background:#fff!important;border-radius:var(--radius-lg)}
-.sub-product-photo img{max-height:min(56vh,520px);width:auto;margin:0 auto;mix-blend-mode:multiply}
+.sub-product-photo img{max-height:min(56vh,520px);width:auto;height:auto;object-fit:contain;margin:0 auto;mix-blend-mode:multiply}
 .sub-hero-card>strong{color:var(--c-on-dark);font-size:var(--t-h3);font-weight:600;letter-spacing:-.02em;line-height:1.1}
 .sub-card-diagram span{border:1px solid var(--c-line-dark-2)!important;background:transparent!important;border-radius:var(--radius);color:var(--c-on-dark);font-family:var(--font-mono)}
 .sub-card-diagram i{background:var(--c-cyan)!important}
