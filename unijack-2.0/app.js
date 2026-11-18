@@ -180,7 +180,7 @@ document.querySelectorAll('[data-route]').forEach(button=>button.addEventListene
  if(mode==='logic'){updateGate();return;}
  document.querySelector('#signal-input-direction').textContent='GROUPS X';
  document.querySelector('#signal-output-direction').textContent='GROUPS Y';
- const descriptions={route:'Channels follow parallel direct routes through ERAU between module and peripherals; routing is bi-directional.',cross:'Cross-route connections are shown without Group X1 CH3.',fanout:'One source signal (Group X1 CH0) branches to multiple peripheral channels.',loopback:'A single signal travels through ERAU and returns on a lower path to a module input.'};
+ const descriptions={route:'Channels follow parallel direct routes through ERAU between module and peripherals; routing is bi-directional.',cross:'Cross-route connections are shown without Group X1 CH3.',fanout:'A module signal fans out to three peripheral channels, and a peripheral signal fans out to four module channels. Each set of branches shares a single junction.',loopback:'A single signal travels through ERAU and returns on a lower path to a module input.'};
  routingDescription.textContent=descriptions[mode];
  signalDiagram.setAttribute('aria-label',descriptions[mode]);
  const svg=signalDiagram.querySelector('.erau-map');if(svg)svg.setAttribute('aria-label',descriptions[mode]);
