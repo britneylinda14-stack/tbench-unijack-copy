@@ -22,7 +22,7 @@ document.querySelectorAll('[data-view]').forEach(button=>button.addEventListener
 }));
 document.querySelector('#reset-scene').addEventListener('click',()=>{story.scene?.resetView();clearOverride();if(!story.on){dockTo('hero');story.goTo('assembled');}});
 story.loadScene().then(scene=>{
- if(!scene){document.querySelector('#scene-hint').textContent='Product photograph · 3D unavailable in this browser';document.querySelectorAll('.scene-controls button:not([data-view="routing"]), [data-part], [data-inspect], #insertion, #play-insertion').forEach(b=>b.disabled=true);document.querySelector('#stage-callout').hidden=true;assemblyElement.querySelector('.assembly-note').textContent='Product photograph · interactive assembly unavailable in this browser';}
+ if(!scene){document.querySelector('#scene-hint').textContent='Product photograph · 3D unavailable in this browser';document.querySelectorAll('.scene-controls button, [data-part], [data-inspect], #insertion, #play-insertion').forEach(b=>b.disabled=true);document.querySelector('#stage-callout').hidden=true;assemblyElement.querySelector('.assembly-note').textContent='Product photograph · interactive assembly unavailable in this browser';}
  // UI diagnostics intentionally expose website state only; no hardware state implied.
  window.uniJackScene=scene;syncInsertionLoop();
 });

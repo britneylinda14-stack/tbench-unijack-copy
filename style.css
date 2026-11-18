@@ -301,16 +301,10 @@ html:not([data-story=on]) .routing-section{padding-top:0}
 [data-story=on] #product-stage.no-webgl::before{opacity:0;transition:opacity 300ms ease;animation:none}
 [data-story=on] #product-stage.no-webgl .scene-fallback{display:block;left:50%;top:var(--still-top,45%);width:var(--still-w,60vw);height:var(--still-h,34vw);transform:translateX(-50%);object-fit:cover;border-radius:var(--radius-lg);opacity:0;transition:opacity 300ms ease}
 [data-story=on] #product-stage.no-webgl .scene-fallback.is-loaded{opacity:1}
-.routed-preview{display:none}
-[data-story=on][data-stop=routed] .routed-preview{display:block;position:absolute;inset:var(--routed-top) var(--gutter) 100px;max-width:1100px;margin-inline:auto}
-.routed-preview img{display:block;width:100%;height:100%;object-fit:contain}
-[data-story=on][data-stop=routed] #product-stage :is(.stage-canvas,.scene-fallback,.scene-footnote){visibility:hidden}
-[data-story=on][data-stop=routed] #product-stage::before{display:none}
 /* Time-limit still: the "3D unavailable" notes apply only when WebGL is actually missing. */
 [data-still=timeout] #scene-hint,[data-still=timeout] .assembly-stage .assembly-note{display:none}
 [data-still=timeout] #scene-hint+span::before{content:none}
 [data-story=on] .scene-controls{left:50%;bottom:30px;transform:translateX(-50%);pointer-events:auto;opacity:calc(var(--intro,1) * (1 - var(--dim,0)))}
-[data-story=on][data-stop=routed] .scene-controls{opacity:1}
 [data-story=on] .scene-footnote{left:var(--gutter);right:var(--gutter);bottom:6px;opacity:calc(1 - var(--dim,0))}
 [data-story=on] :is(.scene-controls,.scene-footnote){transition:visibility 0s linear var(--dur-3)}
 [data-story=on][data-chapter=assembly] :is(.scene-controls,.scene-footnote){opacity:0;visibility:hidden;transition:opacity var(--dur-2) ease,visibility 0s linear var(--dur-2)}
@@ -360,12 +354,12 @@ html[data-story=on][data-snap=on]{scroll-snap-type:y proximity}
 [data-story=on] #platform{max-width:none;padding:0}
 /* Fallback heights (≈ the timeline) until story.js sets exact ones, so the page
    is full length at first paint and later images stay outside the lazy-load range. */
-[data-story=on] #platform{height:116svh}
+[data-story=on] #platform{height:56svh}
 [data-story=on] .assembly-section{height:232svh}
 [data-story=on] .beat-routing{height:68svh}
 [data-story=on] .beat-stats{height:110svh}
 @media (max-width:959px){
- [data-story=on] #platform{height:134svh}
+ [data-story=on] #platform{height:74svh}
  [data-story=on] .assembly-section{height:223svh}
  [data-story=on] .beat-routing{height:110svh}
  [data-story=on] .beat-stats{height:98svh}
