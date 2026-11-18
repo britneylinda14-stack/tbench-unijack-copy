@@ -35,7 +35,6 @@ export function mercuryInsertionPose(amount,edgeX=-17.5,edgeY=.7){
 //   move = the board or camera moves to the stop
 //   draw = the stop's annotations draw in (nothing else moves)
 //   hold = nothing moves, so the annotations can be read
-//   Total pinned length: about 5.4 screens on desktop, 5.8 on phones.
 //   read = phones only: the stop's heading and paragraph are alone on screen,
 //          fully visible, before the board comes back and moves (0 = none)
 // Phones use the `phone` column below 960px wide.
@@ -44,6 +43,7 @@ export const PACING = {
  desktop: {
   assembled: {move:.20, draw:.08, hold:.20},
   exploded:  {move:.28, draw:.08, hold:.20},
+  routed:    {hold:.60},
   ports:     {move:.20, draw:.08, hold:.20},
   chips:     {move:.18, draw:.08, hold:.20},
   underside: {move:.22, draw:.08, hold:.20},
@@ -59,6 +59,7 @@ export const PACING = {
  phone: {
   assembled: {move:.20, draw:.06, hold:.20},
   exploded:  {read:.28, move:.22, draw:.06, hold:.18},
+  routed:    {hold:.60},
   ports:     {read:.28, move:.16, draw:.06, hold:.18},
   chips:     {move:.15, draw:.06, hold:.18},
   underside: {move:.18, draw:.06, hold:.18},
@@ -89,7 +90,7 @@ export const SCHEMATIC_GROUPS = ['route','cross','loopback','fanout','logic'];
 export function buildTimeline(pacing){
  const list = [];
  const add = (name, {read=0, move=0, draw=0, hold=0}, extra = {}) => list.push({name, read, move, draw, hold, ...extra});
- for (const n of ['assembled','exploded','ports','chips','underside']) add(n, pacing[n]);
+ for (const n of ['assembled','exploded','routed','ports','chips','underside']) add(n, pacing[n]);
  add('insertion', {move:pacing.insertion.move});
  add('separate', pacing.insertion.separate);
  add('connected', pacing.insertion.connect);
