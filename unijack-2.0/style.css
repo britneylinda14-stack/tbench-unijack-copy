@@ -183,7 +183,6 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border:0;border-radiu
 }
 #routing .approved-path{opacity:.18;transition:opacity .18s,stroke-width .18s}
 #routing [data-signal-mode=route] .path-route,#routing [data-signal-mode=cross] .path-cross,#routing [data-signal-mode=loopback] .path-loopback,#routing [data-signal-mode=fanout] .path-fanout,#routing [data-signal-mode=logic] .path-logic{opacity:1;stroke-width:7}
-#routing .path-loopback{stroke-linejoin:miter}
 #routing .logic-input-single,#routing [data-logic-gate=NOT] .logic-input-pair{display:none}
 #routing [data-logic-gate=NOT] .logic-input-single{display:inline}
 #routing .approved-routing-graphic .gate-shape{fill:#0a2c53;stroke:#bad7ff;stroke-width:3}
