@@ -285,7 +285,7 @@ html:not([data-story=on]) .routing-section{padding-top:0}
    ===================================================================== */
 [data-story=on]{--band-top:calc(var(--header) + 18px)}
 /* Sized in svh so Safari's address bar and toolbar never resize the stage. */
-[data-story=on] #product-stage{position:fixed;inset:var(--header) 0 auto 0;height:calc(100vh - var(--header));height:calc(100svh - var(--header));z-index:0;pointer-events:none;opacity:var(--fade,1)}
+[data-story=on] #product-stage{position:fixed;inset:var(--header) 0 auto 0;height:calc(100vh - var(--header));height:calc(100svh - var(--header));z-index:0;pointer-events:none;opacity:var(--fade,1);transition-property:none}
 [data-story=on] #product-stage[data-visible=false]{visibility:hidden}
 [data-story=on] #product-stage .stage-canvas{inset:0;pointer-events:auto}
 /* Nothing shows before the board enters; the reveal sets --intro. */
@@ -315,8 +315,9 @@ html:not([data-story=on]) .routing-section{padding-top:0}
 [data-story=on] :is(.scene-controls,.scene-footnote){transition:visibility 0s linear var(--dur-3)}
 [data-story=on][data-chapter=assembly] :is(.scene-controls,.scene-footnote){opacity:0;visibility:hidden;transition:opacity var(--dur-2) ease,visibility 0s linear var(--dur-2)}
 [data-story=on] .story-schematic{position:fixed}
-/* Hardware section: the board comes back beside (desktop) or above (phones) the cards. */
-[data-story=on] #product-stage[data-phase=hardware]{opacity:var(--hw-in,0)}
+/* Fade in beside the cards once the scene has drawn the hardware pose. */
+[data-story=on] #product-stage[data-phase=hardware]{opacity:0;clip-path:inset(var(--hw-clip-top,0px) 0 var(--hw-clip-bottom,0px))}
+[data-story=on] #product-stage[data-phase=hardware][data-rendered-phase=hardware]{opacity:var(--hw-in,0)}
 [data-story=on] #product-stage[data-phase=hardware] .stage-canvas{pointer-events:none}
 @media (min-width:960px){[data-story=on] #product-stage[data-phase=hardware] .stage-canvas{-webkit-mask-image:linear-gradient(to right,#000 calc(var(--hw-right,56vw) - 96px),transparent var(--hw-right,56vw));mask-image:linear-gradient(to right,#000 calc(var(--hw-right,56vw) - 96px),transparent var(--hw-right,56vw))}}
 [data-story=on] #product-stage[data-phase=hardware] :is(.scene-controls,.scene-footnote){visibility:hidden}
