@@ -55,6 +55,7 @@ main{position:relative}
 .hero{position:relative;text-align:center}
 .hero-copy{position:relative;z-index:2;max-width:var(--content);margin:0 auto;padding:0 var(--gutter)}
 .hero h1{margin:0 auto}
+.hero h1 span{white-space:nowrap}
 .hero-description{max-width:34rem;margin:var(--s-4) auto 0;color:var(--c-on-dark-2);font-size:var(--t-lead);line-height:1.4;letter-spacing:-.012em}
 .hero-actions{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:var(--s-3) var(--s-6);margin-top:var(--s-6)}
 .hero-bottom{display:flex;flex-direction:column;align-items:center;gap:var(--s-1);color:var(--c-on-dark-3);font-size:var(--t-small);letter-spacing:-.005em}
@@ -413,9 +414,9 @@ html[data-story=on][data-snap=on]{scroll-snap-type:y proximity}
 [data-story=on] .application-number::after{transform:scaleX(var(--line,0))}
 [data-story=on]:not([data-handoff=done])[data-schematic=ready] #routing .approved-routing-graphic{opacity:var(--handoff,0)}
 
-/* Wide desktop: the hero headline and the story headlines run on one line. */
+/* Wide desktop: let headlines share a line when there is room. */
 @media (min-width:1200px){
- .hero h1{font-size:min(var(--t-hero),5.4vw)}.hero h1 br{display:none}.hero h1 span{margin-left:.22em}
+ .hero h1{font-size:min(var(--t-hero),5.4vw)}.hero h1 br{display:none}
  [data-story=on] :is(#platform,.beat-routing) h2 br{display:none}
  [data-story=on] :is(#platform,.beat-routing) h2 span{margin-left:.22em}
 }
