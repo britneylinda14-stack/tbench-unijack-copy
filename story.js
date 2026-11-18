@@ -293,7 +293,7 @@ const TRACE_KIND = {'#ff862f':'route','#ff852f':'route','#ff842a':'route','#2fdc
 const KEY_POINT = {}, KEY_LEGEND = {};
 async function loadSchematic(){
  try {
-  const response = await fetch(new URL('./assets/erau-routing-approved.svg?v=unijack-2.0-fanout-ch3', import.meta.url));
+  const response = await fetch(new URL('./assets/erau-routing-approved.svg?v=unijack-2.0-fanout-horizontal', import.meta.url));
   if (!response.ok) throw new Error(response.status);
   const doc = new DOMParser().parseFromString(await response.text(), 'image/svg+xml');
   const svg = doc.documentElement;
