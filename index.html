@@ -20,15 +20,15 @@
 d.dataset.saveData=s?'on':'off';d.dataset.motion=r?'reduced':'full';d.dataset.story=!s&&!!window.WebGLRenderingContext?'on':'off';})(document.documentElement);
 </script>
 <!-- The page's own modules are versioned here, so a browser never runs a stale cached copy after an update. -->
-<script type="importmap">{"imports":{"three":"./vendor/three.module.min.js","three/addons/":"./vendor/","./story.js":"./story.js?v=unijack-2.0-platform-dot","./motion.js":"./motion.js?v=unijack-2.0-exploded","./story-scene.js":"./story-scene.js?v=unijack-2.0-platform-dot","./detailed-model.js":"./detailed-model.js?v=unijack-2.0","./material-finish.js":"./material-finish.js?v=unijack-2.0","./dimensions.js":"./dimensions.js?v=unijack-2.0"}}</script>
+<script type="importmap">{"imports":{"three":"./vendor/three.module.min.js","three/addons/":"./vendor/","./story.js":"./story.js?v=unijack-2.0-phone-assembled","./motion.js":"./motion.js?v=unijack-2.0-exploded","./story-scene.js":"./story-scene.js?v=unijack-2.0-phone-assembled","./detailed-model.js":"./detailed-model.js?v=unijack-2.0","./material-finish.js":"./material-finish.js?v=unijack-2.0","./dimensions.js":"./dimensions.js?v=unijack-2.0"}}</script>
 <link rel="modulepreload" href="./app.js?v=unijack-2.0">
-<link rel="modulepreload" href="./story.js?v=unijack-2.0-platform-dot">
+<link rel="modulepreload" href="./story.js?v=unijack-2.0-phone-assembled">
 <link rel="modulepreload" href="./motion.js?v=unijack-2.0-exploded">
 <script>
 // Start three.js, the scene modules and the tiny texture previews with the page
 // (not after it), unless the visitor has Save-Data on.
 (function(d){if(d.documentElement.dataset.saveData==='on')return;var h=d.head;
-['./vendor/three.module.min.js','./vendor/three.core.min.js','./story-scene.js?v=unijack-2.0-platform-dot','./detailed-model.js?v=unijack-2.0','./material-finish.js?v=unijack-2.0','./dimensions.js?v=unijack-2.0','./vendor/RoundedBoxGeometry.js','./vendor/BufferGeometryUtils.js'].forEach(function(u){var l=d.createElement('link');l.rel='modulepreload';l.href=u;h.appendChild(l);});
+['./vendor/three.module.min.js','./vendor/three.core.min.js','./story-scene.js?v=unijack-2.0-phone-assembled','./detailed-model.js?v=unijack-2.0','./material-finish.js?v=unijack-2.0','./dimensions.js?v=unijack-2.0','./vendor/RoundedBoxGeometry.js','./vendor/BufferGeometryUtils.js'].forEach(function(u){var l=d.createElement('link');l.rel='modulepreload';l.href=u;h.appendChild(l);});
 ['gallery-3','gallery-4','gallery-2'].forEach(function(n){var l=d.createElement('link');l.rel='preload';l.as='image';l.crossOrigin='anonymous';l.href='./assets/textures/'+n+'-tiny.webp';h.appendChild(l);});})(document);
 </script>
 <noscript><style>.scene-controls,.insertion-control,.part-tabs,.routing-switch{display:none}</style></noscript>
