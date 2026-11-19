@@ -230,7 +230,9 @@ export async function createStoryScene(host,{lite=false,instant=false,timeline=n
   if(lite&&!hw&&P.phase==='story'&&minY<maxY){
    const a=pads[P.prev]||NOPAD,b=pads[P.stop]||NOPAD,above=lerp(a.above,b.above,P.camT),below=lerp(a.below,b.below,P.camT);
    const centre=frameBox.top+(H-frameBox.top-frameBox.bottom)/2;
-   const delta=(centre-(minY-above+maxY+below)/2)*(1-heroT)*e;
+   let delta=(centre-(minY-above+maxY+below)/2)*(1-heroT)*e;
+   // On short phones the first frame can reach the copy before it scrolls away.
+   if(W<600&&P.stop==='assembled')delta=Math.max(delta,frameBox.hero-scrollY-minY);
    if(Math.abs(delta)>.25){applyOffset(baseDy+delta,0);minY+=delta;maxY+=delta;for(const a2 of Object.values(out.anchors))a2.y+=delta;}
   }
   out.bounds={left:minX,right:maxX,top:minY,bottom:maxY};

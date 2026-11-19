@@ -8,9 +8,11 @@ const root = document.documentElement;
 const storyOn = root.dataset.story === 'on';
 const reduced = matchMedia('(prefers-reduced-motion: reduce)');
 const compact = matchMedia('(max-width: 959px)');
+const phone = matchMedia('(max-width: 599px)');
 const stage = document.querySelector('#product-stage');
 const $ = s => document.querySelector(s);
 const header = $('#tb-unified-header');
+const heroFooter = $('.hero-bottom');
 const sections = {
  proof: $('.beat-proof'), platform: $('#platform'), assembly: $('.assembly-section'),
  routing: $('#routing'), beatRouting: $('.beat-routing'), beatStats: $('.beat-stats'),
@@ -365,10 +367,16 @@ function keyAnchor(g){
 const docTop = el => el.getBoundingClientRect().top + scrollY;
 const setH = (el, px) => { const v = `${Math.max(0, Math.round(px))}px`; if (el && el.style.height !== v) el.style.height = v; };
 let frameNow = {top:0, bottom:0, hero:0};
+let stillTop = 0, stillCenter = 0;
 function measure(){
  vh = screenH(); vw = innerWidth;
  if (!storyOn) return;
- tl = buildTimeline(compact.matches ? PACING.phone : PACING.desktop);
+ const pacing = compact.matches ? PACING.phone : PACING.desktop;
+ // Let the last line of hero copy scroll out before centering the assembled board.
+ if (phone.matches) {
+  const read = (heroFooter.getBoundingClientRect().bottom + scrollY) / vh;
+  tl = buildTimeline({...pacing, assembled:{...pacing.assembled, read, hold:.36}});
+ } else tl = buildTimeline(pacing);
  scene?.setTimeline(tl);
  const b = tl.byName, px = s => s * vh;
  // Section tops sit where their chapter starts, so in-page links land on it.
@@ -478,6 +486,13 @@ function revealOnFocus(event){
 }
 
 function travelBoard(pose, {shift, shown}){
+ if (phone.matches) {
+  const exploded = tl.byName.exploded;
+  // Move the still up with the copy, then restore its regular position while offscreen.
+  const top = sRaw < exploded.start + exploded.read / 2
+   ? Math.min(stillTop, Math.max(stillCenter, frameNow.hero - scrollY)) : stillTop;
+  stage.style.setProperty('--still-top', `${Math.round(top)}px`);
+ }
  if (!hwRegion) {
   const frame = tl.byName.frame;
   if (sRaw >= frame.readEnd) {
@@ -495,7 +510,7 @@ function travelBoard(pose, {shift, shown}){
 const PHONE_FOOT = 152; // control bar (or insertion panel) and the caption line under it
 function computeFrame(){
  const stageTop = stage.getBoundingClientRect().top;
- const heroEnd = $(compact.matches ? '.hero-bottom' : '.hero-actions');
+ const heroEnd = compact.matches ? heroFooter : $('.hero-actions');
  const heroBottom = heroEnd.getBoundingClientRect().bottom + scrollY - stageTop; // position at scroll 0
  // Phones: no band is reserved; the board is centred between the local nav and the control bar.
  if (compact.matches) return {top:8, bottom:PHONE_FOOT, hero:Math.round(heroBottom + 8)};
@@ -520,7 +535,9 @@ function placeGlow(f){
  // The still photo fits between the hero copy and the stage controls.
  const room = Math.max(120, H - f.hero - (compact.matches ? 104 : 92));
  const stillH = Math.min(w / 1.78, room);
- stage.style.setProperty('--still-top', `${Math.round(f.hero + (room - stillH) / 2)}px`);
+ stillTop = f.hero + (room - stillH) / 2;
+ stillCenter = f.top + (region - stillH) / 2;
+ stage.style.setProperty('--still-top', `${Math.round(stillTop)}px`);
  stage.style.setProperty('--still-h', `${Math.round(stillH)}px`);
  stage.style.setProperty('--still-w', `${Math.round(Math.min(w, stillH * 1.78))}px`);
 }
@@ -670,6 +687,7 @@ function drawAppLines(){
 function stepped(s){
  if (s >= tl.hardware.start - 1) return tl.hardware.start + Math.round(s - tl.hardware.start);
  let pick = tl.stops[0];
+ if (pick.read && s < pick.readEnd + pick.move * .5) return pick.start;
  for (const st of tl.stops) if (s >= st.readEnd + st.move * .5) pick = st;
  return Math.max(pick.start, (pick.hold ? pick.drawEnd : pick.end - .002)) + .001;
 }
