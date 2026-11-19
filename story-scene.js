@@ -15,6 +15,7 @@ const LEAVE = {mercury:V(-190,40,-150), peri:V(200,30,40)};
 const FLIP = {lift:V(0,74,26), angle:-2.4};
 // Annotation anchors: a point inside each part's resting bounds (fractions of x, y, z).
 const ANCHORS = {base:['base',[.30,1,.66]], baseBack:['base',[.2,1,.14]], mercury:['mercury',[.5,1,.5]], peri:['peri',[.5,1,.42]],
+ baseExploded:['base',[.44,.10,.56]],
  ports:['base',[.05,.8,.55]], aurix:['mercury',[.56,.5,.52]], underside:['mercury',[.5,0,.45]],
  socket:['base',[.25,.55,.86]], erau:['base',[.56,.35,.42]]};
 const lerp = THREE.MathUtils.lerp;
