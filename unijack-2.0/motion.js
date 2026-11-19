@@ -118,17 +118,17 @@ export function poseAt(tl, s){
  const hw = tl.hardware;
  if (s >= hw.start - 1) {
   const x = Math.max(0, Math.min(hw.stops.length - 1, s - hw.start)), i = Math.min(hw.stops.length - 2, Math.floor(x));
-  return {phase:'hardware', camA:hw.stops[i], camB:hw.stops[i+1], camT:easeInOut(x - i), hero:0, explode:{peri:0,mercury:0,components:0}, insertion:1, flip:0, leave:0, dim:0};
+  return {phase:'hardware', camA:hw.stops[i], camB:hw.stops[i+1], camT:easeInOut(x - i), hero:0, explode:{peri:0,mercury:0}, insertion:1, flip:0, leave:0, dim:0};
  }
  const stop = stopAt(tl, s), t = stop.move ? clamp01((s - stop.readEnd) / stop.move) : (s >= stop.readEnd ? 1 : 0), e = easeInOut(t);
  const a = stop.from, b = stop.to, mix = k => a[k] + (b[k] - a[k]) * e;
- // The explode reads as one movement: all parts start within a few percent.
+ // The two modules start separating a few percent apart so it reads as one movement.
  const ex = w => a.explode + (b.explode - a.explode) * easeInOut(span(t, w));
  const dim = stop.name === 'frame' ? easeInOut(clamp01((s - stop.moveEnd) / (stop.draw || 1))) : stop.schematic ? 1 : a.dim;
  const prev = tl.stops[tl.stops.indexOf(stop) - 1];
  const preview = stop.name === 'routing-preview' ? e : prev?.name === 'routing-preview' ? 1 - e : 0;
  return {phase:'story', stop:stop.name, prev:prev ? prev.name : stop.name, camA:a.cam, camB:b.cam, camT:e, hero:mix('hero'),
-  explode:{peri:ex([0,.8]), mercury:ex([.06,.86]), components:ex([.12,.92])},
+  explode:{peri:ex([0,.8]), mercury:ex([.06,.86])},
   insertion:mix('insertion'), flip:mix('flip'), leave:mix('leave'), dim, preview};
 }
 // Draw-in (0–1) and exit (0–1) of a stop's annotations at position s. They

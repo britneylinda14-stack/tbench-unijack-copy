@@ -8,7 +8,7 @@ import { mercuryInsertionPose, poseAt, easeInOut, easeOut, frameDelta } from './
 // only while something is changing.
 const MM = .05; // Authored millimetres to scene units.
 const V = (x,y,z)=>new THREE.Vector3(x,y,z);
-const EXPLODE = {mercury:V(0,46,-4), peri:V(30,20,0), components:12};
+const EXPLODE = {mercury:V(0,46,-4), peri:V(30,20,0)};
 // Exits are lateral so they read as leaving frame in the top-down view.
 const LEAVE = {mercury:V(-190,40,-150), peri:V(200,30,40)};
 // Underside stop: Mercury lifts clear of the socket and turns its underside to the camera.
@@ -17,7 +17,6 @@ const FLIP = {lift:V(0,74,26), angle:-2.4};
 const ANCHORS = {base:['base',[.30,1,.66]], baseBack:['base',[.2,1,.14]], mercury:['mercury',[.5,1,.5]], peri:['peri',[.5,1,.42]],
  ports:['base',[.05,.8,.55]], aurix:['mercury',[.56,.5,.52]], underside:['mercury',[.5,0,.45]],
  socket:['base',[.25,.55,.86]], erau:['base',[.56,.35,.42]]};
-const BOARD_LAYER = /^(FR4 cut edge|Teal solder mask|Photographic solder mask and silkscreen)$/;
 const lerp = THREE.MathUtils.lerp;
 function lerpAngle(a,b,t){let d=(b-a)%(Math.PI*2);if(d>Math.PI)d-=Math.PI*2;if(d<-Math.PI)d+=Math.PI*2;return a+d*t;}
 
@@ -61,22 +60,19 @@ export async function createStoryScene(host,{lite=false,instant=false,timeline=n
 
  const root=source.root;root.scale.setScalar(MM);scene.add(root);
  const base=root.getObjectByName('UniJack_baseboard'),mercury=root.getObjectByName('Mercury_module'),peri=root.getObjectByName('PeriBoard');
- const components=new THREE.Group();components.name='UniJack component layer';
- for(const mesh of [...base.children])if(!BOARD_LAYER.test(mesh.name))components.add(mesh);
- base.add(components);
  const rest={mercury:source.rest.mercury.clone(),peri:source.rest.peri.clone()};
  const shadow=contactShadow();scene.add(shadow);
 
  // Bounds for the key poses, measured once at rest and once fully exploded.
- function applyParts(m,pe,lift,tilt){
-  mercury.position.copy(m);peri.position.copy(pe);components.position.y=lift;mercury.rotation.z=tilt;root.updateMatrixWorld(true);
+ function applyParts(m,pe,tilt){
+  mercury.position.copy(m);peri.position.copy(pe);mercury.rotation.z=tilt;root.updateMatrixWorld(true);
  }
- applyParts(rest.mercury,rest.peri,0,0);
+ applyParts(rest.mercury,rest.peri,0);
  const boxes={all:new THREE.Box3().setFromObject(root),base:new THREE.Box3().setFromObject(base),
   mercury:new THREE.Box3().setFromObject(mercury),peri:new THREE.Box3().setFromObject(peri)};
- applyParts(rest.mercury.clone().add(EXPLODE.mercury),rest.peri.clone().add(EXPLODE.peri),lite?0:EXPLODE.components,-.1);
+ applyParts(rest.mercury.clone().add(EXPLODE.mercury),rest.peri.clone().add(EXPLODE.peri),-.1);
  boxes.exploded=new THREE.Box3().setFromObject(root);
- applyParts(rest.mercury,rest.peri,0,0);
+ applyParts(rest.mercury,rest.peri,0);
  // Local anchor points, taken at rest so they follow each part as it moves.
  const anchorLocal={};
  for(const [name,[part,f]] of Object.entries(ANCHORS)){const b=boxes[part],obj={base,mercury,peri}[part];
@@ -85,7 +81,7 @@ export async function createStoryScene(host,{lite=false,instant=false,timeline=n
  boxes.flipped=new THREE.Box3().setFromObject(mercury);
  {const ins=mercuryInsertionPose(0);mercury.position.copy(rest.mercury);mercury.position.x+=ins.x;mercury.position.y+=ins.y;mercury.rotation.z=ins.angle;root.updateMatrixWorld(true);
   boxes.insertion=new THREE.Box3().setFromObject(mercury).union(boxes.mercury);}
- applyParts(rest.mercury,rest.peri,0,0);
+ applyParts(rest.mercury,rest.peri,0);
  const footprint=boxes.all.getSize(new THREE.Vector3());
  shadow.scale.set(footprint.x*1.25,footprint.z*1.7,1);shadow.position.set(boxes.all.getCenter(new THREE.Vector3()).x,boxes.all.min.y-.02,0);
 
@@ -173,30 +169,30 @@ export async function createStoryScene(host,{lite=false,instant=false,timeline=n
  const tmp=new THREE.Vector3(),mTarget=new THREE.Vector3(),pTarget=new THREE.Vector3(),corner=new THREE.Vector3();
  const partBox=new THREE.Box3();
  const NOPAD={above:0,below:0};
- const restPose={phase:'story',camA:'hero',camB:'hero',camT:0,hero:1,explode:{peri:0,mercury:0,components:0},insertion:1,flip:0,leave:0,dim:0};
+ const restPose={phase:'story',camA:'hero',camB:'hero',camT:0,hero:1,explode:{peri:0,mercury:0},insertion:1,flip:0,leave:0,dim:0};
 
  function pose(){
   const P=tl?poseAt(tl,state.p):restPose,o=state.override,w=state.weight;
   const preview=P.preview??0;
   const overrideWeight=w*(1-preview);
-  const periT=P.explode.peri,mercT=P.explode.mercury,compT=lite?0:P.explode.components,leaveT=P.leave,flipT=easeInOut(P.flip);
+  const periT=P.explode.peri,mercT=P.explode.mercury,leaveT=P.leave,flipT=easeInOut(P.flip);
   const ins=mercuryInsertionPose(P.insertion);
   mTarget.copy(rest.mercury).addScaledVector(EXPLODE.mercury,mercT).addScaledVector(LEAVE.mercury,leaveT).addScaledVector(FLIP.lift,flipT);
   mTarget.x+=ins.x;mTarget.y+=ins.y;
   pTarget.copy(rest.peri).addScaledVector(EXPLODE.peri,periT).addScaledVector(LEAVE.peri,leaveT);
-  let tilt=-.1*mercT+ins.angle+FLIP.angle*flipT,lift=EXPLODE.components*compT;
+  let tilt=-.1*mercT+ins.angle+FLIP.angle*flipT;
   const hw=P.phase==='hardware';
   let cam=blendCam(keys[P.camA]||keys.hero,keys[P.camB]||keys.hero,P.camT);
   if(o&&overrideWeight>0&&!hw){
    const oi=mercuryInsertionPose(o.insertion??1);
    const om=rest.mercury.clone();om.x+=oi.x;om.y+=oi.y;
-   mTarget.lerp(om,overrideWeight);pTarget.lerp(rest.peri,overrideWeight);tilt=lerp(tilt,oi.angle,overrideWeight);lift=lerp(lift,0,overrideWeight);
+   mTarget.lerp(om,overrideWeight);pTarget.lerp(rest.peri,overrideWeight);tilt=lerp(tilt,oi.angle,overrideWeight);
    cam=blendCam(cam,overrideCamera(o),easeInOut(overrideWeight));
   }
   const showAll=hw||!o||o.focus==='all'||overrideWeight<.02;
   for(const [name,part] of [['base',base],['mercury',mercury],['peri',peri]])part.visible=showAll||o.focus===name;
-  if(!mercury.position.equals(mTarget)||!peri.position.equals(pTarget)||components.position.y!==lift||mercury.rotation.z!==tilt)shadowDirty=true;
-  mercury.position.copy(mTarget);peri.position.copy(pTarget);components.position.y=lift;mercury.rotation.z=tilt;
+  if(!mercury.position.equals(mTarget)||!peri.position.equals(pTarget)||mercury.rotation.z!==tilt)shadowDirty=true;
+  mercury.position.copy(mTarget);peri.position.copy(pTarget);mercury.rotation.z=tilt;
   shadow.material.opacity=(1-leaveT)*.9;shadow.visible=shadow.material.opacity>.01&&showAll;
   // Camera: story key + drag offset + a small idle drift at the top of the page.
   const idle=state.idle&&!state.paused&&!hw?Math.sin(state.time*.32)*.1*P.hero:0;
