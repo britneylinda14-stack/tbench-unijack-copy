@@ -56,7 +56,7 @@ const ANNOTATIONS = {
   {at:'mercury', name:'Mercury controller', d:[-120,-110], m:['above',0,-1,0]},
   {at:'peri', name:'PeriBoard expansion', d:[130,-100], m:['above',0,-1,40]}]},
  exploded:{caption:['One connected ecosystem'], items:[
-  {at:'baseBack', tag:'01 / PLATFORM', name:'UniJack™', d:[-150,-30], m:['below',0,1,0]},
+  {at:'baseExploded', tag:'01 / PLATFORM', name:'UniJack™', d:[-150,-30], m:['below',0,1,0]},
   {at:'mercury', tag:'02 / CONTROLLER', name:'Mercury Module', d:[-130,-90], m:['above',0,1,0]},
   {at:'peri', tag:'03 / EXPANSION', name:'PeriBoard', d:[130,-90], m:['above',0,-1,52]}]},
  ports:{items:[{at:'ports', name:'Ports', d:[-130,-90], m:['above',0]}]},
