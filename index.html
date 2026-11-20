@@ -12,7 +12,7 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23080b10'/%3E%3Cpath d='M8 7v12a8 8 0 0016 0V7h-4v12a4 4 0 01-8 0V7z' fill='%2374e2f4'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="./tokens.css?v=unijack-2.0">
 <link rel="stylesheet" href="./tbench/shared-nav.css?v=apple-16">
-<link rel="stylesheet" href="./style.css?v=unijack-2.0-scroll-flow">
+<link rel="stylesheet" href="./style.css?v=unijack-2.0-logic-gate">
 <script>
 // Decide the layout before first paint: the pinned scroll story needs WebGL
 // (with reduced motion it steps between stops); otherwise the static layout.
@@ -20,9 +20,9 @@
 d.dataset.saveData=s?'on':'off';d.dataset.motion=r?'reduced':'full';d.dataset.story=!s&&!!window.WebGLRenderingContext?'on':'off';})(document.documentElement);
 </script>
 <!-- The page's own modules are versioned here, so a browser never runs a stale cached copy after an update. -->
-<script type="importmap">{"imports":{"three":"./vendor/three.module.min.js","three/addons/":"./vendor/","./story.js":"./story.js?v=unijack-2.0-phone-assembled","./motion.js":"./motion.js?v=unijack-2.0-exploded","./story-scene.js":"./story-scene.js?v=unijack-2.0-phone-assembled","./detailed-model.js":"./detailed-model.js?v=unijack-2.0","./material-finish.js":"./material-finish.js?v=unijack-2.0","./dimensions.js":"./dimensions.js?v=unijack-2.0"}}</script>
-<link rel="modulepreload" href="./app.js?v=unijack-2.0">
-<link rel="modulepreload" href="./story.js?v=unijack-2.0-phone-assembled">
+<script type="importmap">{"imports":{"three":"./vendor/three.module.min.js","three/addons/":"./vendor/","./story.js":"./story.js?v=unijack-2.0-logic-gate","./motion.js":"./motion.js?v=unijack-2.0-exploded","./story-scene.js":"./story-scene.js?v=unijack-2.0-phone-assembled","./detailed-model.js":"./detailed-model.js?v=unijack-2.0","./material-finish.js":"./material-finish.js?v=unijack-2.0","./dimensions.js":"./dimensions.js?v=unijack-2.0"}}</script>
+<link rel="modulepreload" href="./app.js?v=unijack-2.0-logic-gate">
+<link rel="modulepreload" href="./story.js?v=unijack-2.0-logic-gate">
 <link rel="modulepreload" href="./motion.js?v=unijack-2.0-exploded">
 <script>
 // Start three.js, the scene modules and the tiny texture previews with the page
@@ -157,14 +157,16 @@ text{font-family:Arial,Helvetica,sans-serif;fill:#b6d0fa}.heading{font-size:26px
          M284 572 l-14 8 14 8
          M284 606 l-14 8 14 8" class="trace approved-path path-fanout" stroke="#129cf4" />
 
+</g>
+<g class="erau-logic">
 <polyline points="270,363 716,363 716,636 829,636" class="trace approved-path path-logic logic-input-pair" stroke="#ff862f" stroke-dasharray="12 9"/>
 <polyline points="270,398 684,398 684,656 829,656" class="trace approved-path path-logic logic-input-pair" stroke="#ff862f" stroke-dasharray="12 9"/>
 <polyline points="270,363 716,363 716,646 829,646" class="trace approved-path path-logic logic-input-single" stroke="#ff862f" stroke-dasharray="12 9"/>
 <!-- Normalize the dash pattern so the last dash reaches CH3 for every gate. -->
 <polyline id="logic-output-trace" points="879,646 927,646 927,315 1387,315" pathLength="828" class="trace approved-path path-logic" stroke="#ff862f" stroke-dasharray="12 9"/>
-</g>
 <g id="logic-gate-symbol" transform="translate(574 541)"><path class="gate-shape" d="M255 75H275A30 30 0 0 1 275 135H255Z"/></g>
 <text id="erau-gate-caption" x="863" y="706" class="small" text-anchor="middle">AND</text><text id="logic-expression" x="936" y="706" class="small" text-anchor="start"></text>
+</g>
 <path d="M642 799H1077M642 799l14 -7m-14 7 14 7M1077 799l-14 -7m14 7 -14 7" stroke="#86b3e9" stroke-width="2" fill="none"/>
 <text x="854" y="834" class="heading" text-anchor="middle">Bi-directional</text>
 <text x="854" y="865" class="small" text-anchor="middle">per group (or group-wise)</text>
@@ -182,5 +184,5 @@ text{font-family:Arial,Helvetica,sans-serif;fill:#b6d0fa}.heading{font-size:26px
 <a href="./privacy.html">Privacy Policy</a>
 <a href="./privacy.html#cookie-settings" data-cookie-settings>Cookie Settings</a>
 </nav></footer>
-<script type="module" src="./app.js?v=unijack-2.0-fanout"></script>
+<script type="module" src="./app.js?v=unijack-2.0-logic-gate"></script>
 </body></html>

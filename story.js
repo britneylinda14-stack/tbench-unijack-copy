@@ -297,9 +297,20 @@ overlay.setAttribute('aria-hidden', 'true');
 let overlayGroups = null, overlayBox = null, overlaySvg = null;
 const TRACE_KIND = {'#ff862f':'route','#ff852f':'route','#ff842a':'route','#2fdc64':'cross','#30dc62':'cross','#ffe11d':'loopback','#ffe61d':'loopback','#129cf4':'fanout','#0d9ff4':'fanout'};
 const KEY_POINT = {}, KEY_LEGEND = {};
+function syncLogicGate(){
+ if (!overlaySvg) return;
+ const graphic = sections.graphic;
+ overlaySvg.dataset.logicGate = graphic.closest('[data-logic-gate]').dataset.logicGate;
+ for (const id of ['logic-gate-symbol', 'erau-gate-caption', 'logic-expression']) {
+  const source = graphic.querySelector('#' + id);
+  overlaySvg.querySelector('#story-' + id).replaceChildren(...Array.from(source.childNodes, node => node.cloneNode(true)));
+ }
+ const points = graphic.querySelector('#logic-output-trace').getAttribute('points');
+ overlaySvg.querySelector('#story-logic-output-trace').setAttribute('points', points);
+}
 async function loadSchematic(){
  try {
-  const response = await fetch(new URL('./assets/erau-routing-approved.svg?v=unijack-2.0-erau-terminals', import.meta.url));
+  const response = await fetch(new URL('./assets/erau-routing-approved.svg?v=unijack-2.0-logic-gate', import.meta.url));
   if (!response.ok) throw new Error(response.status);
   const doc = new DOMParser().parseFromString(await response.text(), 'image/svg+xml');
   const svg = doc.documentElement;
@@ -307,6 +318,8 @@ async function loadSchematic(){
   svg.removeAttribute('role'); svg.removeAttribute('aria-labelledby');
   svg.setAttribute('aria-hidden', 'true'); svg.setAttribute('focusable', 'false');
   svg.removeAttribute('width'); svg.removeAttribute('height');
+  // Use the explorer's gate and inputs so the two drawings match during the handoff.
+  svg.querySelector('.erau-logic').replaceWith(sections.graphic.querySelector('.erau-logic').cloneNode(true));
   // Keep ids unique next to the inline explorer drawing.
   svg.querySelectorAll('[id]').forEach(n => n.id = 'story-' + n.id);
   svg.querySelectorAll('[fill="url(#grid)"]').forEach(n => n.setAttribute('fill', 'url(#story-grid)'));
@@ -332,6 +345,7 @@ async function loadSchematic(){
   [...svg.children].forEach(el => { if (!/^(defs|style)$/.test(el.tagName) && !el.matches('.trace')) groups.rest.push(el); });
   overlay.append(svg);
   overlaySvg = svg; overlayGroups = groups;
+  syncLogicGate();
   root.dataset.schematic = 'ready';
   update(true);
  } catch (error) {
@@ -844,6 +858,7 @@ export const story = {
  on: storyOn,
  init,
  loadScene,
+ syncLogicGate,
  get scene(){ return scene; },
  get progress(){ return sShown; },
  get stop(){ return currentStop; },

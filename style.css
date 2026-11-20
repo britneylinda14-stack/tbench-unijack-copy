@@ -166,11 +166,11 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border:0;border-radiu
 }
 #routing .approved-path{opacity:.18;transition:opacity .18s,stroke-width .18s}
 #routing [data-signal-mode=route] .path-route,#routing [data-signal-mode=cross] .path-cross,#routing [data-signal-mode=loopback] .path-loopback,#routing [data-signal-mode=fanout] .path-fanout,#routing [data-signal-mode=logic] .path-logic{opacity:1;stroke-width:7}
-#routing .logic-input-single,#routing [data-logic-gate=NOT] .logic-input-pair{display:none}
-#routing [data-logic-gate=NOT] .logic-input-single{display:inline}
-#routing .approved-routing-graphic .gate-shape{fill:#0a2c53;stroke:#bad7ff;stroke-width:3}
-#routing .approved-routing-graphic .gate-bubble{fill:#061d36;stroke:#bad7ff;stroke-width:3}
-#routing #logic-expression{font:500 18px Arial,sans-serif;fill:#ffb36c}
+:is(#routing,.story-schematic) .logic-input-single,:is(#routing,.story-schematic) [data-logic-gate=NOT] .logic-input-pair{display:none}
+:is(#routing,.story-schematic) [data-logic-gate=NOT] .logic-input-single{display:inline}
+.erau-logic .gate-shape{fill:#0a2c53;stroke:#bad7ff;stroke-width:3}
+.erau-logic .gate-bubble{fill:#061d36;stroke:#bad7ff;stroke-width:3}
+:is(#logic-expression,#story-logic-expression){font:500 18px Arial,sans-serif;fill:#ffb36c}
 #routing .erau-diagram-footer{display:flex;justify-content:space-between;flex-wrap:wrap;gap:var(--s-2);margin-top:var(--s-3);color:var(--c-on-dark-3);font:500 var(--t-caption)/1.4 var(--font-mono)}
 #routing-description{min-height:3em;max-width:var(--read);margin:var(--s-5) auto 0;color:var(--c-on-dark-2);font-size:var(--t-body);line-height:1.47}
 
