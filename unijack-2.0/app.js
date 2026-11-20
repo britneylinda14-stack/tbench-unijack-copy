@@ -169,6 +169,7 @@ function updateGate(){
  document.querySelector('#signal-output-direction').textContent='GROUPS Y';
  document.querySelector('#signal-input-direction').textContent='GROUPS X';
  signalDiagram.dataset.logicGate=logicSelect.value;
+ story.syncLogicGate();
  const gateLabel=signalDiagram.querySelector('.erau-inline-gate-label');if(gateLabel)gateLabel.textContent=logicSelect.value+' / LOGIC';
  signalDiagram.setAttribute('aria-label','ERAU logical '+logicSelect.value+' operation: '+gate.expression+(logicSelect.value==='NOT'?' using one input A':' using inputs A and B'));
 }
